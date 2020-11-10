@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.2
+版本號:4-1.3
 通  道:Release
 作　者:龍翔翎(Velade)
 
 更新日期:2020-11-10
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.2";
+  var version = "4-1.3";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1478,7 +1478,7 @@ Date.prototype.getFullMonth=function (addone) {
 
     //Init Auto
     _("html").css("perspective: 100px; min-height:100%; min-width: 100%;");
-    _("body").css("opacity: 1;transform: translateZ(0px);min-width:100%; min-height:100%;margin:0;");
+    _("body").css("opacity: 1;transform: translateZ(0px);min-width:100vw; min-height:100vh;margin:0;");
     if(new Array("rgba(0, 0, 0, 0)","rgba(0,0,0,0)","transparent").indexOf(_("body").css("background-color")) > -1){
       _("body").css("background-color:rgba(255, 255, 255, 1)");
     }

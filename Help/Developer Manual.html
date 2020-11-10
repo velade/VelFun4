@@ -2,7 +2,7 @@
 <html lang="cn" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>VelFun4开发者手册 - 1.2</title>
+    <title>VelFun4开发者手册 - 1.3</title>
     <link rel="stylesheet" href="help_data/styles/style.css" />
     <link rel="stylesheet" href="help_data/styles/w3.css" />
     <script src="help_data/scripts/velfun4.js" type="text/javascript"></script>
@@ -12,7 +12,7 @@
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 1.2</div>
+      <div class="version">Ver 1.3</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -55,6 +55,14 @@
         <span class="typeitem" data-page="ismobile">判断是否是移动端</span>
         <span class="typeitem" data-page="host">获取当前域名</span>
         <span class="typeitem" data-page="isie">判断IE</span>
+      </div>
+      <div class="type">
+        <span class="typetitle">输入输出方法</span>
+        <span class="typeitem" data-page="ajax" new>AJAX</span>
+        <span class="typeitem" data-page="post" new>POST</span>
+        <span class="typeitem" data-page="get" new>GET</span>
+        <span class="typeitem" data-page="import" new>动态导入资源文件</span>
+        <span class="typeitem" data-page="unimport" new>动态卸载资源文件</span>
       </div>
       <div class="type">
         <span class="typetitle">原生扩展</span>
@@ -676,6 +684,115 @@
             <li>回调函数：当浏览器是IE时将会执行的函数，如果浏览器不是IE，此函数不会被执行</li>
             <li>isIE同样具有返回值，是IE则为true。因此可以用if判断返回值处理，而无需使用回调函数</li>
             <li style="color:red;">使用isIE判定时，需要将isIE放在外面，不能套在_(function(){})里面，因为这也是一个VelFun选择器，它无法在IE下工作</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="ajax">
+        <span class="title">AJAX异步传输</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          简单地封装了XHR(XML Http Request)的异步传输方法，也就是俗称的AJAX，AJAX属于io(input/output 输入/输出)分类之下，使用_.io.ajax()调用。
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.ajax(<类型>,<路径>[,<数据>],<回调函数>);
+            </pre>
+          </div>
+          <ul>
+            <li>类型：必要参数，字符串类型，AJAX提交的method，参数为post或get</li>
+            <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，无论传递类型是get还是post，此处连接的参数一律视为GET</li>
+            <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
+            <li>回调函数：必要参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
+            <li>通过使用url连接参数与post + 数据的提交方式，可以给后台同时传递GET的参数与POST的参数，以PHP为例，$_POST只能获取到POST的参数而$_GET则只能获取GET的参数，并不是说类型设为post就都是post传递。但是GET类型没有这个区别。</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="post">
+        <span class="title">POST异步传输</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          简化的ajax方法，内部使用_.io.ajax实现，仅省略了指定类型的参数
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.post(<路径>[,<数据>],<回调函数>);
+            </pre>
+          </div>
+          <ul>
+            <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，此处连接的参数一律视为GET</li>
+            <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
+            <li>回调函数：必要参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
+            <li>通过使用url连接的参数方式，可以给后台同时传递GET的参数与POST的参数。</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="get">
+        <span class="title">GET异步传输</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          简化的ajax方法，内部使用_.io.ajax实现，仅省略了指定类型的参数
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.get(<路径>[,<数据>],<回调函数>);
+            </pre>
+          </div>
+          <ul>
+            <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可直接拼接参数</li>
+            <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
+            <li>回调函数：必要参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
+            <li>可以将参数连接到网址也可以使用 数据 参数传递，这二者并无差别，也可以网址与数据都带有参数，但是这样的书写方式并不推荐。</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="import">
+        <span class="title">IMPORT动态导入资源文件</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          通过操作HTML标签实现的简易的动态导入JS与CSS文件的功能。
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.import(<路径>,<类型>);
+            </pre>
+          </div>
+          <ul>
+            <li>路径：必要参数，字符串类型，要加载的资源文件的路径</li>
+            <li>类型：可选参数，强制指定资源的类型，目前支持两种类型javascript(js)，stylesheet(css)全称与简写都可以</li>
+            <li>类型参数通常可以省略，VelFun4会自动判定文件的类型，即使你加了参数也没有关系。需要用到这个参数的情况只有你使用了非标准的后缀名，例如你的js脚本不是xxx.js或是你的css样式表不是xxx.css的情况</li>
+            <li>此方法会返回一个路径</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="unimport">
+        <span class="title">UNIMPORT动态卸载资源文件</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          通过操作HTML标签实现的简易的动态卸载JS与CSS文件的功能。
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.unimport(<路径>);
+            </pre>
+          </div>
+          <ul>
+            <li>路径：书写代码时使用的路径，或动态引入时返回的路径</li>
+            <li>卸载不需要指定类型，因为我们不认为会有同一个文件既是脚本又是样式表的情况</li>
           </ul>
         </span>
       </div>
