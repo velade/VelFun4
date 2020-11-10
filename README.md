@@ -13,4 +13,4 @@
 　　VelFun是一個類庫，而不是框架。因此只有當你引入它時，它才會初始化，而只有當你調用某個功能時，它才會運作。因此你不必為它改變書寫代碼的習慣，也不必花費時間去學習某些特別的代碼格式，你不必時刻注意到它的存在，只要在想要一個提示框時用_.Msgbox()而不是alert ()就好了。是的，只有當你想起某個功能時，你才會注意到VelFun是多麼好的東西，而其它時間你完全可以忘掉它，因為我們只是想幫你，無條件的幫你，所以我們不會要求你先「懂我」，我能滿足你就好。
   
 ## 如何取得？
-　　取得VelFun4的方式很簡單，你可以通過訪問我們的官網 https://www.velhlkj.com 在產品中心獲得，也可以在GitHub的Release(https://github.com/velade/VelFun4/releases)中直接下載，或是克隆項目來下載。
+　　取得VelFun4的方式很簡單，你可以通過訪問我們的官網 https://www.velhlkj.com 在產品中心獲得，也可以在GitHub的Release( https://github.com/velade/VelFun4/releases )中直接下載，或是克隆項目來下載。
