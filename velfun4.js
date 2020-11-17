@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.4
+版本號:4-1.5
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2020-11-14
+更新日期:2020-11-17
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.4";
+  var version = "4-1.5";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -561,7 +561,6 @@
       var startCursor = _this.attr("data-start-cursor");
       _this.attr("data-start-cursor","");
       _this.css("opacity:" + startOpacity + ";pointer-events:" + startPointerEvents + ";cursor:" + startCursor + ";");
-      console.log(_this[0].tagName);
       if(_this[0].tagName.toLowerCase() == "body"){
         setTimeout(function(){
           _("html").css("background-color:white;");
@@ -666,7 +665,7 @@
       var vel_funthis = _(_this[index]);
       vel_funthis.attr("data-contextmenuid",Math.floor(Math.random()*89999999+10000000));
       var vel_funthisid = vel_funthis.attr("data-contextmenuid");
-      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;border:1px #CCC solid;overflow: hidden;position: absolute;background-color: rgba(250,250,250,0.95);border-radius: 5px;padding: 0;z-index: 9999;width: 100px;opacity: 0;' for='" + vel_funthisid + "'>";
+      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;border:1px #CCC solid;overflow: hidden;position: absolute;background-color: rgba(250,250,250,0.95);border-radius: 5px;padding: 0;z-index: 9999;width: 100px;opacity: 0;display:none;' for='" + vel_funthisid + "'>";
       vel_menufuns[vel_funthisid]=new Object();
       for (var i in funarr) {
         if (funarr.hasOwnProperty(i)) {
@@ -699,11 +698,14 @@
           var X=e.pageX;
           var Y=e.pageY;
           var thisid = this.attr("data-contextmenuid");
-          _("._Velfun_Contextmenu_[data-open]").css("opacity:1;");
+          _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
           _("._Velfun_Contextmenu_[data-open]").css("display:none;");
           _("._Velfun_Contextmenu_[data-open]").attr("data-open","");
-          _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;").css("opacity:1;");
-          _("._Velfun_Contextmenu_[for='" + thisid + "']").attr("data-open","true");
+          _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;");
+          setTimeout(function(thisid){
+            _("._Velfun_Contextmenu_[for='" + thisid + "']").css("opacity:1;");
+            _("._Velfun_Contextmenu_[for='" + thisid + "']").attr("data-open","data-open");
+          },10,thisid);
         }
       })
 
@@ -1488,7 +1490,7 @@ Date.prototype.getFullMonth=function (addone) {
     }
 
     _(document).click(function(){
-      _("._Velfun_Contextmenu_[data-open]").css("opacity:1;");
+      _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
       setTimeout(function(){
         _("._Velfun_Contextmenu_[data-open]").css("display:none;");
         _("._Velfun_Contextmenu_[data-open]").attr("data-open","");
