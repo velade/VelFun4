@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.5
+版本號:4-1.6
 通  道:Release
 作　者:龍翔翎(Velade)
 
 更新日期:2020-11-17
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.5";
+  var version = "4-1.6";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -673,10 +673,10 @@
           if (imgurl) {
             var lititle = i.replace(/icon\((.*?)\)/,'');
             vel_menufuns[vel_funthisid][lititle]=funarr[i];
-            menucontant += "<li style='width: 90%;height: 30px;line-height: 30px;border-bottom: 1px #CCC solid;transition: background 200ms;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'><img style='width: 16px;height: 16px;margin-right: 5px;margin-top: -2px;vertical-align: middle;border:none;' src='" + imgurl[1] + "'>" + lititle + "</li>";
+            menucontant += "<li style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 5px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'><img style='width: 16px;height: 16px;margin-right: 5px;margin-top: -2px;vertical-align: middle;border:none;' src='" + imgurl[1] + "'>" + lititle + "</li>";
           }else {
             vel_menufuns[vel_funthisid][i]=funarr[i];
-            menucontant += "<li style='width: 90%;height: 30px;line-height: 30px;border-bottom: 1px #CCC solid;transition: background 200ms;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + i + "</li>";
+            menucontant += "<li style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 5px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + i + "</li>";
           }
 
         }
@@ -711,8 +711,14 @@
 
       _("._Velfun_Contextmenu_[for='" + vel_funthisid + "'] li").click(function(){
         if(typeof vel_menufuns[vel_funthisid][_(this).text()] === "function"){
-          vel_menufuns[vel_funthisid][_(this).text()].call(_(this));
+          vel_menufuns[vel_funthisid][_(this).text()].call(_("[data-contextmenuid='" + vel_funthisid + "']"));
         }
+      })
+
+      _("._Velfun_Contextmenu_[for='" + vel_funthisid + "'] li").hover(function(){
+        this.css("background-color:rgba(0,0,0,0.1)");
+      },function(){
+        this.css("background-color:rgba(0,0,0,0)");
       })
     }
   }
