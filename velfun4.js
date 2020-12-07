@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.7
+版本號:4-1.8
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2020-11-18
+更新日期:2020-12-07
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.7";
+  var version = "4-1.8";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1118,14 +1118,22 @@
   velfun.io.ajax = function(method,url,data,callback){
     if(typeof data == "function"){
       callback = data;
-      data = "";
+      data = null;
     }else if(typeof data == "object"){
-      var params = new Array();
-      for (var key in data) {
-        var v = encodeURIComponent(data[key]);
-        params.push(key + "=" + v);
+      if(method.toLowerCase() == "get"){
+        var params = new Array();
+        for (var key in data) {
+          var v = encodeURIComponent(data[key]);
+          params.push(key + "=" + v);
+        }
+        data = params.join("&");
+      }else{
+        var params = new FormData();
+        for (var key in data) {
+          params.append(key,data[key]);
+        }
+        data = params;
       }
-      data = params.join("&");
     }
 
     var XHR = new XMLHttpRequest();
@@ -1146,7 +1154,6 @@
       XHR.send();
     }else if(method.toLowerCase() == "post"){
       XHR.open(method,url);
-      XHR.setRequestHeader("content-type","application/x-www-form-urlencoded");
       XHR.send(data);
     }else{
       try {
