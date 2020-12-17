@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.8
+版本號:4-1.9
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2020-12-07
+更新日期:2020-12-17
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.8";
+  var version = "4-1.9";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -923,7 +923,7 @@
       pos=['calc(50% - '+offset+'px)','30%'];
     }
 
-    var appstr="<div id='_MessageBox_' style='background-color: rgba(250,250,250,0.9);border:1px #CCC solid;border-radius: 5px;box-shadow: 1px 1px 2px 1px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(5px);opacity:0;max-width:80%;width:450px;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
+    var appstr="<div id='_MessageBox_' style='transition:300ms;background-color: rgba(250,250,250,0.9);border:1px #CCC solid;border-radius: 5px;box-shadow: 1px 1px 2px 1px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(5px);opacity:0;max-width:80%;width:450px;box-shadow:0px 0px 50px gray;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
     if (title!="") {
       appstr+="<div style='width: calc(100% - 10px);height: 30px;margin:5px 5px 0px 5px;font-weight: bold;line-height:30px;box-sizing:border-box;padding-left: 5px;border-bottom:1px #DDD solid;text-align: left;'>" + title + "</div>";
       appstr+="<div style='width: calc(100% - 30px);margin:0px 15px;height: calc(100% - 85px);position: absolute;top: 40px;left: 0px;display: block;'>" + msg + "</div>";
@@ -943,6 +943,7 @@
     _("body").back();
     setTimeout(function(){
       _("#_MessageBox_").back();
+      _("#_MessageBox_").css("box-shadow:0px 0px 5px black;");
     },10);
 
     _("._MsgButton_").hover(function(){
@@ -987,7 +988,7 @@
       pos=['calc(50% - '+offset+'px)','30%'];
     }
 
-    var appstr="<div id='_MessageBox_' style='background-color: rgba(250,250,250,0.9);border:1px #CCC solid;border-radius: 5px;box-shadow: 1px 1px 2px 1px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:80%;width:450px;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
+    var appstr="<div id='_MessageBox_' style='box-shadow:0px 0px 5px black;background-color: rgba(250,250,250,0.9);border:1px #CCC solid;border-radius: 5px;box-shadow: 1px 1px 2px 1px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:80%;width:450px;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
     if (title!="") {
       appstr+="<div style='width: calc(100% - 10px);height: 30px;margin:5px 5px 0px 5px;font-weight: bold;line-height:30px;box-sizing:border-box;padding-left: 5px;border-bottom:1px #DDD solid;text-align: left;'>" + title + "</div>";
       appstr+="<div style='width: calc(100% - 30px);margin:0px 15px;height: calc(100% - 85px);position: absolute;top: 40px;left: 0px;display: block;'>" + msg + "</div>";
@@ -1024,6 +1025,7 @@
         fun();
       }
     }else{
+      _("#_MessageBox_").css("box-shadow:0px 0px 50px gray;");
       _("#_MessageBox_").unback();
       _("body").unback();
       setTimeout(function () {
@@ -1385,7 +1387,7 @@
     }
     var appendHtml = "";
     if(title !== undefined){
-      appendHtml = "<div class='velfun_tip' style='display: block;position: fixed;top:5px;right:-310px;width:300px; min-height:50px;background-color:rgba(250,250,250,0.95);border-radius:5px;box-shadow: 0px 0px 5px gray;pointer-events:none;transition:300ms ease-in;'><span class='velfun_tip_title' style='display:block;width:calc(100% - 10px);height:30px;line-height:30px;top:0px;margin:0px 5px;box-sizing:border-box;border-bottom:1px lightgray solid;font-weight:bold;'>" + title + "</span><span class='velfun_tip_content' style='display:block;width:100%;top:40px;padding:5px 10px;box-sizing:border-box;'>" + content + "</span></div>";
+      appendHtml = "<div class='velfun_tip' style='display: block;position: fixed;top:5px;right:-310px;width:300px; min-height:50px;background-color:rgba(250,250,250,0.95);border-radius:5px;box-shadow: 0px 0px 5px gray;pointer-events:none;transition:right 300ms ease-in,filter 500ms ease-out;transition-delay:0ms 350ms;filter: brightness(5) sepia(1);'><span class='velfun_tip_title' style='display:block;width:calc(100% - 10px);height:30px;line-height:30px;top:0px;margin:0px 5px;box-sizing:border-box;border-bottom:1px lightgray solid;font-weight:bold;'>" + title + "</span><span class='velfun_tip_content' style='display:block;width:100%;top:40px;padding:5px 10px;box-sizing:border-box;'>" + content + "</span></div>";
     }else{
       appendHtml = "<div class='velfun_tip' style='display: block;position: fixed;top:5px;right:-310px;width:300px; min-height:50px;background-color:rgba(250,250,250,0.95);border-radius:5px;box-shadow: 0px 0px 5px gray;pointer-events:none;transition:300ms ease-in;'><span class='velfun_tip_content' style='display:block;width:100%;padding:5px;box-sizing:border-box;'>" + content + "</span></div>";
     }
@@ -1396,7 +1398,7 @@
       var tip = _(tips[i]);
       if(i == 0){
         setTimeout(function(t){
-          t.css("right:5px;");
+          t.css("right:5px;filter: brightness(1);");
         },10,tip)
       }else{
         var newtop = parseInt(tips[0].offsetHeight) + parseInt(tip[0].offsetTop) + 5;
