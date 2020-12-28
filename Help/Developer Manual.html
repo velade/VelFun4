@@ -2,7 +2,7 @@
 <html lang="cn" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>VelFun4开发者手册 - 1.9</title>
+    <title>VelFun4开发者手册 - 1.10</title>
     <link rel="stylesheet" href="help_data/styles/style.css" />
     <link rel="stylesheet" href="help_data/styles/w3.css" />
     <script src="help_data/scripts/velfun4.js" type="text/javascript"></script>
@@ -12,7 +12,7 @@
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 1.9</div>
+      <div class="version">Ver 1.10</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -1086,18 +1086,21 @@
         <span class="title">事件绑定</span>
         <span class="subtitle"><span>说明</span></span>
         <span class="content">
-          用于velfun对象的事件绑定，用来绑定事件触发时的操作，在VelFun中所有的事件绑定都是由bind完成的，不像jQuery拥有类似click() mousedown()等方法。同时bind基本等同于on，对于动态添加的对象也可以绑定，但需要注意的是绑定操作需要在能够捕捉到元素之后进行。
+          用于velfun对象的事件绑定，用来绑定事件触发时的操作，在VelFun中所有的事件绑定都是由bind完成的，不像jQuery拥有类似click() mousedown()等方法。同时bind基本等同于on，对于动态添加的对象也可以绑定。
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
           <div class="w3-panel w3-card w3-light-grey">
             <div class="w3-code jsHigh notranslate">
-              _(<元素>).bind(<事件>,<方法>);
+              _(<元素>).bind(<事件>,<方法>); //绑定静态元素（已加载的元素）事件
+              _(document).bind(<事件>,<选择器>,<方法>); //绑定动态元素（未来将加载的元素）事件
+              _.bind(<事件>,<选择器>,<方法>); //此写法也可以绑定动态元素（未来将加载的元素）事件
             </div>
           </div>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>事件：要监听的事件，需要不带on的形式，例如单击是click而不是onclick</li>
+            <li>选择器：VelFun4选择器兼容的任意形式（文本，元素，velfun对象等），最常用文本类型，因为在元素加载前，其它类型无法获取到，需要注意的是_(selector)返回的是<strong>当前存在</strong>的对象，因此不能匹配未来加载的元素，即使他们的selector一样</li>
             <li>方法：当事件发生时要执行的方法，可以是匿名函数。需要注意变量的作用域，以免触发时拿到的变量值与绑定时不同。</li>
           </ul>
         </span>

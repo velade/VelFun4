@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.9
+版本號:4-1.10
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2020-12-17
+更新日期:2020-12-28
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.9";
+  var version = "4-1.10";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -328,15 +328,30 @@
     return this;
   }
 
-  velfun.fn.bind = function(event,func){
+  velfun.fn.bind = function(ev,selector = "",func){
     if(this.length == 0) return this;
     var _this = this;
+    if(typeof selector == "function" && func == undefined) {
+      func = selector;
+      selector = "";
+    }
     if(typeof func === "function"){
       for (var i = 0; i < _this.length; i++) {
         var th = _this[i];
-        th.addEventListener(event,function(e){
-          func.call(_(e.target),e);
-        })
+        if(selector != ""){
+          th.addEventListener(ev,(s=>{
+            return function(e){
+              var sdom = _(s);
+              for (var i = 0; i < sdom.length; i++) {
+                if(e.target === sdom[i]) func.call(_(e.target),e);
+              }
+            }
+          })(selector))
+        }else{
+          th.addEventListener(ev,function(e){
+            func.call(_(e.target),e);
+          })
+        }
       }
     }else{
       try {
@@ -886,6 +901,41 @@
       callback.call(document.createRange().createContextualFragment(html),document.createRange().createContextualFragment(html));
     }
     return document.createRange().createContextualFragment(html);
+  }
+
+  velfun.bind = function(ev,selector = "",func){
+    var _this = _(document);
+    if(typeof selector == "function" && func == undefined) {
+      func = selector;
+      selector = "";
+    }
+    if(typeof func === "function"){
+      for (var i = 0; i < _this.length; i++) {
+        var th = _this[i];
+        if(selector != ""){
+          th.addEventListener(ev,(s=>{
+            return function(e){
+              var sdom = _(s);
+              for (var i = 0; i < sdom.length; i++) {
+                if(e.target === sdom[i]) func.call(_(e.target),e);
+              }
+            }
+          })(selector))
+        }else{
+          th.addEventListener(ev,function(e){
+            func.call(_(e.target),e);
+          })
+        }
+      }
+    }else{
+      try {
+        console.error("VelFun Error:\n    bind:The second parameter not a function!");
+      } catch (e) {
+        document.writeln("VelFun Error:\n    bind:The second parameter not a function!");
+      }
+    }
+
+    return _this;
   }
 
   var msgboxList = new Array();
