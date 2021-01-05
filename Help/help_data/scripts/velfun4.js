@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.10
+版本號:4-1.11
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2020-12-28
+更新日期:2020-12-30
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.10";
+  var version = "4-1.11";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -153,6 +153,8 @@
     if(this.length == 0) return this;
     var _this = this;
     var isRead = false;
+    css = css.replace(/\s*?:\s*?/,":");
+    css = css.replace(/\s*?;\s*?/,";");
     var newstyles = css.split(";");
     newstyles = newstyles.filter(Boolean);
     if(newstyles.length <= 1){
@@ -189,6 +191,8 @@
           var tostyle = _(_this[i]).attr("style");
           var oldstyles = {};
           if(tostyle != null){
+            tostyle = tostyle.replace(/\s*?:\s*?/,":");
+            tostyle = tostyle.replace(/\s*?;\s*?/,";");
             oldstyles = tostyle.split(";");
             oldstyles = oldstyles.filter(Boolean);
           }
@@ -196,13 +200,13 @@
           for (var i2 in newstyles) {
             if (newstyles.hasOwnProperty(i2)) {
               var NaA = newstyles[i2].split(":");
-              newstyles_a[NaA[0]] = NaA[1];
+              newstyles_a[NaA[0].trim()] = NaA[1];
             }
           }
           for (var i2 in oldstyles) {
             if (oldstyles.hasOwnProperty(i2)) {
               var NaA = oldstyles[i2].split(":");
-              oldstyles_a[NaA[0]] = NaA[1];
+              oldstyles_a[NaA[0].trim()] = NaA[1];
             }
           }
           for (var key in newstyles_a) {
