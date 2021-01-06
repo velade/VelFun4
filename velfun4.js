@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.11
+版本號:4-1.12
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2020-12-30
+更新日期:2020-01-06
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.11";
+  var version = "4-1.12";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -684,7 +684,7 @@
       var vel_funthis = _(_this[index]);
       vel_funthis.attr("data-contextmenuid",Math.floor(Math.random()*89999999+10000000));
       var vel_funthisid = vel_funthis.attr("data-contextmenuid");
-      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;border:1px #CCC solid;overflow: hidden;position: absolute;background-color: rgba(250,250,250,0.95);border-radius: 5px;padding: 0;z-index: 9999;width: 100px;opacity: 0;display:none;' for='" + vel_funthisid + "'>";
+      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;border:1px #CCC solid;overflow: hidden;position: absolute;background-color: rgba(250,250,250,0.95);border-radius: 5px;padding: 0;z-index: 9999;width: 100px;opacity: 0;display:none;margin:0;' for='" + vel_funthisid + "'>";
       vel_menufuns[vel_funthisid]=new Object();
       for (var i in funarr) {
         if (funarr.hasOwnProperty(i)) {
@@ -714,12 +714,22 @@
 
       _("[data-contextmenuid='" + vel_funthisid + "']").bind("mousedown",function (e) {
         if (e.button == 2) {
+          console.dir(e);
           var X=e.pageX;
           var Y=e.pageY;
           var thisid = this.attr("data-contextmenuid");
           _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
           _("._Velfun_Contextmenu_[data-open]").css("display:none;");
           _("._Velfun_Contextmenu_[data-open]").attr("data-open","");
+
+          if(Y + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height")) > parseInt(_("body").css("height"))){
+            Y -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height"));
+          }
+
+          if(X + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width")) > parseInt(_("body").css("width"))){
+            X -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width"));
+          }
+
           _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;");
           setTimeout(function(thisid){
             _("._Velfun_Contextmenu_[for='" + thisid + "']").css("opacity:1;");
