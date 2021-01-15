@@ -2,7 +2,7 @@
 <html lang="cn" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>VelFun4开发者手册 - 1.12</title>
+    <title>VelFun4开发者手册 - 1.20</title>
     <link rel="stylesheet" href="help_data/styles/style.css" />
     <link rel="stylesheet" href="help_data/styles/w3.css" />
     <script src="help_data/scripts/velfun4.js" type="text/javascript"></script>
@@ -12,7 +12,7 @@
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 1.12</div>
+      <div class="version">Ver 1.20</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -27,7 +27,8 @@
         <span class="typeitem" data-page="resetback">重置背景</span>
         <span class="typeitem" data-page="exec">执行代码</span>
         <span class="typeitem" data-page="hover">鼠标悬浮操作</span>
-        <span class="typeitem" data-page="ccm">自定义右键选单</span>
+        <span class="typeitem" data-page="ccm">自定义右键选单（静态）</span>
+        <span class="typeitem" data-page="ccmd" new>自定义右键选单（动态）</span>
         <span class="typeitem" data-page="select">下拉菜单框架</span>
         <span class="typeitem" data-page="coloricon">变色图标</span>
         <span class="typeitem" data-page="autotile">自动平铺</span>
@@ -241,31 +242,153 @@
       </div>
 
       <div class="part" id="ccm">
-        <span class="title">自定义右键选单</span>
+        <span class="title">自定义右键选单（静态）</span>
         <span class="subtitle"><span>说明</span></span>
         <span class="content">
-          在网页越来越强大的现在，不少云应用应运而生，就算不是做云应用，默认的右键选单还是太Low了，有没有想过自定义一个右键选单？实现更加符合PC的操作习惯？CustomContextmenu就是这样的功能。
+          在网页越来越强大的现在，不少云应用应运而生，就算不是做云应用，默认的右键选单还是太Low了，有没有想过自定义一个右键选单？实现更加符合PC的操作习惯？CustomContextmenu就是这样的功能。<br>
+          此方法是针对静态元素对象的，你需要首先用VelFun选择器选取现有元素后才能为其定义菜单。对于动态加载的元素请使用CustomContextmenuDynamic方法。
         </span>
-        <span class="subtitle"><span>使用方法</span></span>
+        <span class="subtitle"><span>基础使用方法</span></span>
         <span class="content">
           <div class="w3-panel w3-card w3-light-grey">
             <pre class="w3-code jsHigh notranslate">
-              _(<元素>).CustomContextmenu({
-                "选项1":function(){
+              _(<元素>).CustomContextmenu({<br />
+                "选项1":function(){<br />
                   //选项1的操作<br />
-                },
-                "选项2":function(){
+                },<br />
+                "选项2":function(){<br />
                   //选项2的操作<br />
-                },
-                .
-                .
-                .
+                },<br />
+                .<br />
+                .<br />
+                .<br />
+              });<br />
+              //你也可以使用缩写ccm<br />
+              _(<元素>).ccm({<br />
+                "选项1":function(){<br />
+                  //选项1的操作<br />
+                },<br />
+                "选项2":function(){<br />
+                  //选项2的操作<br />
+                },<br />
+                .<br />
+                .<br />
+                .<br />
               });
             </pre>
             <button id="test_rightclick">右键点击我试试</button>
           </div>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+            <li>选项：选项的标题，其中可以使用icon(url)来为选单项目添加小图标，也可以在尾部使用 if(条件)来限定显示的条件，你也可以用---作为标题，它将为菜单添加一条分割线</li>
+          </ul>
+        </span>
+        <span class="subtitle" style="width:300px;"><span style="width:300px;">特殊选项使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _(<元素>).CustomContextmenu({<br />
+                "icon('/ex/ex.icon')选项1":function(){ //添加一个带有小图标的菜单项<br />
+                  //选项1的操作<br />
+                },<br />
+                "选项2 if(条件)":function(){ //选项2只有在符合if()中的条件时才会显示<br />
+                  //选项2的操作<br />
+                }<br />
+              });
+            </pre>
+          </div>
+          <ul>
+            <li>条件：用于控制选项是否显示的条件表达式，但是需要注意的是，由于变量作用域的原因，调用自定义菜单的地方与生成菜单的地方并不相同，变量也就无法直接使用，因此此处如过需要用到变量，那么只能是以下变量作用域：全局变量，注册到window的属性，注册到velfun的属性（推荐），以及元素的值或属性等。建议使用&#12288;_.变量名&#12288;将变量变为VelFun4的属性来调用。</li>
+          </ul>
+        </span>
+        <span class="subtitle" style="width:300px;"><span style="width:300px;">与动态方法的差异</span></span>
+        <span class="content">
+          <ul>
+            <li>静态的自定义选单会提前生成，这会更有利于项目较多的菜单的显示速度，避免因项目较多产生显示延迟</li>
+            <li>静态的自定义选单只能够与已经加载的元素绑定</li>
+            <li>静态的自定义选单不会自动清理，即使与之绑定的元素已被移除，已生成的静态选单也不会随之移除</li>
+            <li>静态的自定义选单选项的条件判定是在绑定时发生，后续条件变化不会影响选项</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="ccmd">
+        <span class="title">自定义右键选单（动态）</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          在网页越来越强大的现在，不少云应用应运而生，就算不是做云应用，默认的右键选单还是太Low了，有没有想过自定义一个右键选单？实现更加符合PC的操作习惯？CustomContextmenuDynamic就是这样的功能。<br>
+          此方法是针对元素对象的父级的，你需要首先用VelFun选择器选取现有元素作为父级，可以对父级下动态加载的元素绑定菜单。对于不需要动态加载的元素请使用CustomContextmenu方法。
+        </span>
+        <span class="subtitle"><span>基础使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _(<元素>).CustomContextmenuDynamic({<br />
+                "选择器1":{
+                  "选项1":function(){<br />
+                    //选项1的操作<br />
+                  },<br />
+                  "选项2":function(){<br />
+                    //选项2的操作<br />
+                  }<br />
+                },
+                "选择器2":{
+                  "选项1":function(){<br />
+                    //选项1的操作<br />
+                  },<br />
+                  "选项2":function(){<br />
+                    //选项2的操作<br />
+                  }<br />
+                },<br />
+                .<br />
+                .<br />
+                .<br />
+              });<br />
+              //你也可以使用缩写ccmd<br />
+              _(<元素>).ccmd({<br />
+                "选择器1":{
+                  "选项1":function(){<br />
+                    //选项1的操作<br />
+                  },<br />
+                  "选项2":function(){<br />
+                    //选项2的操作<br />
+                  }<br />
+                },
+                "选择器2":{
+                  "选项1":function(){<br />
+                    //选项1的操作<br />
+                  },<br />
+                  "选项2":function(){<br />
+                    //选项2的操作<br />
+                  }<br />
+                },<br />
+                .<br />
+                .<br />
+                .<br />
+              });
+            </pre>
+            <button id="test_rightclick">右键点击我试试</button>
+          </div>
+          <ul>
+            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+            <li>选择器：与VelFun选择器使用同样的字串（"#id",".class"等），用以表示对应的子元素</li>
+            <li>选项：选项的标题，其中可以使用icon(url)来为选单项目添加小图标，也可以在尾部使用 if(条件)来限定显示的条件，你也可以用---作为标题，它将为菜单添加一条分割线</li>
+          </ul>
+        </span>
+        <span class="subtitle" style="width:300px;"><span style="width:300px;">特殊选项使用方法</span></span>
+        <span class="content">
+          <ul>
+            <li>选项的特殊写法同静态方法</li>
+          </ul>
+        </span>
+        <span class="subtitle" style="width:300px;"><span style="width:300px;">与静态方法的差异</span></span>
+        <span class="content">
+          <ul>
+            <li>动态的自定义菜单不会预先生成，而是在调用时生成，相比之下会略慢于静态方法</li>
+            <li>动态的自定义菜单只需绑定父级元素（父级元素可以是body或html），对其子元素则根据传递的选择器进行绑定</li>
+            <li>动态的自定义菜单在隐藏后会被立即移除，在下次显示时重新生成</li>
+            <li>动态的自定义菜单每次显示时判定选项条件，因此当条件变化时，选项会随之改变</li>
+            <li>动态的自定义菜单可以使用"self"表示选择自身，例如绑定到body的动态菜单可以通过「"self":{}」为body自身定义菜单</li>
           </ul>
         </span>
       </div>
@@ -1101,7 +1224,7 @@
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>事件：要监听的事件，需要不带on的形式，例如单击是click而不是onclick</li>
             <li>选择器：VelFun4选择器兼容的任意形式（文本，元素，velfun对象等），最常用文本类型，因为在元素加载前，其它类型无法获取到，需要注意的是_(selector)返回的是<strong>当前存在</strong>的对象，因此不能匹配未来加载的元素，即使他们的selector一样</li>
-            <li>方法：当事件发生时要执行的方法，可以是匿名函数。需要注意变量的作用域，以免触发时拿到的变量值与绑定时不同。</li>
+            <li>方法：当事件发生时要执行的方法，可以是匿名函数。需要注意变量的作用域，以免触发时拿到的变量值与绑定时不同。方法可以通过第二个参数接收原始绑定元素对象</li>
           </ul>
         </span>
       </div>
