@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.20
+版本號:4-1.21
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-01-15
+更新日期:2021-01-16
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.20";
+  var version = "4-1.21";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -689,7 +689,7 @@
       var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 100px;opacity: 0;display:none;margin:0;' for='" + vel_funthisid + "'>";
       vel_menufuns[vel_funthisid]=new Object();
       for (var i in funarr) {
-          if(i == "---"){
+          if(i.match(/^\-{3}/)){
             menucontant += `<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;"></li>`;
           }else{
             var imgurl = i.match(/icon\((.+?)\)/);
@@ -795,7 +795,7 @@
           var funarr = vel_dynamic_menus[thisid][trueTarget];
           var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 100px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic>";
           for (var i in funarr) {
-            if(i == "---"){
+            if(i.match(/^\-{3}/)){
               menucontant += `<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;"></li>`;
             }else{
               var imgurl = i.match(/icon\((.+?)\)/);
