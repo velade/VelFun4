@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.21
+版本號:4-1.22
 通  道:Release
 作　者:龍翔翎(Velade)
 
 更新日期:2021-01-16
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.21";
+  var version = "4-1.22";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -727,15 +727,18 @@
           _("._Velfun_Contextmenu_[data-open]").css("display:none;");
           _("._Velfun_Contextmenu_[data-open]").attr("data-open","");
 
+          _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;");
+
           if(Y + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height")) > parseInt(_("body").css("height"))){
             Y -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height"));
+            _("._Velfun_Contextmenu_[for='" + thisid + "']").css("top:" + Y + "px;");
           }
 
           if(X + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width")) > parseInt(_("body").css("width"))){
             X -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width"));
+            _("._Velfun_Contextmenu_[for='" + thisid + "']").css("left:" + X + "px;");
           }
 
-          _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;");
           setTimeout(function(thisid){
             _("._Velfun_Contextmenu_[for='" + thisid + "']").css("opacity:1;");
             _("._Velfun_Contextmenu_[for='" + thisid + "']").attr("data-open","data-open");
@@ -826,15 +829,18 @@
           _("._Velfun_Contextmenu_[data-open]").css("display:none;");
           _("._Velfun_Contextmenu_[data-open]").attr("data-open","");
 
+          _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;");
+
           if(Y + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height")) > parseInt(_("body").css("height"))){
             Y -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height"));
+            _("._Velfun_Contextmenu_[for='" + thisid + "']").css("top:" + Y + "px;");
           }
 
           if(X + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width")) > parseInt(_("body").css("width"))){
             X -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width"));
+            _("._Velfun_Contextmenu_[for='" + thisid + "']").css("left:" + X + "px;");
           }
 
-          _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;");
           setTimeout(function(thisid){
             _("._Velfun_Contextmenu_[for='" + thisid + "']").css("opacity:1;");
             _("._Velfun_Contextmenu_[for='" + thisid + "']").attr("data-open","data-open");
