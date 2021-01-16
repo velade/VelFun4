@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.22
+版本號:4-1.23
 通  道:Release
 作　者:龍翔翎(Velade)
 
 更新日期:2021-01-16
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.22";
+  var version = "4-1.23";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -779,6 +779,7 @@
 
       _("[data-contextmenuid='" + vel_funthisid + "']").bind("mousedown",function (e,self) {
         if (e.button == 2) {
+          _("body ._Velfun_Contextmenu_[dynamic]").remove();
           var thisid = _(self).attr("data-contextmenuid");
           var trueTarget = "";
           if(this[0] == self){
@@ -796,10 +797,11 @@
           var Y=e.pageY;
 
           var funarr = vel_dynamic_menus[thisid][trueTarget];
-          var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 100px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic>";
+          _("body").append("<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 100px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic></ul>");
+          var _ul = _("body ._Velfun_Contextmenu_[dynamic]");
           for (var i in funarr) {
             if(i.match(/^\-{3}/)){
-              menucontant += `<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;"></li>`;
+              _ul.append(`<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;"></li>`);
             }else{
               var imgurl = i.match(/icon\((.+?)\)/);
               var ifc = i.match(/\sif\((.+?)\)/);
@@ -815,15 +817,18 @@
                 lititle = lititle.replace(/\sif\((.+?)\)/,'');
                 if(!eval(ifc[1])) continue;
               }
-              var _func = funarr[i].toString();
-              _func = _func.replace(/[\r\n\s]/g,"");
-              _func = _func.replace(/^function\(\)\{/g,"");
-              _func = _func.replace(/\}$/g,"");
-              menucontant += "<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 5px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;' onclick='" + _func + "'>" + append + lititle + "</li>";
+              var _func = funarr[i];
+              _ul.append("<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 5px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + append + lititle + "</li>");
+              var _last_li = _("li",_ul)[_("li",_ul).length - 1];
+              console.dir(_last_li);
+              _last_li.addEventListener("click",((target,func) => {
+                return function(e){
+                  func.call(_(target),e);
+                }
+              })(e.target,_func),{"once":true});
             }
           }
-          menucontant += "</ul>";
-          _("body").append(menucontant);
+
 
           _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
           _("._Velfun_Contextmenu_[data-open]").css("display:none;");
