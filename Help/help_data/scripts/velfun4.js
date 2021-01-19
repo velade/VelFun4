@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.23
+版本號:4-1.24
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-01-16
+更新日期:2021-01-19
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.23";
+  var version = "4-1.24";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -686,14 +686,14 @@
       var vel_funthis = _(_this[index]);
       var vel_funthisid = Math.floor(Math.random()*89999999+10000000);
       vel_funthis.attr("data-contextmenuid",vel_funthisid);
-      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 100px;opacity: 0;display:none;margin:0;' for='" + vel_funthisid + "'>";
+      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + vel_funthisid + "'>";
       vel_menufuns[vel_funthisid]=new Object();
       for (var i in funarr) {
           if(i.match(/^\-{3}/)){
             menucontant += `<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;"></li>`;
           }else{
             var imgurl = i.match(/icon\((.+?)\)/);
-            var ifc = i.match(/\sif\((.+?)\)/);
+            var ifc = i.match(/\sif\((.+)\)/);
             var lititle = i;
             var append = "";
 
@@ -703,7 +703,7 @@
             }
 
             if(ifc){
-              lititle = lititle.replace(/\sif\((.+?)\)/,'');
+              lititle = lititle.replace(/\sif\((.+)\)/,'');
               if(!eval(ifc[1])) continue;
             }
             vel_menufuns[vel_funthisid][i]=funarr[i];
@@ -797,14 +797,14 @@
           var Y=e.pageY;
 
           var funarr = vel_dynamic_menus[thisid][trueTarget];
-          _("body").append("<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 100px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic></ul>");
+          _("body").append("<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic></ul>");
           var _ul = _("body ._Velfun_Contextmenu_[dynamic]");
           for (var i in funarr) {
             if(i.match(/^\-{3}/)){
               _ul.append(`<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;"></li>`);
             }else{
               var imgurl = i.match(/icon\((.+?)\)/);
-              var ifc = i.match(/\sif\((.+?)\)/);
+              var ifc = i.match(/\sif\((.+)\)/);
               var lititle = i;
               var append = "";
 
@@ -814,13 +814,12 @@
               }
 
               if(ifc){
-                lititle = lititle.replace(/\sif\((.+?)\)/,'');
+                lititle = lititle.replace(/\sif\((.+)\)/,'');
                 if(!eval(ifc[1])) continue;
               }
               var _func = funarr[i];
               _ul.append("<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 5px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + append + lititle + "</li>");
               var _last_li = _("li",_ul)[_("li",_ul).length - 1];
-              console.dir(_last_li);
               _last_li.addEventListener("click",((target,func) => {
                 return function(e){
                   func.call(_(target),e);
