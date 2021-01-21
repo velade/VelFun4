@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.24
+版本號:4-1.25
 通  道:Release
 作　者:龍翔翎(Velade)
 
 更新日期:2021-01-19
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.24";
+  var version = "4-1.25";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1518,18 +1518,8 @@
 		return (velfun.info.mobileType() != 'NOT')?true:false;
 	}
 
-  velfun.info.host = function(){//Need Test
-    var addr = window.location.href;
-    var host = addr.match(/(http|https):\/\/(.+?)[\/$]+?/);
-    if (host.hasOwnProperty(2)) {
-      return host[2];
-    }
-    try {
-      console.error("VelFun Error:\n    host:Don\'t visit page from local file.Please put your page to a server.");
-    } catch (e) {
-      document.writeln("VelFun Error:\n    host:Don\'t visit page from local file.Please put your page to a server.");
-    }
-    return false;
+  velfun.info.host = function(){
+    return window.location.host;
   }
 
   velfun.info.isIE = function(func){
@@ -1537,6 +1527,20 @@
       func();
     }
     return (!!window.ActiveXObject || "ActiveXObject" in window)?true:false;
+  }
+
+  velfun.info.args = function(needvar){
+    let query = window.location.search.substring(1);
+    let reg = new RegExp(`(^|&)${needvar}=(.*?)(&|$)`);
+    let re = query.match(reg);
+    return re?re[2]:false;
+  };
+
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0;i<vars.length;i++) {
+    var pair = vars[i].split("=");
+    velfun.info.args[pair[0]] = pair[1];
   }
 
   var tipList = new Array();
