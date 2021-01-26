@@ -97,6 +97,7 @@
   //Object Function
   velfun.fn.attr = function(attrname,attrvalue){
     if(this.length == 0) return this;
+    if(this[0].nodeType == 3) return null;
     var _this = this;
     if(attrvalue === undefined){
       return _this[0].getAttribute(attrname);

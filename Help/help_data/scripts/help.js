@@ -8,7 +8,7 @@ _(function(){
   _(".typeitem[data-page='jj']").addClass("selected");
   _("#jj").css("display:block;");
 
-  _.setLang("../lang/cn.lang");
+  _.setLang("/online/Help/help_data/lang/cn.lang");
 
   /****演示按钮****/
   _("#test_back").bind("click",function(){
@@ -120,10 +120,10 @@ _(function(){
 
   _("#test_setlang").bind("click",function(){
     if(this.attr("data-lang") == "cn"){
-      _.setLang("../lang/en.lang");
+      _.setLang("/online/Help/help_data/lang/en.lang");
       this.attr("data-lang","en");
     }else{
-      _.setLang("../lang/cn.lang");
+      _.setLang("/online/Help/help_data/lang/cn.lang");
       this.attr("data-lang","cn");
     }
   })
