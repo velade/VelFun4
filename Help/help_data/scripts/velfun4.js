@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.25
+版本號:4-1.26
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-01-19
+更新日期:2021-01-22
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.25";
+  var version = "4-1.26";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -200,13 +200,27 @@
           for (var i2 in newstyles) {
             if (newstyles.hasOwnProperty(i2)) {
               var NaA = newstyles[i2].split(":");
-              newstyles_a[NaA[0].trim()] = NaA[1];
+              NaA = NaA.filter(Boolean);
+              var cssvals = [];
+              for (var n = 1; n <= NaA.length; n++) {
+                if(NaA[n]){
+                  cssvals.push(NaA[n]);
+                }
+              }
+              newstyles_a[NaA[0].trim()] = cssvals.join(":");
             }
           }
           for (var i2 in oldstyles) {
             if (oldstyles.hasOwnProperty(i2)) {
               var NaA = oldstyles[i2].split(":");
-              oldstyles_a[NaA[0].trim()] = NaA[1];
+              NaA = NaA.filter(Boolean);
+              var cssvals = [];
+              for (var n = 1; n <= NaA.length; n++) {
+                if(NaA[n]){
+                  cssvals.push(NaA[n]);
+                }
+              }
+              oldstyles_a[NaA[0].trim()] = cssvals.join(":");
             }
           }
           for (var key in newstyles_a) {
@@ -476,7 +490,17 @@
 
   velfun.fn.parent = function(){
     if(this.length == 0) return this;
-    return _(this[0].parentNode);
+    return _(this[0].parentElement);
+  }
+
+  velfun.fn.next = function(){
+    if(this.length == 0) return this;
+    return _(this[0].nextElementSibling);
+  }
+
+  velfun.fn.prev = function(){
+    if(this.length == 0) return this;
+    return _(this[0].previousSibling);
   }
 
   velfun.fn.each = function(func){
@@ -706,7 +730,7 @@
               lititle = lititle.replace(/\sif\((.+)\)/,'');
               if(!eval(ifc[1])) continue;
             }
-            vel_menufuns[vel_funthisid][i]=funarr[i];
+            vel_menufuns[vel_funthisid][lititle]=funarr[i];
             menucontant += "<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 5px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + append + lititle + "</li>";
           }
       }
