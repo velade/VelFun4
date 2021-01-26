@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.26
+版本號:4-1.27
 通  道:Release
 作　者:龍翔翎(Velade)
 
 更新日期:2021-01-22
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.26";
+  var version = "4-1.27";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1633,6 +1633,137 @@
       thisicon.css("width:" + width + "px;height:" + height + "px;overflow:hidden;display:inline-block;text-indent:0px;padding:0px;");
       thisicon.append("<img src='" + src + "' style='width:" + width + "px;height:" + height + "px;position:relative;left:-" + width + "px;border-right:1px solid transparent;filter:drop-shadow(" + width + "px 0 0 black)'>");
     }
+  }
+
+  velfun.setLang = function(langfile = ""){
+    if(langfile == "") return;
+    if(_.observer != undefined) _.observer.disconnect();
+
+    _.io.get(langfile,function(langfiledata){
+      let langdata = JSON.parse(langfiledata);
+
+      /**调用时强制更新**/
+      var nl = _.getTextNodes(_("body")[0]);
+      for (var tn of nl) {
+        if(tn.nodeValue.trim() == "") continue;
+        if(tn.tempStr == undefined){
+          tn.tempStr = tn.nodeValue.trim();
+        }else{
+          tn.nodeValue = tn.tempStr;
+        }
+        for (var key in langdata) {
+          var nt = langdata[key];
+          tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`,nt);
+        }
+      }
+
+      var al = _("[title],[placeholder],[value]");
+      al.each(function(){
+        _.setAttrsLang(this,langdata);
+      })
+
+
+
+      /**监听变化内容以更新**/
+      _.body = _("body")[0];
+      _.config = {attributes: true, childList: true, subtree: true};
+      _.callback = function(ml, observer){
+        for (var mr of ml) {
+          switch (mr.type) {
+            case "attributes":
+              _.observer.disconnect();
+              if(_(mr.target).hasAttr(mr.attributeName)){
+                if(!_(mr.target).hasAttr("data-" + mr.attributeName + "TempStr")){
+                  _(mr.target).attr("data-" + mr.attributeName + "TempStr",_(mr.target).attr(mr.attributeName));
+                }else{
+                  _(mr.target).attr(mr.attributeName,_(mr.target).attr("data-" + mr.attributeName + "TempStr"));
+                }
+              }
+              if(_(mr.target).attr(mr.attributeName) != null){
+                for (var key in langdata) {
+                    var nt = langdata[key];
+                    _(mr.target).attr(mr.attributeName,_(mr.target).attr(mr.attributeName).replaceAll(`@t-${key};`,nt));
+                }
+              }
+              _.observer.observe(_.body,_.config);
+            break;
+            case "childList":
+              _.observer.disconnect();
+              for (var adn of mr.addedNodes) {
+                var nl = _.getTextNodes(adn);
+                for (var tn of nl) {
+                  if(tn.tempStr == undefined){
+                    tn.tempStr = tn.nodeValue.trim();
+                  }else{
+                    tn.nodeValue = tn.tempStr;
+                  }
+                  for (var key in langdata) {
+                    var nt = langdata[key];
+                    tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`,nt);
+                  }
+                }
+                _.setAttrsLang(adn,langdata);
+              }
+              _.observer.observe(_.body,_.config);
+            break;
+          }
+        }
+      }
+      _.observer = new MutationObserver(_.callback);
+      _.observer.observe(_.body,_.config);
+    })
+  }
+
+  velfun.setAttrsLang = function(th,langdata){
+    if(_(th).hasAttr("title")){
+      if(!_(th).hasAttr("data-titleTempStr")){
+        _(th).attr("data-titleTempStr",_(th).attr("title"));
+      }else{
+        _(th).attr("title",_(th).attr("data-titleTempStr"));
+      }
+    }
+    if(_(th).hasAttr("placeholder")){
+      if(!_(th).hasAttr("data-placeholderTempStr")){
+        _(th).attr("data-placeholderTempStr",_(th).attr("placeholder"));
+      }else{
+        _(th).attr("placeholder",_(th).attr("data-placeholderTempStr"));
+      }
+    }
+    if(_(th).hasAttr("value")){
+      if(!_(th).hasAttr("data-valueTempStr")){
+        _(th).attr("data-valueTempStr",_(th).attr("value"));
+      }else{
+        _(th).attr("value",_(th).attr("data-valueTempStr"));
+      }
+    }
+    for (var key in langdata) {
+      var nt = langdata[key];
+      if(_(th).hasAttr("title")){
+        _(th).attr("title",_(th).attr("title").replaceAll(`@t-${key};`,nt));
+      }
+      if(_(th).hasAttr("placeholder")){
+        _(th).attr("placeholder",_(th).attr("placeholder").replaceAll(`@t-${key};`,nt));
+      }
+      if(_(th).hasAttr("value")){
+        _(th).attr("value",_(th).attr("value").replaceAll(`@t-${key};`,nt));
+      }
+    }
+  }
+
+  velfun.getTextNodes = function(ele){
+    var nodes = ele.childNodes;
+    var textnodes = [];
+    for (var i in nodes) {
+      if(nodes[i].nodeType == 3){
+        textnodes.push(nodes[i]);
+      }else{
+        var r = _.getTextNodes(nodes[i]);
+        for (var tn of r) {
+          textnodes.push(tn);
+        }
+      }
+    }
+    return textnodes;
   }
 
   velfun.fn.init.prototype = velfun.fn;

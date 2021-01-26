@@ -2,7 +2,7 @@
 <html lang="cn" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>VelFun4开发者手册 - 1.26</title>
+    <title>VelFun4开发者手册 - 1.27</title>
     <link rel="stylesheet" href="help_data/styles/style.css" />
     <link rel="stylesheet" href="help_data/styles/w3.css" />
     <script src="help_data/scripts/velfun4.js" type="text/javascript"></script>
@@ -12,7 +12,7 @@
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 1.26</div>
+      <div class="version">Ver 1.27</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -39,6 +39,7 @@
         <span class="typeitem" data-page="options">全屏选择项</span>
         <span class="typeitem" data-page="random">整数随机数</span>
         <span class="typeitem" data-page="tip">无中断提示</span>
+        <span class="typeitem" data-page="setlang" new>多语言框架</span>
       </div>
       <div class="type">
         <span class="typetitle">验证方法</span>
@@ -635,6 +636,52 @@
             <li>提示框是可穿透的，它不会阻挡鼠标的点击，也不会响应任何的操作</li>
             <li>提示框具有队列，并发的提示也可以良好显示</li>
           </ul>
+        </span>
+      </div>
+
+      <div class="part" id="setlang">
+        <span class="title">多语言框架</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          多语言开发对于WEB来说一直是一个不可避面的话题，尤其是对于国际性的网站来说。但是一直以来我们都不能很好的解决这个问题，原因就是HTML并没有字符的映射机制，我们无法直接像Android开发那样使用一个「地址」来指向某个列表中的值，基于需求就出现了许多种做法，例如使用后台代码的变量(例如<?=$var?>);又或者用不同语言做多个网页，根据语言访问的其实是不同的网页;又或者利用CSS的伪元素，设计多个不同的content的CSS，根据需要加载等等。但是！现在VelFun4带来了出乎意料简单与方便的多语言框架！无需数据库，无需后端语言，不用复杂的CSS！最简洁的写法，最简单的调用，最流畅的切换！这就是setLang！
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <h2>html</h2>
+            <pre class="w3-code htmlHigh notranslate">
+              &lt;div title="@t-名称;"&gt;@t-名称;&lt;/div&gt;
+            </pre>
+            <ul>
+              <li>名称：用来表示不同文本内容的名称，与变量名类似，建议使用英文。前方的「 @t- 」与最后的 「 ; 」是不可以缺少的，请确保名称与语言文件中定义的名称一致</li>
+              <li>多语言模板字串同样可以用于属性，目前支持的属性有title placeholder value三个</li>
+            </ul>
+          </div>
+          <div class="w3-panel w3-card w3-light-grey">
+            <h2>语言文件</h2>
+            <pre class="w3-code jsHigh notranslate">
+              {
+                "名称1": "文本1",
+                "名称2": "文本2"
+              }
+            </pre>
+            <ul>
+              <li>名称n：用来表示不同文本内容的名称，与变量名类似，建议使用英文。此处的名称不需要带「@t-」前缀与「;」</li>
+              <li>语言文件可以以任何后缀名保存，但本质上是一个json文件，因此需要遵守json的规则</li>
+              <li>语言文件中定义的键值对可以多于使用的模板字串，但是不可以少，虽然不会报错，但是语言文件中未定义的名称的模板字串将直接显示出来</li>
+            </ul>
+          </div>
+          <div class="w3-panel w3-card w3-light-grey">
+            <h2>JavaScript</h2>
+            <pre class="w3-code jsHigh notranslate">
+              _.setLang(<语言文件>);
+            </pre>
+            <ul>
+              <li>语言文件：语言文件的路径，指示程序要读取的语言文件</li>
+              <li style="color:red;"><strong>如果使用了多语言框架写法，那么你必须在页面开始时调用一次此方法，否则多语言框架将不会执行。（因为每个人定义的语言文件的路径都不相同，所以程序无法自动完成多语言框架的初始化）</strong></li>
+            </ul>
+            <button id="test_setlang" title="@t-langbutton;">@t-langbutton;</button>
+          </div>
         </span>
       </div>
 
