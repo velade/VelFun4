@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.27
+版本號:4-1.28
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-01-22
+更新日期:2021-01-27
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.27";
+  var version = "4-1.28";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1672,19 +1672,16 @@
         for (var mr of ml) {
           switch (mr.type) {
             case "attributes":
+              if(!["alt","title","placeholder","value"].includes(mr.attributeName)) continue;
               _.observer.disconnect();
               if(_(mr.target).hasAttr(mr.attributeName)){
-                if(!_(mr.target).hasAttr("data-" + mr.attributeName + "TempStr")){
                   _(mr.target).attr("data-" + mr.attributeName + "TempStr",_(mr.target).attr(mr.attributeName));
-                }else{
-                  _(mr.target).attr(mr.attributeName,_(mr.target).attr("data-" + mr.attributeName + "TempStr"));
-                }
               }
-              if(_(mr.target).attr(mr.attributeName) != null){
-                for (var key in langdata) {
-                    var nt = langdata[key];
+              for (var key in langdata) {
+                  var nt = langdata[key];
+                  try {
                     _(mr.target).attr(mr.attributeName,_(mr.target).attr(mr.attributeName).replaceAll(`@t-${key};`,nt));
-                }
+                  } catch (e) {}
               }
               _.observer.observe(_.body,_.config);
             break;
@@ -1716,6 +1713,14 @@
   }
 
   velfun.setAttrsLang = function(th,langdata){
+    if(_(th).hasAttr("alt")){
+      if(!_(th).hasAttr("data-altTempStr")){
+        _(th).attr("data-altTempStr",_(th).attr("alt"));
+      }else{
+        _(th).attr("alt",_(th).attr("data-altTempStr"));
+      }
+    }
+
     if(_(th).hasAttr("title")){
       if(!_(th).hasAttr("data-titleTempStr")){
         _(th).attr("data-titleTempStr",_(th).attr("title"));
@@ -1742,6 +1747,9 @@
       if(_(th).hasAttr("title")){
         _(th).attr("title",_(th).attr("title").replaceAll(`@t-${key};`,nt));
       }
+      if(_(th).hasAttr("alt")){
+        _(th).attr("alt",_(th).attr("alt").replaceAll(`@t-${key};`,nt));
+      }
       if(_(th).hasAttr("placeholder")){
         _(th).attr("placeholder",_(th).attr("placeholder").replaceAll(`@t-${key};`,nt));
       }
@@ -1752,6 +1760,7 @@
   }
 
   velfun.getTextNodes = function(ele){
+    if(ele.nodeType == 3) return [ele];
     var nodes = ele.childNodes;
     var textnodes = [];
     for (var i in nodes) {
