@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.28
+版本號:4-1.30
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-01-27
+更新日期:2021-03-19
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.28";
+  var version = "4-1.30";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1380,9 +1380,11 @@
       type = ext[1];
     }
     if(type.toLowerCase() == "javascript" || type.toLowerCase() == "js"){
-      _("head").append('<script src="' + url + '" type="text/javascript"></script>');
+      var nowscript = _("script[src]");
+      _(nowscript[nowscript.length - 1]).after('<script src="' + url + '" type="text/javascript"></script>');
     }else if(type.toLowerCase() == "stylesheet" || type.toLowerCase() == "css"){
-      _("head").append('<link rel="stylesheet" href="' + url + '">');
+      var nowcss = _("link[rel='stylesheet']");
+      _(nowcss[nowcss.length - 1]).after('<link rel="stylesheet" href="' + url + '">');
     }
     return url;
   }
@@ -1390,6 +1392,50 @@
   velfun.io.unimport = function(url){
     _("[src='" + url + "']").remove();
     _("[href='" + url + "']").remove();
+  }
+
+  velfun.io.loadPathFrom = function(path){ //實驗性
+    var request = new XMLHttpRequest();
+    request.open("get",path,false);
+    request.send();
+    for (var a of _.htmltodom(request.responseText).querySelectorAll('a')) {
+      var patchfile = a.innerText;
+      var start = patchfile.lastIndexOf('.');
+      if(start > 0){
+        var patchfile_ext = patchfile.substring(start + 1);
+        if(["js","css"].includes(patchfile_ext)){
+          _.io.import(path + "/" + patchfile);
+        }else if(["html","xml","php","htm"].includes(patchfile_ext)){
+          window.addEventListener("load",((patchfile)=>{
+            return function(){
+              var html = new XMLHttpRequest();
+              html.open("get",path + "/" + patchfile,false);
+              html.send();
+              for (var dom of _.htmltodom(html.responseText).querySelectorAll('*')) {
+                if(dom.parentElement === null){
+                  if(_(dom).hasAttr("id")){
+                    let did = _(dom).attr("id");
+                    let nowele = _("#" + did);
+                    for (var i = 0; i < nowele.length; i++) {
+                      nowele[i].outerHTML = dom.outerHTML;
+                    }
+                  }else if(_(dom).hasAttr("class")){
+                    let dc = _(dom).getClass();
+                    for (var cl of dc) {
+                      let nowele = _("." + cl);
+                      for (var i = 0; i < nowele.length; i++) {
+                        nowele[i].outerHTML = dom.outerHTML;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          })(patchfile))
+        }
+      }
+    }
+    return true;
   }
 
   //Test

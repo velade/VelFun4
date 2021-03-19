@@ -113,6 +113,14 @@ body{
   color: #f4433c;
 }
 
+.menu .type .typeitem > img {
+  display: block;
+  float: left;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+}
+
 .menu .type .typeitem[new]::after {
   content: "New";
   color: rgb(250,250,250);
@@ -156,6 +164,30 @@ body{
   text-align: center;
   margin: 20px auto;
   border-bottom: 1px lightgray solid;
+}
+
+.main .part .title > img, .main .part .title > span{
+  height: 50px;
+  line-height: 50px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.main .part .title > img {
+  height: 36px;
+}
+
+.main .part .ExperimentalTip {
+  display: block;
+  width: 50%;
+  min-width: 500px;
+  font-size: 15px;
+  color: red;
+  height: 20px;
+  line-height: 20px;
+  margin: -20px auto 0 auto;
+  font-weight: bold;
+  text-align: center;
 }
 
 .main .part .subtitle{

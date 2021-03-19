@@ -2,7 +2,7 @@
 <html lang="cn" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>VelFun4开发者手册 - 1.28</title>
+    <title>VelFun4开发者手册 - 1.30</title>
     <link rel="stylesheet" href="help_data/styles/style.css" />
     <link rel="stylesheet" href="help_data/styles/w3.css" />
     <script src="help_data/scripts/velfun4.js" type="text/javascript"></script>
@@ -12,7 +12,7 @@
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 1.28</div>
+      <div class="version">Ver 1.30</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -39,7 +39,7 @@
         <span class="typeitem" data-page="options">全屏选择项</span>
         <span class="typeitem" data-page="random">整数随机数</span>
         <span class="typeitem" data-page="tip">无中断提示</span>
-        <span class="typeitem" data-page="setlang" new>多语言框架</span>
+        <span class="typeitem" data-page="setlang">多语言框架</span>
       </div>
       <div class="type">
         <span class="typetitle">验证方法</span>
@@ -66,6 +66,7 @@
         <span class="typeitem" data-page="get">GET</span>
         <span class="typeitem" data-page="import">动态导入资源文件</span>
         <span class="typeitem" data-page="unimport">动态卸载资源文件</span>
+        <span class="typeitem" data-page="patchs" new><img src="help_data/images/Experimental.png" alt="实验性功能" title="实验性功能">加载补丁</span>
       </div>
       <div class="type">
         <span class="typetitle">原生扩展</span>
@@ -93,8 +94,8 @@
         <span class="typeitem" data-page="trigger">事件触发</span>
         <span class="typeitem" data-page="dom">元素操作</span>
         <span class="typeitem" data-page="parent">获取父级</span>
-        <span class="typeitem" data-page="next" new>获取下一个元素</span>
-        <span class="typeitem" data-page="prev" new>获取上一个元素</span>
+        <span class="typeitem" data-page="next">获取下一个元素</span>
+        <span class="typeitem" data-page="prev">获取上一个元素</span>
         <span class="typeitem" data-page="each">遍历操作</span>
       </div>
     </div>
@@ -991,6 +992,41 @@
           <ul>
             <li>路径：书写代码时使用的路径，或动态引入时返回的路径</li>
             <li>卸载不需要指定类型，因为我们不认为会有同一个文件既是脚本又是样式表的情况</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="patchs">
+        <span class="title"><img src="help_data/images/Experimental.png" alt="实验性功能" title="实验性功能"><span>LOADPATCHSFROM加载补丁</span></span>
+        <span class="ExperimentalTip">注意：此功能当前为实验性功能，不建议用于正式生产环境</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          曾经每一次要更改部分内容，总是在上百上千行代码中找到，然后修改，不但阅读麻烦，维护麻烦，并且对于历史版本都要完整备份，尽管有git这类版本控制，但是如过我要修改多处，而只想恢复一处怎么办呢？<br>
+          现在VelFun4提出一个全新方式，将补丁文件引入网页开发的领域，你只需要将需要修改的片段放在补丁文件中，并且调用一次此方法来指定补丁文件所在的目录，即可自动载入此目录下所有可用的补丁文件。目前支持的有JS脚本，CSS样式表，HTML片段。不支持PHP等后端代码的补丁，因为这些后端代码在服务器运行，从前端当然是拿不到的，但是你依然可以拿到运行后的结果，也就是说，你可以把PHP生成的代码片段当做补丁文件载入。
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.loadPatchsFrom(<路径>); //在初始化函数之前调用<br>
+              _(function(){
+                .
+                .
+                .
+              })
+            </pre>
+          </div>
+          <ul>
+            <li>路径：存放补丁文件的文件夹的路径，不要直接指定单个补丁文件</li>
+            <li><strong>补丁所在目录需要开放目录列表权限，即访问的目录没有index时允许展示目录列表而不是返回403</strong></li>
+            <li><strong>此方法必须在调用相应功能前调用！否则在补丁文件加载完成前将会调用旧方法</strong></li>
+            <li>建议放在_(function(){...})之前调用，此时页面尚未加载完成，可保证补丁及时加载</li>
+            <li>应为当前版本启用的补丁建立单独的路径，不建议把已废弃的旧补丁放在一起，以免影响加载速度</li>
+            <li>加载优先级依文件名排序，补丁文件名无要求，但需要避开index.html index.php等常用网站入口文件，可以使用 01-main.js 02-window.js 这样的命名方式表示优先级，后面的补丁覆盖前面的补丁</li>
+            <li>暂无黑/白名单，会载入指定目录下所有可用的补丁文件，如果某个补丁不需要，请移出文件夹，或更改其后缀名为非可用补丁类型</li>
+            <li>html文件片段需要具有id或class的元素，你不能通过补丁直接替换所有的div或是其它标签。</li>
+            <li>js补丁/插件主要用以重写函数，也可以添加新的功能。如果你想改变某个函数的功能，只需要在补丁文件中定义一个同名函数即可</li>
+            <li>css补丁主要用以添加样式，或重写样式。请注意优先级的问题，当某个样式未能生效时，请优先检查是否优先级比以前的低，因而无法达到覆盖样式的效果</li>
           </ul>
         </span>
       </div>
