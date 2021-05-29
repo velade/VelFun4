@@ -1,10 +1,10 @@
 /********************
 腳本名:VelFun
-版本號:4-1.30
+版本號:4-1.31
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-03-19
+更新日期:2021-05-29
 ********************/
 ;(function(window,undefined){
   var version = "4-1.30";
@@ -1421,11 +1421,10 @@
                     }
                   }else if(_(dom).hasAttr("class")){
                     let dc = _(dom).getClass();
-                    for (var cl of dc) {
-                      let nowele = _("." + cl);
-                      for (var i = 0; i < nowele.length; i++) {
-                        nowele[i].outerHTML = dom.outerHTML;
-                      }
+                    let cl = dc[0];
+                    let nowele = _("." + cl);
+                    for (var i = 0; i < nowele.length; i++) {
+                      nowele[i].outerHTML = dom.outerHTML;
                     }
                   }
                 }
@@ -1828,162 +1827,192 @@
 
 //Base Ext
 Date.prototype.getFullMonth=function (addone) {
-		var addo = addone || false;
-		var vel_date=this;
-		var vel_month=vel_date.getMonth();
-		if (addo) {
-			vel_month=parseInt(vel_month)+1;
-		}
-		if (vel_month.toString().length==1) {
-			return "0"+vel_month;
-		}else {
-			return vel_month;
-		}
+	var addo = addone || false;
+	var vel_date=this;
+	var vel_month=vel_date.getMonth();
+	if (addo) {
+		vel_month=parseInt(vel_month)+1;
 	}
-	Date.prototype.getFullDate=function () {
-		var vel_date=this;
-		var vel_fdate=vel_date.getDate();
-		if (vel_fdate.toString().length==1) {
-			return "0"+vel_fdate;
-		}else {
-			return vel_fdate;
-		}
+	if (vel_month.toString().length==1) {
+		return "0"+vel_month;
+	}else {
+		return vel_month;
 	}
-	Date.prototype.getFullHours=function () {
-		var vel_date=this;
-		var vel_hours=vel_date.getHours();
-		if (vel_hours.toString().length==1) {
-			return "0"+vel_hours;
-		}else {
-			return vel_hours;
-		}
+}
+Date.prototype.getFullDate=function () {
+	var vel_date=this;
+	var vel_fdate=vel_date.getDate();
+	if (vel_fdate.toString().length==1) {
+		return "0"+vel_fdate;
+	}else {
+		return vel_fdate;
 	}
-	Date.prototype.getFullMinutes=function () {
-		var vel_date=this;
-		var vel_minutes=vel_date.getMinutes();
-		if (vel_minutes.toString().length==1) {
-			return "0"+vel_minutes;
-		}else {
-			return vel_minutes;
-		}
+}
+Date.prototype.getFullHours=function () {
+	var vel_date=this;
+	var vel_hours=vel_date.getHours();
+	if (vel_hours.toString().length==1) {
+		return "0"+vel_hours;
+	}else {
+		return vel_hours;
 	}
-	Date.prototype.getFullSeconds=function () {
-		var vel_date=this;
-		var vel_seconds=vel_date.getSeconds();
-		if (vel_seconds.toString().length==1) {
-			return "0"+vel_seconds;
-		}else {
-			return vel_seconds;
-		}
+}
+Date.prototype.getFullMinutes=function () {
+	var vel_date=this;
+	var vel_minutes=vel_date.getMinutes();
+	if (vel_minutes.toString().length==1) {
+		return "0"+vel_minutes;
+	}else {
+		return vel_minutes;
 	}
+}
+Date.prototype.getFullSeconds=function () {
+	var vel_date=this;
+	var vel_seconds=vel_date.getSeconds();
+	if (vel_seconds.toString().length==1) {
+		return "0"+vel_seconds;
+	}else {
+		return vel_seconds;
+	}
+}
 
-  //Auto Exec
-  _(function(){
+Object.defineProperty(Date.prototype,"FullMonth",{
+  get:function(){
+    return this.getFullMonth(true);
+  }
+});
 
-    if(_.info.isIE()){
-      document.writeln("VelFun4 is not support Internet Explorer.");
+Object.defineProperty(Date.prototype,"FullDate",{
+  get:function(){
+    return this.getFullDate();
+  }
+});
+
+Object.defineProperty(Date.prototype,"FullHours",{
+  get:function(){
+    return this.getFullHours();
+  }
+});
+
+Object.defineProperty(Date.prototype,"FullMinutes",{
+  get:function(){
+    return this.getFullMinutes();
+  }
+});
+
+Object.defineProperty(Date.prototype,"FullSeconds",{
+  get:function(){
+    return this.getFullSeconds();
+  }
+});
+
+//Auto Exec
+_(function(){
+
+  if(_.info.isIE()){
+    document.writeln("VelFun4 is not support Internet Explorer.");
+    return false;
+  }
+
+  _("v-select").setSelect();
+
+  //Init Auto
+  _("html").css("perspective: 100px; min-height:100%; min-width: 100%;");
+  _("body").css("opacity: 1;transform: translateZ(0px);min-width:100vw; min-height:100vh;margin:0;");
+  if(new Array("rgba(0, 0, 0, 0)","rgba(0,0,0,0)","transparent").indexOf(_("body").css("background-color")) > -1){
+    _("body").css("background-color:rgba(255, 255, 255, 1)");
+  }
+
+  _(document).click(function(){
+    _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
+    setTimeout(function(){
+      _("._Velfun_Contextmenu_[data-open]").css("display:none;");
+      _("._Velfun_Contextmenu_[data-open]").attr("data-open","");
+      _("._Velfun_Contextmenu_[dynamic]").remove();
+    },120)
+
+    if(_("v-select[data-opening]").length > 0){
+      _("v-select[data-opening]").closeSelect();
+    }
+  })
+
+  _.setColoricon();
+
+  //Keys
+  velfun.nowinputbox = null;
+  _("v-key").bind("mousedown",function(e){
+    e.preventDefault();
+  })
+
+  _("v-key").bind("click",function(){
+    var _this = this;
+    if(_(velfun.nowinputbox).hasAttr('readonly') || _(velfun.nowinputbox).hasAttr('disable') || !velfun.nowinputbox){
       return false;
     }
-
-    _("v-select").setSelect();
-
-    //Init Auto
-    _("html").css("perspective: 100px; min-height:100%; min-width: 100%;");
-    _("body").css("opacity: 1;transform: translateZ(0px);min-width:100vw; min-height:100vh;margin:0;");
-    if(new Array("rgba(0, 0, 0, 0)","rgba(0,0,0,0)","transparent").indexOf(_("body").css("background-color")) > -1){
-      _("body").css("background-color:rgba(255, 255, 255, 1)");
-    }
-
-    _(document).click(function(){
-      _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
-      setTimeout(function(){
-        _("._Velfun_Contextmenu_[data-open]").css("display:none;");
-        _("._Velfun_Contextmenu_[data-open]").attr("data-open","");
-        _("._Velfun_Contextmenu_[dynamic]").remove();
-      },120)
-
-      if(_("v-select[data-opening]").length > 0){
-        _("v-select[data-opening]").closeSelect();
-      }
-    })
-
-    _.setColoricon();
-
-    //Keys
-    velfun.nowinputbox = null;
-    _("v-key").bind("mousedown",function(e){
-      e.preventDefault();
-    })
-
-    _("v-key").bind("click",function(){
-      var _this = this;
-      if(_(velfun.nowinputbox).hasAttr('readonly') || _(velfun.nowinputbox).hasAttr('disable') || !velfun.nowinputbox){
+    var keychar=_this.val();
+    var pos=velfun.nowinputbox.selectionStart;
+    if (keychar=="clear") {
+      velfun.nowinputbox.value="";
+      velfun.nowinputbox.selectionStart=0;
+      velfun.nowinputbox.selectionEnd=0;
+    }else if (keychar=="backspace") {
+      if(velfun.nowinputbox.selectionStart != velfun.nowinputbox.selectionEnd){
+        velfun.nowinputbox.value=velfun.nowinputbox.value.substr(0,velfun.nowinputbox.selectionStart)+velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd,velfun.nowinputbox.value.length);
+        velfun.nowinputbox.selectionStart=pos;
+        velfun.nowinputbox.selectionEnd=pos;
         return false;
       }
-      var keychar=_this.val();
-      var pos=velfun.nowinputbox.selectionStart;
-      if (keychar=="clear") {
-        velfun.nowinputbox.value="";
-        velfun.nowinputbox.selectionStart=0;
-        velfun.nowinputbox.selectionEnd=0;
-      }else if (keychar=="backspace") {
-        if(velfun.nowinputbox.selectionStart != velfun.nowinputbox.selectionEnd){
-          velfun.nowinputbox.value=velfun.nowinputbox.value.substr(0,velfun.nowinputbox.selectionStart)+velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd,velfun.nowinputbox.value.length);
-          velfun.nowinputbox.selectionStart=pos;
-          velfun.nowinputbox.selectionEnd=pos;
-          return false;
-        }
-        velfun.nowinputbox.value=velfun.nowinputbox.value.substr(0,pos-1)+velfun.nowinputbox.value.substr(pos,velfun.nowinputbox.value.length);
-        velfun.nowinputbox.selectionStart=pos-1;
-        velfun.nowinputbox.selectionEnd=pos-1;
-      }else if (keychar=="minus") {
-        if (velfun.nowinputbox.value.indexOf("-")==-1) {
-          velfun.nowinputbox.value="-"+velfun.nowinputbox.value;
-        }else {
-          velfun.nowinputbox.value=velfun.nowinputbox.value.substr(1,velfun.nowinputbox.value.length);
-        }
-        velfun.nowinputbox.selectionStart=velfun.nowinputbox.value.length;
-        velfun.nowinputbox.selectionEnd=velfun.nowinputbox.value.length;
-      }else if (keychar=="shift"){
-        if (_this.hasClass('shiftON')) {
-          _this.removeClass('shiftON');
-          var keys = _("v-key",_this.parent());
-          for (var i = 0; i < keys.length; i++) {
-            var key = _(keys[i]);
-            var isEn = /^[a-zA-Z]$/i.test(key.val());
-            if (isEn) {
-              var normal=key.val().toLowerCase();
-              key.val(normal);
-              key.text(normal);
-            }
-          }
-        }else {
-          _this.addClass('shiftON');
-          var keys = _("v-key",_this.parent());
-          for (var i = 0; i < keys.length; i++) {
-            var key = _(keys[i]);
-            var isEn = /^[a-zA-Z]$/i.test(key.val());
-            if (isEn) {
-              var upper=key.val().toUpperCase();
-              key.val(upper);
-              key.text(upper);
-            }
-          }
-        }
-      }else if(keychar=="space"){
-        velfun.nowinputbox.value=velfun.nowinputbox.value.substr(0,velfun.nowinputbox.selectionStart)+" "+velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd,velfun.nowinputbox.value.length);
-        velfun.nowinputbox.selectionStart=pos+keychar.length;
-        velfun.nowinputbox.selectionEnd=pos+keychar.length;
+      velfun.nowinputbox.value=velfun.nowinputbox.value.substr(0,pos-1)+velfun.nowinputbox.value.substr(pos,velfun.nowinputbox.value.length);
+      velfun.nowinputbox.selectionStart=pos-1;
+      velfun.nowinputbox.selectionEnd=pos-1;
+    }else if (keychar=="minus") {
+      if (velfun.nowinputbox.value.indexOf("-")==-1) {
+        velfun.nowinputbox.value="-"+velfun.nowinputbox.value;
       }else {
-        velfun.nowinputbox.value=velfun.nowinputbox.value.substr(0,velfun.nowinputbox.selectionStart)+keychar+velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd,velfun.nowinputbox.value.length);
-        velfun.nowinputbox.selectionStart=pos+keychar.length;
-        velfun.nowinputbox.selectionEnd=pos+keychar.length;
+        velfun.nowinputbox.value=velfun.nowinputbox.value.substr(1,velfun.nowinputbox.value.length);
       }
-      _(velfun.nowinputbox).trigger("change");
-    })
-
-    _("input[inputbox]").bind("focus",function(){
-      velfun.nowinputbox=this[0];
-    })
-
+      velfun.nowinputbox.selectionStart=velfun.nowinputbox.value.length;
+      velfun.nowinputbox.selectionEnd=velfun.nowinputbox.value.length;
+    }else if (keychar=="shift"){
+      if (_this.hasClass('shiftON')) {
+        _this.removeClass('shiftON');
+        var keys = _("v-key",_this.parent());
+        for (var i = 0; i < keys.length; i++) {
+          var key = _(keys[i]);
+          var isEn = /^[a-zA-Z]$/i.test(key.val());
+          if (isEn) {
+            var normal=key.val().toLowerCase();
+            key.val(normal);
+            key.text(normal);
+          }
+        }
+      }else {
+        _this.addClass('shiftON');
+        var keys = _("v-key",_this.parent());
+        for (var i = 0; i < keys.length; i++) {
+          var key = _(keys[i]);
+          var isEn = /^[a-zA-Z]$/i.test(key.val());
+          if (isEn) {
+            var upper=key.val().toUpperCase();
+            key.val(upper);
+            key.text(upper);
+          }
+        }
+      }
+    }else if(keychar=="space"){
+      velfun.nowinputbox.value=velfun.nowinputbox.value.substr(0,velfun.nowinputbox.selectionStart)+" "+velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd,velfun.nowinputbox.value.length);
+      velfun.nowinputbox.selectionStart=pos+keychar.length;
+      velfun.nowinputbox.selectionEnd=pos+keychar.length;
+    }else {
+      velfun.nowinputbox.value=velfun.nowinputbox.value.substr(0,velfun.nowinputbox.selectionStart)+keychar+velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd,velfun.nowinputbox.value.length);
+      velfun.nowinputbox.selectionStart=pos+keychar.length;
+      velfun.nowinputbox.selectionEnd=pos+keychar.length;
+    }
+    _(velfun.nowinputbox).trigger("change");
   })
+
+  _("input[inputbox]").bind("focus",function(){
+    velfun.nowinputbox=this[0];
+  })
+
+})

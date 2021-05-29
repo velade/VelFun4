@@ -12,7 +12,7 @@
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 1.30</div>
+      <div class="version">Ver 1.31</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -1042,12 +1042,14 @@
           <div class="w3-panel w3-card w3-light-grey">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
-              date.getFullMonth(<是否+1>);
+              date.getFullMonth(<是否+1>); <br>//或者<br>
+              date.FullMonth;
             </pre>
             月份:<span id="test_Month"></span>
           </div>
           <ul>
             <li>是否+1：布尔型，可选参数，因为Date默认获取的月份是从0开始的，因此加1后才是我们需要的月份。此参数为true时返回的月份是正常月份，而传递false时，返回的是Date自身获取的月份。缺省为false</li>
+            <li>使用属性形式时固定+1，返回通常的月份。</li>
           </ul>
         </span>
       </div>
@@ -1063,7 +1065,8 @@
           <div class="w3-panel w3-card w3-light-grey">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
-              date.getFullDate();
+              date.getFullDate(); <br>//或者<br>
+              date.FullDate;
             </pre>
             日期:<span id="test_Date"></span>
           </div>
@@ -1081,7 +1084,8 @@
           <div class="w3-panel w3-card w3-light-grey">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
-              date.getFullHours();
+              date.getFullHours(); <br>//或者<br>
+              date.FullHours;
             </pre>
             小时:<span id="test_Hour"></span>
           </div>
@@ -1099,7 +1103,8 @@
           <div class="w3-panel w3-card w3-light-grey">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
-              date.getFullMinutes();
+              date.getFullMinutes(); <br>//或者<br>
+              date.FullMinutes;
             </pre>
             分钟:<span id="test_Min"></span>
           </div>
@@ -1117,7 +1122,8 @@
           <div class="w3-panel w3-card w3-light-grey">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
-              date.getFullSeconds();
+              date.getFullSeconds(); <br>//或者<br>
+              date.FullSeconds;
             </pre>
             秒数:<span id="test_Sec"></span>
           </div>
