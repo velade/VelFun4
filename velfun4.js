@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.31
+版本號:4-1.40
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-05-29
+更新日期:2021-06-08
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.30";
+  var version = "4-1.40";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -347,7 +347,7 @@
     return this;
   }
 
-  velfun.fn.bind = function(ev,selector = "",func){
+  velfun.fn.bind = function(ev,selector = "",func,repeatable = true){
     if(this.length == 0) return this;
     var _this = this;
     if(typeof selector == "function" && func == undefined) {
@@ -1313,6 +1313,174 @@
 		return vel_randomval;
 	}
 
+  velfun.initUpload = function(){
+    var veluploads = _("v-upload");
+    for (var i = 0; i < veluploads.length; i++) {
+      var th = _(veluploads[i]);
+      if(_("*",th).length > 0) continue;
+      let name = th.attr("data-name") || "uploadFile";
+      let title = th.attr("data-title") || "";
+      let eximg = th.attr("data-eximg") || "";
+      let showpreview = th.attr("showpreview") || "true";
+      let titletype = th.attr("titletype") || "defdynamic";
+      th.attr("data-id",i+1);
+      if(th.css("position").toLowerCase() == "static"){
+        th.css("position:relative");
+      }
+      if(showpreview == "true"){
+        th.append(`<img class="velupload_img" src="${eximg}" alt="${title}" />`);
+      }
+
+      th.append(`<input class="velupload_file" type="file" name="${name}" />`);
+      if(title && ["defdynamic","dynamic","static"].indexOf(titletype) != -1){
+        if(titletype == "defdynamic"){
+          titletype = (showpreview == "false")?"static":"dynamic";
+        }
+        th.append(`<div class="velupload_title ${titletype}">${title}</div>`);
+      }
+    }
+
+    if(_.veluploadInitDone) return true;
+    if(veluploads.length == 0) return false;
+
+    _("head").append(`<style>
+      v-upload .velupload_img {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        margin: auto;
+        border: 1px solid gray;
+        border-radius: 5px;
+        box-shadow: 1px 1px 5px gray;
+        box-sizing: border-box;
+      }
+      v-upload .velupload_title{
+        display: block;
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        color: black;
+        transition: opacity 300ms;
+        padding: 0;
+        margin: 0;
+        text-indent: 0;
+      }
+      v-upload .velupload_title.dynamic {
+        opacity: 0;
+      }
+      v-upload .velupload_title.static {
+        opacity: 1;
+      }
+      v-upload:hover .velupload_title.dynamic {
+        opacity: 1;
+      }
+      v-upload .velupload_file {
+        display: block;
+        width: 0px;
+        height: 0px;
+        margin: 0;
+        padding: 0;
+      }
+      v-upload *:not(.velupload_file) {
+        pointer-events: none;
+      }
+      v-upload-preview {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background-color: rgba(0,0,0,0.5);
+        opacity: 0;
+        transition: opacity 300ms;
+        justify-content: center;
+        algin-items: center;
+        z-index:9999999;
+      }
+      v-upload-preview .velupload_preview {
+        display:block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        max-width: 100vw;
+        max-height: 100vh;
+        pointer-events: none;
+      }
+      v-upload-preview .velupload_reupload {
+        display: block;
+        position: absolute;
+        width: 100px;
+        height: 40px;
+        line-height: 40px;
+        bottom: 50px;
+        left: calc(50% - 50px);
+        text-align: center;
+        border: 1px solid white;
+        color: white;
+        background-color: rgba(0,0,0,0.2);
+        cursor: pointer;
+        backdrop-filter: blur(30px);
+      }
+    </style>`);
+
+    _.bind("click","v-upload",function(){
+      if(_(".velupload_file",this).val() == ""){
+        _(".velupload_file",this).trigger("click");
+      }else{
+        let files = _(".velupload_file",this)[0].files;
+        if(files.length == 0){
+          _("body").append(`<v-upload-preview data-for="${this.attr("data-id")}"><div class="velupload_preview">无法预览图片</div><div class="velupload_reupload">重新上传</div></v-upload-preview>`);
+          setTimeout(function(){
+            _("v-upload-preview").css("opacity:1");
+          },0)
+        }else{
+          let fr = new FileReader();
+          fr.onload = () => {
+            _("body").append(`<v-upload-preview data-for="${this.attr("data-id")}"><img class="velupload_preview" src="${fr.result}"><div class="velupload_reupload">重新上传</div></v-upload-preview>`);
+            setTimeout(function(){
+              _("v-upload-preview").css("opacity:1");
+            },0)
+          }
+          fr.readAsDataURL(files[0]);
+        }
+      }
+    })
+
+    _.bind("change","v-upload .velupload_file",function(){
+      let files = this[0].files;
+      if(files.length == 0){
+        _(".velupload_img",this.parent()).attr("src",this.parent().attr("data-eximg"));
+      }else{
+        let thp = this.parent();
+        let fr = new FileReader();
+        fr.onload = () => {
+          _(".velupload_img",thp).attr("src",fr.result);
+        }
+        fr.readAsDataURL(files[0]);
+      }
+    })
+
+    _.bind("click","v-upload-preview",function(){
+      this.css("opacity:0;pointer-events:none;");
+      setTimeout(function(th){
+        th.remove();
+      },300,this)
+    })
+
+    _.bind("click","v-upload-preview .velupload_reupload",function(){
+      let thfor = this.parent().attr("data-for");
+      this.parent().trigger("click");
+      _(`.velupload_file`,`v-upload[data-id='${thfor}']`).trigger("click");
+    })
+    _.veluploadInitDone = true;
+    return true;
+  }
+
   //IO
   velfun.io = new Object();
   velfun.io.ajax = function(method,url,data,callback){
@@ -1686,7 +1854,7 @@
     if(_.observer != undefined) _.observer.disconnect();
 
     _.io.get(langfile,function(langfiledata){
-      let langdata = JSON.parse(langfiledata);
+      _.langdata = JSON.parse(langfiledata);
 
       /**调用时强制更新**/
       var nl = _.getTextNodes(_("body")[0]);
@@ -1697,63 +1865,17 @@
         }else{
           tn.nodeValue = tn.tempStr;
         }
-        for (var key in langdata) {
-          var nt = langdata[key];
+        for (var key in _.langdata) {
+          var nt = _.langdata[key];
           tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`,nt);
         }
       }
 
       var al = _("[title],[placeholder],[value]");
       al.each(function(){
-        _.setAttrsLang(this,langdata);
+        _.setAttrsLang(this,_.langdata);
       })
 
-
-
-      /**监听变化内容以更新**/
-      _.body = _("body")[0];
-      _.config = {attributes: true, childList: true, subtree: true};
-      _.callback = function(ml, observer){
-        for (var mr of ml) {
-          switch (mr.type) {
-            case "attributes":
-              if(!["alt","title","placeholder","value"].includes(mr.attributeName)) continue;
-              _.observer.disconnect();
-              if(_(mr.target).hasAttr(mr.attributeName)){
-                  _(mr.target).attr("data-" + mr.attributeName + "TempStr",_(mr.target).attr(mr.attributeName));
-              }
-              for (var key in langdata) {
-                  var nt = langdata[key];
-                  try {
-                    _(mr.target).attr(mr.attributeName,_(mr.target).attr(mr.attributeName).replaceAll(`@t-${key};`,nt));
-                  } catch (e) {}
-              }
-              _.observer.observe(_.body,_.config);
-            break;
-            case "childList":
-              _.observer.disconnect();
-              for (var adn of mr.addedNodes) {
-                var nl = _.getTextNodes(adn);
-                for (var tn of nl) {
-                  if(tn.tempStr == undefined){
-                    tn.tempStr = tn.nodeValue.trim();
-                  }else{
-                    tn.nodeValue = tn.tempStr;
-                  }
-                  for (var key in langdata) {
-                    var nt = langdata[key];
-                    tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`,nt);
-                  }
-                }
-                _.setAttrsLang(adn,langdata);
-              }
-              _.observer.observe(_.body,_.config);
-            break;
-          }
-        }
-      }
-      _.observer = new MutationObserver(_.callback);
-      _.observer.observe(_.body,_.config);
     })
   }
 
@@ -1907,14 +2029,66 @@ Object.defineProperty(Date.prototype,"FullSeconds",{
 });
 
 //Auto Exec
+function controllerInit() {
+  _("v-select").setSelect();
+  _.initUpload();
+  _.setColoricon();
+}
 _(function(){
 
   if(_.info.isIE()){
     document.writeln("VelFun4 is not support Internet Explorer.");
     return false;
   }
+  controllerInit(); //初始化控件
 
-  _("v-select").setSelect();
+  /**监听变化内容以更新**/
+  _.body = _("body")[0];
+  _.config = {attributes: true, childList: true, subtree: true};
+  _.callback = function(ml, observer){
+    controllerInit();
+    for (var mr of ml) {
+      /*>>>>语言更新*/
+      switch (mr.type) {
+        case "attributes":
+          if(!["alt","title","placeholder","value"].includes(mr.attributeName)) continue;
+          _.observer.disconnect();
+          if(_(mr.target).hasAttr(mr.attributeName)){
+              _(mr.target).attr("data-" + mr.attributeName + "TempStr",_(mr.target).attr(mr.attributeName));
+          }
+          for (var key in _.langdata) {
+              var nt = _.langdata[key];
+              try {
+                _(mr.target).attr(mr.attributeName,_(mr.target).attr(mr.attributeName).replaceAll(`@t-${key};`,nt));
+              } catch (e) {}
+          }
+          _.observer.observe(_.body,_.config);
+        break;
+        case "childList":
+          _.observer.disconnect();
+          for (var adn of mr.addedNodes) {
+            var nl = _.getTextNodes(adn);
+            for (var tn of nl) {
+              if(tn.tempStr == undefined){
+                tn.tempStr = tn.nodeValue.trim();
+              }else{
+                tn.nodeValue = tn.tempStr;
+              }
+              for (var key in _.langdata) {
+                var nt = langdata[key];
+                tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`,nt);
+              }
+            }
+            _.setAttrsLang(adn,_.langdata);
+          }
+          _.observer.observe(_.body,_.config);
+        break;
+      }
+      /*<<<<语言更新*/
+    }
+  }
+  _.observer = new MutationObserver(_.callback);
+  _.observer.observe(_.body,_.config);
 
   //Init Auto
   _("html").css("perspective: 100px; min-height:100%; min-width: 100%;");
@@ -1936,7 +2110,6 @@ _(function(){
     }
   })
 
-  _.setColoricon();
 
   //Keys
   velfun.nowinputbox = null;
