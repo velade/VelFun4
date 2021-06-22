@@ -1075,13 +1075,13 @@
                 if(pop){
                   let thChilds = _("*",sdom[i]);
                   for (var childIndex = 0; childIndex < thChilds.length; childIndex++) {
-                    if(e.target === thChilds[childIndex]){
+                    if(e.target === sdom[i] || e.target === thChilds[childIndex]){
                       func.call(_(sdom[i]),e,this);
                       break;
                     }
                   }
-                }else{
-                  if(e.target === sdom[i]) func.call(_(e.target),e,this);
+                }else if(e.target === sdom[i]){
+                  func.call(_(e.target),e,this);
                 }
               }
             }
