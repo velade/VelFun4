@@ -1072,10 +1072,10 @@
             return function(e){
               var sdom = _(s);
               for (var i = 0; i < sdom.length; i++) {
-                if(pop){
+                if(pop && e.target !== sdom[i]){
                   let thChilds = _("*",sdom[i]);
                   for (var childIndex = 0; childIndex < thChilds.length; childIndex++) {
-                    if(e.target === sdom[i] || e.target === thChilds[childIndex]){
+                    if(e.target === thChilds[childIndex]){
                       func.call(_(sdom[i]),e,this);
                       break;
                     }
