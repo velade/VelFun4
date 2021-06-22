@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.40
+版本號:4-1.41
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-06-08
+更新日期:2021-06-21
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.40";
+  var version = "4-1.41";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -347,9 +347,13 @@
     return this;
   }
 
-  velfun.fn.bind = function(ev,selector = "",func,repeatable = true){
+  velfun.fn.bind = function(ev,selector = "",func,pop = false){
     if(this.length == 0) return this;
     var _this = this;
+    if(typeof func == "boolean" && pop == undefined) {
+      pop = func;
+      func = "";
+    }
     if(typeof selector == "function" && func == undefined) {
       func = selector;
       selector = "";
@@ -363,7 +367,7 @@
             return function(e){
               var sdom = _(s);
               for (var i = 0; i < sdom.length; i++) {
-                if(e.target === sdom[i]) func.call(_(e.target),e,this);
+                if(e.target === sdom[i] || pop) func.call(_(e.target),e,this);
               }
             }
           })(selector))
@@ -1049,8 +1053,12 @@
     return document.createRange().createContextualFragment(html);
   }
 
-  velfun.bind = function(ev,selector = "",func){
+  velfun.bind = function(ev,selector = "",func,pop = false){
     var _this = _(document);
+    if(typeof func == "boolean") {
+      pop = func;
+      func = undefined;
+    }
     if(typeof selector == "function" && func == undefined) {
       func = selector;
       selector = "";
@@ -1064,7 +1072,17 @@
             return function(e){
               var sdom = _(s);
               for (var i = 0; i < sdom.length; i++) {
-                if(e.target === sdom[i]) func.call(_(e.target),e,this);
+                if(pop){
+                  let thChilds = _("*",sdom[i]);
+                  for (var childIndex = 0; childIndex < thChilds.length; childIndex++) {
+                    if(e.target === thChilds[childIndex]){
+                      func.call(_(sdom[i]),e,this);
+                      break;
+                    }
+                  }
+                }else{
+                  if(e.target === sdom[i]) func.call(_(e.target),e,this);
+                }
               }
             }
           })(selector))
