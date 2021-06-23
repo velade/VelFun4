@@ -50,13 +50,7 @@
         }
         if(typeof selector === "string"){
           if(parent === undefined){
-            try {
-              console.warn("VelFun Warning:\n    Selector:Invalid context,Whole document is being used.");
-            } catch (e) {
-              document.writeln("VelFun Warning:\n    Selector:Invalid context,Whole document is being used.");
-            }
-
-            parent = document;
+            return;
           }
           doms = parent.querySelectorAll(selector);
         }else if(typeof selector === "object"){
