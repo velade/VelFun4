@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.41
+版本號:4-1.42
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-06-21
+更新日期:2021-06-23
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.41";
+  var version = "4-1.42";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
