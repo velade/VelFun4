@@ -1044,7 +1044,7 @@
     var gapNum = itemsInlineNum * 2;
     var allGap = parentW - (itemsW * itemsInlineNum);
     var eachGapW =allGap / gapNum;
-    _items.css("margin-left:" + eachGapW +"px;margin-right:" + eachGapW + "px;")
+    _items.css("margin-left:" + eachGapW +"px;margin-right:" + eachGapW + "px;");
   }
 
   //Static Function
