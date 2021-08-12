@@ -182,7 +182,7 @@ body{
   width: 50%;
   min-width: 500px;
   font-size: 15px;
-  color: red;
+  color: orange;
   height: 20px;
   line-height: 20px;
   margin: -20px auto 0 auto;
@@ -218,6 +218,16 @@ body{
   display: block;
   font-size: 20px;
   text-indent: 40px;
+}
+
+.main .part .content .warning {
+  display: block;
+  width: 100%;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f8c9ca;
+  text-indent: 0;
+  margin-bottom: 20px;
 }
 
 ul li{

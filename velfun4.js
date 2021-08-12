@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-1.42
+版本號:4-2.00
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-06-23
+更新日期:2021-08-12
 ********************/
 ;(function(window,undefined){
-  var version = "4-1.42";
+  var version = "4-2.00";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -361,7 +361,7 @@
             return function(e){
               var sdom = _(s);
               for (var i = 0; i < sdom.length; i++) {
-                if(e.target === sdom[i] || pop) func.call(_(e.target),e,this);
+                if(e.target === sdom[i] || pop) func.call(_(e.target),e,this);;
               }
             }
           })(selector))
@@ -369,6 +369,7 @@
           th.self = th;
           th.addEventListener(ev,function(e){
             func.call(_(e.target),e,this);
+
           })
         }
       }
@@ -709,11 +710,15 @@
       var vel_funthis = _(_this[index]);
       var vel_funthisid = Math.floor(Math.random()*89999999+10000000);
       vel_funthis.attr("data-contextmenuid",vel_funthisid);
-      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + vel_funthisid + "'>";
+      var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
+      if(CSS.supports("backdrop-filter","blur(30px)")){
+        backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+      }
+      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 10px rgba(0,0,0,0.5);overflow: hidden;position: absolute;" + backgroundStyle + ";backdrop-filter:blur(15px);border-radius: 10px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + vel_funthisid + "'>";
       vel_menufuns[vel_funthisid]=new Object();
       for (var i in funarr) {
           if(i.match(/^\-{3}/)){
-            menucontant += `<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;"></li>`;
+            menucontant += `<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;padding: 0 10px;"></li>`;
           }else{
             var imgurl = i.match(/icon\((.+?)\)/);
             var ifc = i.match(/\sif\((.+)\)/);
@@ -730,7 +735,7 @@
               if(!eval(ifc[1])) continue;
             }
             vel_menufuns[vel_funthisid][lititle]=funarr[i];
-            menucontant += "<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 5px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + append + lititle + "</li>";
+            menucontant += "<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 10px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + append + lititle + "</li>";
           }
       }
 
@@ -820,11 +825,15 @@
           var Y=e.pageY;
 
           var funarr = vel_dynamic_menus[thisid][trueTarget];
-          _("body").append("<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 3px gray;overflow: hidden;position: absolute;background-color: rgba(255,255,255,0.85);backdrop-filter:blur(15px);border-radius: 5px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic></ul>");
+          var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
+          if(CSS.supports("backdrop-filter","blur(30px)")){
+            backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+          }
+          _("body").append("<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 10px rgba(0,0,0,0.5);overflow: hidden;position: absolute;" + backgroundStyle + ";backdrop-filter:blur(15px);border-radius: 10px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic></ul>");
           var _ul = _("body ._Velfun_Contextmenu_[dynamic]");
           for (var i in funarr) {
             if(i.match(/^\-{3}/)){
-              _ul.append(`<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;"></li>`);
+              _ul.append(`<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;padding: 0 10px;"></li>`);
             }else{
               var imgurl = i.match(/icon\((.+?)\)/);
               var ifc = i.match(/\sif\((.+)\)/);
@@ -841,7 +850,7 @@
                 if(!eval(ifc[1])) continue;
               }
               var _func = funarr[i];
-              _ul.append("<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 5px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + append + lititle + "</li>");
+              _ul.append("<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 10px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + append + lititle + "</li>");
               var _last_li = _("li",_ul)[_("li",_ul).length - 1];
               _last_li.addEventListener("click",((target,func) => {
                 return function(e){
@@ -1035,7 +1044,7 @@
     var gapNum = itemsInlineNum * 2;
     var allGap = parentW - (itemsW * itemsInlineNum);
     var eachGapW =allGap / gapNum;
-    _items.css("margin-left:" + eachGapW +"px;margin-right:" + eachGapW + "px;")
+    _items.css("margin-left:" + eachGapW +"px;margin-right:" + eachGapW + "px;");
   }
 
   //Static Function
@@ -1071,11 +1080,13 @@
                   for (var childIndex = 0; childIndex < thChilds.length; childIndex++) {
                     if(e.target === thChilds[childIndex]){
                       func.call(_(sdom[i]),e,this);
+
                       break;
                     }
                   }
                 }else if(e.target === sdom[i]){
                   func.call(_(e.target),e,this);
+
                 }
               }
             }
@@ -1084,6 +1095,7 @@
           th.self = th;
           th.addEventListener(ev,function(e){
             func.call(_(e.target),e,this);
+
           })
         }
       }
@@ -1133,7 +1145,12 @@
       pos=['calc(50% - '+offset+'px)','30%'];
     }
 
-    var appstr="<div id='_MessageBox_' style='transition:300ms;background-color: rgba(250,250,250,0.9);border:1px #CCC solid;border-radius: 5px;box-shadow: 1px 1px 2px 1px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(5px);opacity:0;max-width:80%;width:450px;box-shadow:0px 0px 50px gray;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
+    var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
+    if(CSS.supports("backdrop-filter","blur(30px)")){
+      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+    }
+
+    var appstr="<div id='_MessageBox_' style='transition:300ms;" + backgroundStyle + "border:1px #CCC solid;border-radius: 10px;box-shadow: 1px 1px 10px rgba(0,0,0,0.5);box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(5px);opacity:0;max-width:80%;width:450px;box-shadow:0px 0px 50px gray;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
     if (title!="") {
       appstr+="<div style='width: calc(100% - 10px);height: 30px;margin:5px 5px 0px 5px;font-weight: bold;line-height:30px;box-sizing:border-box;padding-left: 5px;border-bottom:1px #DDD solid;text-align: left;'>" + title + "</div>";
       appstr+="<div style='width: calc(100% - 30px);margin:0px 15px;height: calc(100% - 85px);position: absolute;top: 40px;left: 0px;display: block;'>" + msg + "</div>";
@@ -1153,7 +1170,7 @@
     _("body").back();
     setTimeout(function(){
       _("#_MessageBox_").back();
-      _("#_MessageBox_").css("box-shadow:0px 0px 5px black;");
+      _("#_MessageBox_").css("box-shadow:0px 0px 10px rgba(0,0,0,0.5);");
     },10);
 
     _("._MsgButton_").hover(function(){
@@ -1198,7 +1215,12 @@
       pos=['calc(50% - '+offset+'px)','30%'];
     }
 
-    var appstr="<div id='_MessageBox_' style='box-shadow:0px 0px 5px black;background-color: rgba(250,250,250,0.9);border:1px #CCC solid;border-radius: 5px;box-shadow: 1px 1px 2px 1px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:80%;width:450px;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
+    var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
+    if(CSS.supports("backdrop-filter","blur(30px)")){
+      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+    }
+
+    var appstr="<div id='_MessageBox_' style='box-shadow:0px 0px 5px black;" + backgroundStyle + "border:1px #CCC solid;border-radius: 10px;box-shadow: 1px 1px 10px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:80%;width:450px;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
     if (title!="") {
       appstr+="<div style='width: calc(100% - 10px);height: 30px;margin:5px 5px 0px 5px;font-weight: bold;line-height:30px;box-sizing:border-box;padding-left: 5px;border-bottom:1px #DDD solid;text-align: left;'>" + title + "</div>";
       appstr+="<div style='width: calc(100% - 30px);margin:0px 15px;height: calc(100% - 85px);position: absolute;top: 40px;left: 0px;display: block;'>" + msg + "</div>";
@@ -1265,13 +1287,17 @@
     var ulhtml = "<ul id='_OPTIONS_' style='position: fixed;display: block;width: 100%;height: 100%;left: 0px;top: 0px;margin:0px;padding: 0px;z-index: 1000;overflow: hidden;cursor:default;'>";
     var lihtml = "";
     optionsArr = opt_arr;
+    var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
+    if(CSS.supports("backdrop-filter","blur(30px)")){
+      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+    }
 
     if(title!=""){
       lihtml = "<li class='velfun_options_title' style='max-width: 400px;min-height: 40px;position: relative;height: auto;display: table;clear: both;margin: 10px auto;overflow-x: hidden;width: 100%;background: transparent;font-size: 20px;font-weight:bold;text-align: center;color: white;text-shadow:0px 0px 5px black;transform:translateZ(0px);'>"+title+"</li>";
     }
     for (var index in opt_arr) {
       if (opt_arr.hasOwnProperty(index)) {
-        lihtml += "<li class='velfun_options_item' style='width: 80%;max-width: 400px;min-height: 40px;position: relative;height: auto;display: table;clear: both;margin: 10px auto;border: 1px black solid;border-radius: 5px;background-color: white;overflow-x: hidden;transform:translateZ(10px);opacity:0;' onclick='_.inside.OptionsRe(this,\"" + index + "\")'><span style='display:table-cell;vertical-align: middle;text-align: center;'>" + index + "</span></li>";
+        lihtml += "<li class='velfun_options_item' style='width: 80%;max-width: 400px;min-height: 40px;position: relative;height: auto;display: table;clear: both;margin: 10px auto;border: 1px black solid;border-radius: 10px;" + backgroundStyle + "overflow-x: hidden;transform:translateZ(10px);opacity:0;' onclick='_.inside.OptionsRe(this,\"" + index + "\")'><span style='display:table-cell;vertical-align: middle;text-align: center;'>" + index + "</span></li>";
       }
     }
     var ophtml = ulhtml + lihtml + "</ul>";
@@ -1362,7 +1388,7 @@
         max-height: 100%;
         margin: auto;
         border: 1px solid gray;
-        border-radius: 5px;
+        border-radius: 10px;
         box-shadow: 1px 1px 5px gray;
         box-sizing: border-box;
       }
@@ -1813,10 +1839,14 @@
       duration = 3000;
     }
     var appendHtml = "";
+    var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
+    if(CSS.supports("backdrop-filter","blur(30px)")){
+      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+    }
     if(title !== undefined){
-      appendHtml = "<div class='velfun_tip' style='display: block;position: fixed;top:5px;right:-310px;width:300px; min-height:50px;background-color:rgba(250,250,250,0.95);border-radius:5px;box-shadow: 0px 0px 5px gray;pointer-events:none;transition:right 300ms ease-in,filter 500ms ease-out;transition-delay:0ms 350ms;filter: brightness(5) sepia(1);'><span class='velfun_tip_title' style='display:block;width:calc(100% - 10px);height:30px;line-height:30px;top:0px;margin:0px 5px;box-sizing:border-box;border-bottom:1px lightgray solid;font-weight:bold;'>" + title + "</span><span class='velfun_tip_content' style='display:block;width:100%;top:40px;padding:5px 10px;box-sizing:border-box;'>" + content + "</span></div>";
+      appendHtml = "<div class='velfun_tip' style='display: block;position: fixed;top:5px;right:-310px;width:300px; min-height:50px;" + backgroundStyle + "border-radius:10px;box-shadow: 0px 0px 5px gray;pointer-events:none;transition:right 300ms ease-in,filter 500ms ease-out;transition-delay:0ms 350ms;filter: brightness(5) sepia(1);'><span class='velfun_tip_title' style='display:block;width:calc(100% - 10px);height:30px;line-height:30px;top:0px;margin:0px 5px;box-sizing:border-box;border-bottom:1px lightgray solid;font-weight:bold;'>" + title + "</span><span class='velfun_tip_content' style='display:block;width:100%;top:40px;padding:5px 10px;box-sizing:border-box;'>" + content + "</span></div>";
     }else{
-      appendHtml = "<div class='velfun_tip' style='display: block;position: fixed;top:5px;right:-310px;width:300px; min-height:50px;background-color:rgba(250,250,250,0.95);border-radius:5px;box-shadow: 0px 0px 5px gray;pointer-events:none;transition:300ms ease-in;'><span class='velfun_tip_content' style='display:block;width:100%;padding:5px;box-sizing:border-box;'>" + content + "</span></div>";
+      appendHtml = "<div class='velfun_tip' style='display: block;position: fixed;top:5px;right:-310px;width:300px; min-height:50px;" + backgroundStyle + ";border-radius:10px;box-shadow: 0px 0px 5px gray;pointer-events:none;transition:300ms ease-in;'><span class='velfun_tip_content' style='display:block;width:100%;padding:5px;box-sizing:border-box;'>" + content + "</span></div>";
     }
     _("body").after(appendHtml);
 
@@ -1887,7 +1917,7 @@
       al.each(function(){
         _.setAttrsLang(this,_.langdata);
       })
-
+      _.observer.observe(_.obbody,_.obconfig);
     })
   }
 
@@ -2045,6 +2075,7 @@ function controllerInit() {
   _("v-select").setSelect();
   _.initUpload();
   _.setColoricon();
+  _.observer.observe(_.obbody,_.obconfig);
 }
 _(function(){
 
@@ -2052,18 +2083,18 @@ _(function(){
     document.writeln("VelFun4 is not support Internet Explorer.");
     return false;
   }
-  controllerInit(); //初始化控件
 
   /**监听变化内容以更新**/
-  _.body = _("body")[0];
-  _.config = {attributes: true, childList: true, subtree: true};
-  _.callback = function(ml, observer){
+  _.obbody = _("body")[0];
+  _.obconfig = {attributes: true, childList: true, subtree: true};
+  _.obcallback = function(ml, observer){
     controllerInit();
     for (var mr of ml) {
       /*>>>>语言更新*/
       switch (mr.type) {
         case "attributes":
           if(!["alt","title","placeholder","value"].includes(mr.attributeName)) continue;
+          let mutationRecords = observer.takeRecords();
           _.observer.disconnect();
           if(_(mr.target).hasAttr(mr.attributeName)){
               _(mr.target).attr("data-" + mr.attributeName + "TempStr",_(mr.target).attr(mr.attributeName));
@@ -2074,7 +2105,7 @@ _(function(){
                 _(mr.target).attr(mr.attributeName,_(mr.target).attr(mr.attributeName).replaceAll(`@t-${key};`,nt));
               } catch (e) {}
           }
-          _.observer.observe(_.body,_.config);
+          _.observer.observe(_.obbody,_.obconfig);
         break;
         case "childList":
           _.observer.disconnect();
@@ -2087,20 +2118,20 @@ _(function(){
                 tn.nodeValue = tn.tempStr;
               }
               for (var key in _.langdata) {
-                var nt = langdata[key];
+                var nt = _.langdata[key];
                 tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`,nt);
               }
             }
             _.setAttrsLang(adn,_.langdata);
           }
-          _.observer.observe(_.body,_.config);
+          _.observer.observe(_.obbody,_.obconfig);
         break;
       }
       /*<<<<语言更新*/
     }
   }
-  _.observer = new MutationObserver(_.callback);
-  _.observer.observe(_.body,_.config);
+  _.observer = new MutationObserver(_.obcallback);
+  controllerInit(); //初始化控件
 
   //Init Auto
   _("html").css("perspective: 100px; min-height:100%; min-width: 100%;");
