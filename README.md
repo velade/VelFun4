@@ -16,4 +16,4 @@
 　　取得VelFun4的方式很簡單，你可以通過訪問我們的官網 https://www.velhlkj.com 在產品中心獲得，也可以在GitHub的Release( https://github.com/velade/VelFun4/releases )中直接下載，或是克隆項目來下載。
 
 ## 手冊去哪了？
-　　現在開發者手冊不再打包在下載的文件中，取而代之的是在官方網站線上查看( https://www.velhlkj.com/cn/download?subact=velfun4help )，如果你需要一個離線版本，也可以從GitHub( https://github.com/velade/VelFun4 )中下載。
+　　現在開發者手冊不再打包在下載的文件中，取而代之的是在官方網站線上查看( https://www.velhlkj.com/cn/productssubact=velfun4help )，如果你需要一個離線版本，也可以從GitHub( https://github.com/velade/VelFun4 )中下載。
