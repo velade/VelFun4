@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-2.00
+版本號:4-2.50
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-08-12
+更新日期:2021-12-10
 ********************/
 ;(function(window,undefined){
-  var version = "4-2.00";
+  var version = "4-2.50";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1113,14 +1113,14 @@
   var msgboxList = new Array();
   var msgfun = function(e){return true;};
 
-  velfun.Msgbox = function(Message,Title,Type,Position,callback){
-    msgboxList.push(function(){_.inside.Msgbox_do(Message,Title,Type,Position,callback)});
+  velfun.Msgbox = async function(Message,Title,Type,Position,callback){
+    msgboxList.push(function(){return _.inside.Msgbox_do(Message,Title,Type,Position,callback)});
     if(_("#_MessageBox_").length == 0){
       var fun = msgboxList.shift();
       fun();
     }
   }
-  velfun.inside.Msgbox_do = function (Message,Title,Type,Position,callback) {
+  velfun.inside.Msgbox_do = async function (Message,Title,Type,Position,callback) {
     var msg=Message || "";
     var title=Title || "";
     var ty=Type || "";
@@ -1159,11 +1159,11 @@
     }
 
     if (ty=="" || ty==0 || ty=="MSG_OK") {
-      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgOK_' class='_MsgButton_' onclick='_.inside.MsgRe(true,false)' style='display:block;width:100%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span></div>";
+      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgOK_' class='_MsgButton_' data-val='true' style='display:block;width:100%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span></div>";
     }else if (ty==1 || ty=="MSG_YES_NO") {
-      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgYes_' class='_MsgButton_' onclick='_.inside.MsgRe(true,false)' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>是</span><span id='_MsgNo_' class='_MsgButton_' onclick='_.inside.MsgRe(false,false)' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>否</span></div>";
+      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgYes_' class='_MsgButton_' data-val='true' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>是</span><span id='_MsgNo_' class='_MsgButton_' data-val='false' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>否</span></div>";
     }else if (ty==2 || ty=="MSG_OK_Cancel") {
-      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgOK_' class='_MsgButton_' onclick='_.inside.MsgRe(true,false)' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span><span id='_MsgCancel_' class='_MsgButton_' onclick='_.inside.MsgRe(false,false)' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>取消</span></div>";
+      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgOK_' class='_MsgButton_' data-val='true' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span><span id='_MsgCancel_' class='_MsgButton_' data-val='false' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>取消</span></div>";
     }
     appstr+="</div></div>";
     _("body").after(appstr);
@@ -1180,17 +1180,30 @@
     }).bind("mousedown",function(){
       this.css("background-color:rgba(0,0,0,0.05);");
     });
+
+    return new Promise((resolve,reject)=>{
+      _("._MsgButton_").bind("click",e=>{
+        let buttonval = _(e.target).attr("data-val") == "true"?true:false;
+        if(buttonval){
+          _.inside.MsgRe(true,false);
+          resolve(true)
+        }else{
+          _.inside.MsgRe(false,false);
+          reject(false);
+        }
+      })
+    })
   }
 
-  velfun.Msgbox_lite = function(Message,Title,Type,Position,callback){
-    msgboxList.push(function(){_.inside.Msgbox_lite_do(Message,Title,Type,Position,callback)});
+  velfun.Msgbox_lite = async function(Message,Title,Type,Position,callback){
+    msgboxList.push(function(){return _.inside.Msgbox_lite_do(Message,Title,Type,Position,callback)});
     if(_("#_MessageBox_").length == 0){
       var fun = msgboxList.shift();
       fun();
     }
   }
 
-  velfun.inside.Msgbox_lite_do = function (Message,Title,Type,Position,callback) {
+  velfun.inside.Msgbox_lite_do = async function (Message,Title,Type,Position,callback) {
     var msg=Message || "";
     var title=Title || "";
     var ty=Type || "";
@@ -1229,11 +1242,11 @@
     }
 
     if (ty=="" || ty==0 || ty=="MSG_OK") {
-      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgOK_' class='_MsgButton_' onclick='_.inside.MsgRe(true,true)' style='display:block;width:100%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span></div>";
+      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgOK_' class='_MsgButton_' data-val='true' style='display:block;width:100%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span></div>";
     }else if (ty==1 || ty=="MSG_YES_NO") {
-      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgYes_' class='_MsgButton_' onclick='_.inside.MsgRe(true,true)' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>是</span><span id='_MsgNo_' class='_MsgButton_' onclick='_.inside.MsgRe(false,true)' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>否</span></div>";
+      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgYes_' class='_MsgButton_' data-val='true' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>是</span><span id='_MsgNo_' class='_MsgButton_' data-val='false' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>否</span></div>";
     }else if (ty==2 || ty=="MSG_OK_Cancel") {
-      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgOK_' class='_MsgButton_' onclick='_.inside.MsgRe(true,true)' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span><span id='_MsgCancel_' class='_MsgButton_' onclick='_.inside.MsgRe(false,true)' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>取消</span></div>";
+      appstr+="<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px #DDD solid;'><span id='_MsgOK_' class='_MsgButton_' data-val='true' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span><span id='_MsgCancel_' class='_MsgButton_' data-val='false' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>取消</span></div>";
     }
     appstr+="</div></div>";
     _("body").after(appstr);
@@ -1246,6 +1259,19 @@
     }).bind("mousedown",function(){
       this.css("background-color:rgba(0,0,0,0.05);");
     });
+
+    return new Promise((resolve,reject)=>{
+      _("._MsgButton_").bind("click",e=>{
+        let buttonval = _(e.target).attr("data-val") == "true"?true:false;
+        if(buttonval){
+          _.inside.MsgRe(true,true);
+          resolve(true)
+        }else{
+          _.inside.MsgRe(false,true);
+          reject(false);
+        }
+      })
+    })
   };
 
   velfun.inside.MsgRe = function (re,lite) {
@@ -1283,7 +1309,6 @@
 
   velfun.inside.Options_do = function(opt_arr,title) {
     var title = title || "";
-    var tithtml = "";
     var ulhtml = "<ul id='_OPTIONS_' style='position: fixed;display: block;width: 100%;height: 100%;left: 0px;top: 0px;margin:0px;padding: 0px;z-index: 1000;overflow: hidden;cursor:default;'>";
     var lihtml = "";
     optionsArr = opt_arr;
@@ -1521,7 +1546,7 @@
 
   //IO
   velfun.io = new Object();
-  velfun.io.ajax = function(method,url,data,callback){
+  velfun.io.ajax = async function(method,url,data,callback){
     if(typeof data == "function"){
       callback = data;
       data = null;
@@ -1541,41 +1566,43 @@
         data = params;
       }
     }
-
-    var XHR = new XMLHttpRequest();
-    XHR.onreadystatechange = function(){
-      if (XHR.readyState == 4 && XHR.status == 200) {
-        var msg = XHR.responseText;
-        callback(msg,XHR);
+    return new Promise((resolve,reject)=>{
+      var XHR = new XMLHttpRequest();
+      XHR.onreadystatechange = function(){
+        if (XHR.readyState == 4 && XHR.status == 200) {
+          var msg = XHR.responseText;
+          if(typeof callback == "function") callback(msg,XHR);
+          resolve(msg,XHR);
+        }
       }
-    }
 
-    if(method.toLowerCase() == "get"){
-      if (url.match(/\?/) != null) {
-        url += "&" + data;
+      if(method.toLowerCase() == "get"){
+        if (url.match(/\?/) != null) {
+          url += "&" + data;
+        }else{
+          url += "?" + data;
+        }
+        XHR.open(method,url);
+        XHR.send();
+      }else if(method.toLowerCase() == "post"){
+        XHR.open(method,url);
+        XHR.send(data);
       }else{
-        url += "?" + data;
+        try {
+          console.error("VelFun Error:\n    AJAX:The method invalid.Can only be get or post.");
+        } catch (e) {
+          document.writeln("VelFun Error:\n    AJAX:The method invalid.Can only be get or post.");
+        }
       }
-      XHR.open(method,url);
-      XHR.send();
-    }else if(method.toLowerCase() == "post"){
-      XHR.open(method,url);
-      XHR.send(data);
-    }else{
-      try {
-        console.error("VelFun Error:\n    AJAX:The method invalid.Can only be get or post.");
-      } catch (e) {
-        document.writeln("VelFun Error:\n    AJAX:The method invalid.Can only be get or post.");
-      }
-    }
+    })
   }
 
-  velfun.io.get = function(url,data,callback){
-    velfun.io.ajax("get",url,data,callback);
+  velfun.io.get = async function(url,data,callback){
+    return velfun.io.ajax("get",url,data,callback);
   }
 
-  velfun.io.post = function(url,data,callback){
-    velfun.io.ajax("post",url,data,callback);
+  velfun.io.post = async function(url,data,callback){
+    return velfun.io.ajax("post",url,data,callback);
   }
 
   velfun.io.import = function(url,type){
