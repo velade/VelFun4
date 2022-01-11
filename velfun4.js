@@ -1926,7 +1926,7 @@
       _.langdata = JSON.parse(langfiledata);
 
       /**调用时强制更新**/
-      var nl = _.getTextNodes(_("body")[0]);
+      var nl = _.getTextNodes(_("html")[0]);
       for (var tn of nl) {
         if(tn.nodeValue.trim() == "") continue;
         if(tn.tempStr == undefined){
@@ -2112,7 +2112,7 @@ _(function(){
   }
 
   /**监听变化内容以更新**/
-  _.obbody = _("body")[0];
+  _.obbody = _("html")[0];
   _.obconfig = {attributes: true, childList: true, subtree: true};
   _.obcallback = function(ml, observer){
     controllerInit();
