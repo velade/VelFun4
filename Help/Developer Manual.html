@@ -65,6 +65,9 @@
         <span class="typeitem" data-page="ajax">AJAX</span>
         <span class="typeitem" data-page="post">POST</span>
         <span class="typeitem" data-page="get">GET</span>
+        <span class="typeitem" data-page="setcookie">设置Cookie</span>
+        <span class="typeitem" data-page="getcookie">获取Cookie</span>
+        <span class="typeitem" data-page="delcookie">删除Cookie</span>
         <span class="typeitem" data-page="import">动态导入资源文件</span>
         <span class="typeitem" data-page="unimport">动态卸载资源文件</span>
         <span class="typeitem" data-page="patchs"><img src="help_data/images/Experimental.png" alt="实验性功能" title="实验性功能">加载补丁</span>
@@ -998,6 +1001,84 @@
             <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
             <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，如果同时给出回调函数则会同时触发两个处理</li>
             <li>可以将参数连接到网址也可以使用 数据 参数传递，这二者并无差别，也可以网址与数据都带有参数，但是这样的书写方式并不推荐。</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="setcookie">
+        <span class="title">设置Cookie</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          以易于使用的方式提供Cookie写入/变更的方法
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.setCookie({
+                "name": &lt;名称&gt;,
+                "value": &lt;值&gt;,
+                "expires": &lt;过期时间&gt;,
+                "path": &lt;路径&gt;,
+                "domain": &lt;域名&gt;,
+              });
+            </pre>
+          </div>
+          <ul>
+            <li>setCookie的参数以对象方式传入</li>
+            <li>名称：用于指定Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
+            <li>值：用于指定Cookie的值</li>
+            <li>过期时间(可选)：过期时间是一个具体的时间，但是在VelFun中提供了更高的易用性，你可以在这里输入new Date()支持的参数以外，还可以用以下参数表示时间:
+              <ul>
+                <li>+#y：#为数字，以此表示#<strong>年</strong>后，#可以是任意位数</li>
+                <li>+#m：#为数字，以此表示#<strong>月</strong>后，#可以是任意位数</li>
+                <li>+#d：#为数字，以此表示#<strong>日</strong>后，#可以是任意位数</li>
+                <li>+#h：#为数字，以此表示#<strong>小时</strong>后，#可以是任意位数</li>
+                <li>+#i：#为数字，以此表示#<strong>分钟</strong>后，#可以是任意位数</li>
+                <li>+#s：#为数字，以此表示#<strong>秒</strong>后，#可以是任意位数</li>
+              </ul>
+            </li>
+            <li>路径(可选)：用于指定Cookie的作用范围，默认在文件当前目录</li>
+            <li>域名(可选)：用于指定Cookie所属域，默认为当前域</li>
+            <li>设定的时间均非自然计算，例如+1d表示的是到第二天的这个时间，而非是自然日，因此并非过0点就失效</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="getcookie">
+        <span class="title">获取Cookie</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          以易于使用的方式提供Cookie获取的方法
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.getCookie(&lt;Cookie名&gt;);
+            </pre>
+          </div>
+          <ul>
+            <li>名称：字符串类型，用于指定要获取的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
+          </ul>
+        </span>
+      </div>
+
+      <div class="part" id="delcookie">
+        <span class="title">删除Cookie</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          以易于使用的方式提供Cookie删除的方法
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-grey">
+            <pre class="w3-code jsHigh notranslate">
+              _.io.delCookie(&lt;Cookie名&gt;);
+            </pre>
+          </div>
+          <ul>
+            <li>名称：字符串类型，用于指定要删除的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
           </ul>
         </span>
       </div>

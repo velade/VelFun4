@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-2.50
+版本號:4-2.70
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2021-12-10
+更新日期:2022-02-14
 ********************/
 ;(function(window,undefined){
-  var version = "4-2.50";
+  var version = "4-2.70";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1668,6 +1668,49 @@
       }
     }
     return true;
+  }
+
+  velfun.io.setCookie = function(opts){
+    let cookieStr = `${opts.name}=${opts.value}`;
+    if(opts.expires){
+      let exp = opts.expires;
+      let offset = 0;
+      if(offset = exp.match(/^\+(\d+?)y$/)){
+        offset = parseInt(offset[1]);
+        exp = new Date(new Date().setFullYear(new Date().getFullYear() + offset));
+      }else if(offset = exp.match(/^\+(\d+?)m$/)){
+        offset = parseInt(offset[1]);
+        exp = new Date(new Date().setMonth(new Date().getMonth() + offset));
+      }else if(offset = exp.match(/^\+(\d+?)d$/)){
+        offset = parseInt(offset[1]);
+        exp = new Date(new Date().setDate(new Date().getDate() + offset));
+      }else if(offset = exp.match(/^\+(\d+?)h$/)){
+        offset = parseInt(offset[1]);
+        exp = new Date(new Date().setHours(new Date().getHours() + offset));
+      }else if(offset = exp.match(/^\+(\d+?)i$/)){
+        offset = parseInt(offset[1]);
+        exp = new Date(new Date().setMinutes(new Date().getMinutes() + offset));
+      }else if(offset = exp.match(/^\+(\d+?)s$/)){
+        offset = parseInt(offset[1]);
+        exp = new Date(new Date().setSeconds(new Date().getSeconds() + offset));
+      }else{
+        exp = new Date(exp);
+      }
+      let utcdate = exp.toUTCString();
+      cookieStr += "; expires=" + utcdate;
+    }
+    if(opts.path) cookieStr += "; path=" + opts.path;
+    if(opts.domain) cookieStr += "; domain=" + opts.domain;
+    document.cookie = cookieStr;
+  }
+
+  velfun.io.getCookie = function(name){
+    let result = document.cookie.match("(^|[^;]+)\\s*" + name + "\\s*=\\s*([^;]+)")
+    return result ? result.pop() : ""
+  }
+
+  velfun.io.delCookie = function(name){
+    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
   }
 
   //Test
