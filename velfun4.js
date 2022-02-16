@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-2.70
+版本號:4-2.75
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2022-02-14
+更新日期:2022-02-16
 ********************/
 ;(function(window,undefined){
-  var version = "4-2.70";
+  var version = "4-2.75";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -413,27 +413,21 @@
 
   velfun.fn.after = function(html){
     if(this.length == 0) return this;
-    var _this = this;
+    var dom = this[0];
     _.htmltodom(html,function(elem){
-      for (var i = 0; i < _this.length; i++) {
-        var dom = _this[i];
-        if(dom.parentNode){
-          dom.parentNode.insertBefore(elem,dom.nextSibling);
-        }
+      if(dom.parentNode){
+        dom.parentNode.insertBefore(elem,dom.nextSibling);
       }
     })
-    return _this;
+    return this;
   }
 
   velfun.fn.before = function(html){
     if(this.length == 0) return this;
-    var _this = this;
+    var dom = this[0];
     _.htmltodom(html,function(elem){
-      for (var i = 0; i < _this.length; i++) {
-        var dom = _this[i];
-        if(dom.parentNode){
-          dom.parentNode.insertBefore(elem,dom);
-        }
+      if(dom.parentNode){
+        dom.parentNode.insertBefore(elem,dom);
       }
     })
     return this;
@@ -441,13 +435,10 @@
 
   velfun.fn.append = function(html){
     if(this.length == 0) return this;
-    var _this = this;
+    var dom = this[0];
     _.htmltodom(html,function(elem){
-      for (var i = 0; i < _this.length; i++) {
-        var dom = _this[i];
-        if(dom.parentNode){
-          dom.appendChild(elem);
-        }
+      if(dom.parentNode){
+        dom.appendChild(elem);
       }
     })
     return this;
@@ -455,13 +446,10 @@
 
   velfun.fn.prepend = function(html){
     if(this.length == 0) return this;
-    var _this = this;
+    var dom = this[0];
     _.htmltodom(html,function(elem){
-      for (var i = 0; i < _this.length; i++) {
-        var dom = _this[i];
-        if(dom.parentNode){
-          dom.insertBefore(elem,dom.firstChild);
-        }
+      if(dom.parentNode){
+        dom.insertBefore(elem,dom.firstChild);
       }
     })
     return this;
@@ -1050,10 +1038,14 @@
   //Static Function
   velfun.inside = new Object();
   velfun.htmltodom = function(html,callback){
+    var template = document.createElement( 'template' );
+    let range = document.createRange();
+    range.selectNodeContents(template);
+
     if(callback !== undefined){
-      callback.call(document.createRange().createContextualFragment(html),document.createRange().createContextualFragment(html));
+      callback.call(range.createContextualFragment(html),range.createContextualFragment(html));
     }
-    return document.createRange().createContextualFragment(html);
+    return range.createContextualFragment(html);
   }
 
   velfun.bind = function(ev,selector = "",func,pop = false){
