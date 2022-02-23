@@ -1,13 +1,13 @@
 /********************
 腳本名:VelFun
-版本號:4-2.75
+版本號:4-2.80
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2022-02-16
+更新日期:2022-02-23
 ********************/
 ;(function(window,undefined){
-  var version = "4-2.75";
+  var version = "4-2.80";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -1619,7 +1619,7 @@
     _("[href='" + url + "']").remove();
   }
 
-  velfun.io.loadPathFrom = function(path){ //實驗性
+  velfun.io.loadPatchsFrom = function(path){ //實驗性
     var request = new XMLHttpRequest();
     request.open("get",path,false);
     request.send();
@@ -1662,47 +1662,92 @@
     return true;
   }
 
-  velfun.io.setCookie = function(opts){
-    let cookieStr = `${opts.name}=${opts.value}`;
-    if(opts.expires){
-      let exp = opts.expires;
-      let offset = 0;
-      if(offset = exp.match(/^\+(\d+?)y$/)){
-        offset = parseInt(offset[1]);
-        exp = new Date(new Date().setFullYear(new Date().getFullYear() + offset));
-      }else if(offset = exp.match(/^\+(\d+?)m$/)){
-        offset = parseInt(offset[1]);
-        exp = new Date(new Date().setMonth(new Date().getMonth() + offset));
-      }else if(offset = exp.match(/^\+(\d+?)d$/)){
-        offset = parseInt(offset[1]);
-        exp = new Date(new Date().setDate(new Date().getDate() + offset));
-      }else if(offset = exp.match(/^\+(\d+?)h$/)){
-        offset = parseInt(offset[1]);
-        exp = new Date(new Date().setHours(new Date().getHours() + offset));
-      }else if(offset = exp.match(/^\+(\d+?)i$/)){
-        offset = parseInt(offset[1]);
-        exp = new Date(new Date().setMinutes(new Date().getMinutes() + offset));
-      }else if(offset = exp.match(/^\+(\d+?)s$/)){
-        offset = parseInt(offset[1]);
-        exp = new Date(new Date().setSeconds(new Date().getSeconds() + offset));
-      }else{
-        exp = new Date(exp);
+  velfun.io.setCookie = function(opts,usingSessionMode = false){
+    if(usingSessionMode){
+      window.sessionStorage.setItem(opts.name,opts.value);
+      if(opts.expires){
+        let exp = opts.expires;
+        let offset = 0;
+        if(offset = exp.match(/^\+(\d+?)y$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setFullYear(new Date().getFullYear() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)m$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setMonth(new Date().getMonth() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)d$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setDate(new Date().getDate() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)h$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setHours(new Date().getHours() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)i$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setMinutes(new Date().getMinutes() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)s$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setSeconds(new Date().getSeconds() + offset));
+        }else{
+          exp = new Date(exp);
+        }
+        let peeper = setInterval((name,expires)=>{
+          let now = new Date();
+          if(Date.parse(now) >= Date.parse(expires)){
+            window.sessionStorage.removeItem(name);
+            clearInterval(peeper);
+          }
+        },1000,opts.name,exp);
       }
-      let utcdate = exp.toUTCString();
-      cookieStr += "; expires=" + utcdate;
+    }else{
+      let cookieStr = `${opts.name}=${opts.value}`;
+      if(opts.expires){
+        let exp = opts.expires;
+        let offset = 0;
+        if(offset = exp.match(/^\+(\d+?)y$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setFullYear(new Date().getFullYear() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)m$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setMonth(new Date().getMonth() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)d$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setDate(new Date().getDate() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)h$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setHours(new Date().getHours() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)i$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setMinutes(new Date().getMinutes() + offset));
+        }else if(offset = exp.match(/^\+(\d+?)s$/)){
+          offset = parseInt(offset[1]);
+          exp = new Date(new Date().setSeconds(new Date().getSeconds() + offset));
+        }else{
+          exp = new Date(exp);
+        }
+        let utcdate = exp.toUTCString();
+        cookieStr += "; expires=" + utcdate;
+      }
+      if(opts.path) cookieStr += "; path=" + opts.path;
+      if(opts.domain) cookieStr += "; domain=" + opts.domain;
+      document.cookie = cookieStr;
     }
-    if(opts.path) cookieStr += "; path=" + opts.path;
-    if(opts.domain) cookieStr += "; domain=" + opts.domain;
-    document.cookie = cookieStr;
   }
 
-  velfun.io.getCookie = function(name){
-    let result = document.cookie.match("(^|[^;]+)\\s*" + name + "\\s*=\\s*([^;]+)")
-    return result ? result.pop() : ""
+  velfun.io.getCookie = function(name,usingSessionMode = true){
+    
+    if(usingSessionMode){
+      let val = window.sessionStorage.getItem(name);
+      if(val) return val;
+    }
+
+    let result = document.cookie.match("(^|[^;]+)\\s*" + name + "\\s*=\\s*([^;]+)");
+    return result ? result.pop() : "";
   }
 
-  velfun.io.delCookie = function(name){
-    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+  velfun.io.delCookie = function(name,usingSessionMode = true){
+      if(usingSessionMode){
+        window.sessionStorage.removeItem(name);
+      }
+      document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
   }
 
   //Test
@@ -2133,6 +2178,10 @@ Object.defineProperty(Date.prototype,"FullSeconds",{
 });
 
 //Auto Exec
+_.selfpath=document.scripts;
+_.selfpath=_.selfpath[_.selfpath.length-1].src.substring(0,_.selfpath[_.selfpath.length-1].src.lastIndexOf("/")+1);
+_.io.loadPatchsFrom(_.selfpath + "plugins/");
+
 function controllerInit() {
   _("v-select").setSelect();
   _.initUpload();
@@ -2140,11 +2189,12 @@ function controllerInit() {
   _.observer.observe(_.obbody,_.obconfig);
 }
 _(function(){
-
   if(_.info.isIE()){
     document.writeln("VelFun4 is not support Internet Explorer.");
     return false;
   }
+
+  
 
   /**监听变化内容以更新**/
   _.obbody = _("html")[0];

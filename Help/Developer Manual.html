@@ -2,7 +2,7 @@
 <html lang="cn" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>VelFun4开发者手册 - 2.75</title>
+    <title>VelFun4开发者手册 - 2.80</title>
     <link rel="stylesheet" href="help_data/styles/style.css?ver=2.50" />
     <link rel="stylesheet" href="help_data/styles/w3.css" />
     <script src="help_data/scripts/velfun4.js?ver=2.50" type="text/javascript"></script>
@@ -12,7 +12,7 @@
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 2.75</div>
+      <div class="version">Ver 2.80</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -1021,7 +1021,7 @@
                 "expires": &lt;过期时间&gt;,
                 "path": &lt;路径&gt;,
                 "domain": &lt;域名&gt;,
-              });
+              },&lt;使用Session模式&gt;);
             </pre>
           </div>
           <ul>
@@ -1038,8 +1038,10 @@
                 <li>+#s：#为数字，以此表示#<strong>秒</strong>后，#可以是任意位数</li>
               </ul>
             </li>
-            <li>路径(可选)：用于指定Cookie的作用范围，默认在文件当前目录</li>
-            <li>域名(可选)：用于指定Cookie所属域，默认为当前域</li>
+            <li>路径(可选)：用于指定Cookie的作用范围，默认在文件当前目录，Session模式下无效</li>
+            <li>域名(可选)：用于指定Cookie所属域，默认为当前域，Session模式下无效</li>
+            <li>使用Session模式(可选)：布尔型，默认为False，指示是否采用sessionStorage来替代Cookie的功能，sessionStorage的优势是关闭标签页即删除，而Cookie不设定过期时间也需要关闭整个浏览器才可以清除。而sessionStorage还具有更严格的限定范围，只有由设定它的页面开启的分页才能够共享session，而新开页面即使网址URL完全一样也无法共享session。</li>
+            <li>Session Mode下依然可以为其设定过期时间，使用方法与Cookie Mode完全一致</li>
             <li>设定的时间均非自然计算，例如+1d表示的是到第二天的这个时间，而非是自然日，因此并非过0点就失效</li>
           </ul>
         </span>
@@ -1055,11 +1057,14 @@
         <span class="content">
           <div class="w3-panel w3-card w3-light-grey">
             <pre class="w3-code jsHigh notranslate">
-              _.io.getCookie(&lt;Cookie名&gt;);
+              _.io.getCookie(&lt;Cookie名&gt;,&lt;使用Session模式&gt;);
             </pre>
           </div>
           <ul>
             <li>名称：字符串类型，用于指定要获取的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
+            <li>使用Session模式(可选)：布尔型，默认为True</li>
+            <li>关于Session Mode：getCookie会智能读取项目，优先读取sessionStorage，如果没有项目则尝试读取Cookie，因此设定了同名的二者则会以sessionStorage为准，你也可以通过手动把Session Mode设定为False来强制仅读取Cookie</li>
+            <li>智能读取的设计目的是在同时使用了Session Mode与Cookie Mode的项目中方便读取，例如：id存在了sessionStorage中而nickname存在了Cookie中，此时智能读取能够省去区分模式的麻烦，而Session Mode与Cookie Mode中存在同名不同内容的项目是极其不推荐的，就算智能读取依然可以很好的工作。</li>
           </ul>
         </span>
       </div>
@@ -1074,11 +1079,14 @@
         <span class="content">
           <div class="w3-panel w3-card w3-light-grey">
             <pre class="w3-code jsHigh notranslate">
-              _.io.delCookie(&lt;Cookie名&gt;);
+              _.io.delCookie(&lt;Cookie名&gt;,&lt;使用Session模式&gt;);
             </pre>
           </div>
           <ul>
             <li>名称：字符串类型，用于指定要删除的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
+            <li>使用Session模式(可选)：布尔型，默认为True</li>
+            <li>关于Session Mode：delCookie会默认同时删除sessionStorage与Cookie中符合名称的项目，你也可以通过手动把Session Mode设定为False来强制仅删除Cookie</li>
+            <li>智能删除的设计目的是在同时使用了Session Mode与Cookie Mode的项目中方便删除，例如：id存在了sessionStorageStorage中而nickname存在了Cookie中，此时智能删除能够省去区分模式的麻烦，而Session Mode与Cookie Mode中存在同名不同内容的项目是极其不推荐的，就算智能删除依然可以很好的工作。</li>
           </ul>
         </span>
       </div>
