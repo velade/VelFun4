@@ -2,10 +2,10 @@
 <html lang="cn" dir="ltr" style="perspective: 100px;min-height:100%;min-width: 100%;">
   <head>
     <meta charset="utf-8">
-    <title>VelFun4开发者手册 - 3.00</title>
+    <title>VelFun4开发者手册 - 3.10</title>
     <link rel="stylesheet" href="help_data/styles/style.css?ver=2.50" />
     <link rel="stylesheet" href="help_data/styles/w3.css" />
-    <script src="help_data/scripts/velfun4.js?ver=2.90" type="text/javascript"></script>
+    <script src="help_data/scripts/velfun4.js?ver=3.10" type="text/javascript"></script>
     <script src="help_data/scripts/help.js" type="text/javascript"></script>
     <script src="help_data/scripts/w3codecolor.js" type="text/javascript"></script>
     <style id="vel_needed_styles">
@@ -37,7 +37,7 @@
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 3.00</div>
+      <div class="version">Ver 3.10</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -66,6 +66,7 @@
         <span class="typeitem" data-page="tip">无中断提示</span>
         <span class="typeitem" data-page="setlang">多语言框架</span>
         <span class="typeitem" data-page="upload">可视化上传控件</span>
+        <span class="typeitem" data-page="deepcopy">数组/对象深度拷贝</span>
       </div>
       <div class="type">
         <span class="typetitle">验证方法</span>
@@ -745,6 +746,31 @@
               <li>showpreview:值为true/false 指示此控件是否显示缩略图，默认为true显示缩略图，设为false时不显示例图与选择的图片。当此值为false时，titletype的默认值将由dynamic变为static。</li>
               <li>此控件的大小及位址需要自行设定，为v-upload正常写样式即可</li>
               <li>操作逻辑：此控件在未选择文件时显示例图，此时点击将开启“打开”文件框，选择文件后例图被替代，再次点击将显示原图预览，并包含重新上传按钮。</li>
+            </ul>
+          </div>
+        </span>
+      </div>
+
+      <div class="part" id="deepcopy">
+        <span class="title">数组/对象深度拷贝</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          因为javascript本身对于变量的赋值采用了两套方案，对于一般的变量，是复制的方式，可是对于数组(Array)、对象(Object)却是强行引用，变量记录的只是内存地址，这就导致很多意外情况的发生，而到目前为止，js并没有原生提供完美的深拷贝功能。序列化存在BUG，在部份情况下会导致值的丢失，并且对包含不可序列化的内容会出现错误。因此VelFun添加了这样一个功能。
+          因为直接向Object添加方法会导致遍历错误，因此使用VelFun顶级方法的方式调用。
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-vel">
+            <h2>JavaScript</h2>
+            <pre class="w3-code jsHigh notranslate">
+              let &lt;新变量&gt; = _.deepCopy(&lt;源变量&gt;);
+            </pre>
+            <ul>
+              <li>新变量：被赋值的新变量</li>
+              <li>源变量：已有的数组/对象，被拷贝的内容</li>
+              <li>deepCopy会返回一个新的变量，独立于源变量，使得互相之间的修改不再影响</li>
+              <li>deepCopy可以处理数组/对象类型的值，无限层级</li>
+              <li>deepCopy可以拷贝不可序列化的内容</li>
             </ul>
           </div>
         </span>
