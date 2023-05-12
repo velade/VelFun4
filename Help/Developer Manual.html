@@ -1,18 +1,43 @@
 <!DOCTYPE html>
-<html lang="cn" dir="ltr">
+<html lang="cn" dir="ltr" style="perspective: 100px;min-height:100%;min-width: 100%;">
   <head>
     <meta charset="utf-8">
-    <title>VelFun4开发者手册 - 2.81</title>
+    <title>VelFun4开发者手册 - 3.00</title>
     <link rel="stylesheet" href="help_data/styles/style.css?ver=2.50" />
     <link rel="stylesheet" href="help_data/styles/w3.css" />
-    <script src="help_data/scripts/velfun4.js?ver=2.50" type="text/javascript"></script>
+    <script src="help_data/scripts/velfun4.js?ver=2.90" type="text/javascript"></script>
     <script src="help_data/scripts/help.js" type="text/javascript"></script>
     <script src="help_data/scripts/w3codecolor.js" type="text/javascript"></script>
+    <style id="vel_needed_styles">
+        .html_alt_back {
+          background-color: black !important;
+        }
+        .body_alt_back {
+          background-color: white !important;
+        }
+        .body_lite_disabled {
+          opacity:0.8 !important;
+          pointer-events: none !important;
+          cursor:default !important;
+        }
+        .body_inback {
+          pointer-events: none;
+          cursor: default;
+          transition-duration: 300ms;
+        }
+        body {
+          opacity: 1;
+          transform: translateZ(0px);
+          min-width:100vw;
+          min-height:100vh;
+          margin:0;
+        }
+      </style>
   </head>
   <body>
     <div class="top">
       <img src="help_data/images/Logo.png" alt="VelFun4" />
-      <div class="version">Ver 2.81</div>
+      <div class="version">Ver 3.00</div>
     </div>
     <div class="menu">
       <div class="type">
@@ -57,7 +82,7 @@
         <span class="typeitem" data-page="mobiletype">获取移动端类别</span>
         <span class="typeitem" data-page="ismobile">判断是否是移动端</span>
         <span class="typeitem" data-page="host">获取当前域名</span>
-        <span class="typeitem" data-page="isie">判断IE</span>
+        <span class="typeitem" data-page="isie"><img src="help_data/images/no.svg" alt="不可用" title="不可用">判断IE</span>
         <span class="typeitem" data-page="args">获取传参</span>
       </div>
       <div class="type">
@@ -134,7 +159,7 @@
         </span>
         <span class="subtitle"><span>示例</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <h4>引入VelFun4</h4>
             <div class="w3-code htmlHigh notranslate">
               &lt;script src="velfun4.js" type="text/javascript"&gt;&lt;/script&gt;
@@ -151,19 +176,19 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).back([<距离>]);
             </div>
-            <button id="test_back">点这里试试</button>
+            <button id="test_back">点击这里试试</button>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>距离：整数类型，可选参数，用来指示远离的距离，他是一个百分比，例如5表示的是向最远距离移动5%，而不是远离5像素或是什么其他的单位。你当然可以给它一个负值，他会向屏幕方向移动。如果你没有给出这个参数，那么每次默认移动5%。</li>
+              <li>随着距离变远，元素会逐渐消失，大约30%左右，所以不必移动太远</li>
+              <li>body的置于背景效果远好于其他元素</li>
+              <li>back可以被调用多次，也就是说，你可以拥有多个层级，这在你拥有三个层级的弹窗时会很有用。</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>距离：整数类型，可选参数，用来指示远离的距离，他是一个百分比，例如5表示的是向最远距离移动5%，而不是远离5像素或是什么其他的单位。你当然可以给它一个负值，他会向屏幕方向移动。如果你没有给出这个参数，那么每次默认移动5%。</li>
-            <li>随着距离变远，元素会逐渐消失，大约30%左右，所以不必移动太远</li>
-            <li>body的置于背景效果远好于其他元素</li>
-            <li>back可以被调用多次，也就是说，你可以拥有多个层级，这在你拥有三个层级的弹窗时会很有用。</li>
-          </ul>
         </span>
       </div>
 
@@ -175,16 +200,16 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).unback();
             </div>
-            <button id="test_unback">点这里试试</button>
+            <button id="test_unback">点击这里试试</button>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>unback可以多次调用，每次恢复一个层级</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>unback可以多次调用，每次恢复一个层级</li>
-          </ul>
         </span>
       </div>
 
@@ -196,15 +221,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).resetback();
             </div>
-            <button id="test_resetback">点这里试试</button>
+            <button id="test_resetback">点击这里试试</button>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-          </ul>
         </span>
       </div>
 
@@ -216,16 +241,16 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).exec(<方法>[,<延迟>]);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>方法：要执行的方法，你可以传入一个匿名函数，或是一个具名函数</li>
+              <li>延迟：整数类型，单位是毫秒，可选参数，用来表示代码要延迟多久之后执行，需要注意的是，如果你提供了这个参数，exec方法会变为异步执行</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>方法：要执行的方法，你可以传入一个匿名函数，或是一个具名函数</li>
-            <li>延迟：整数类型，单位是毫秒，可选参数，用来表示代码要延迟多久之后执行，需要注意的是，如果你提供了这个参数，exec方法会变为异步执行</li>
-          </ul>
         </span>
       </div>
 
@@ -237,16 +262,16 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).hover(<方法1>[,<方法2>]);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>方法1：当鼠标进入时执行的方法</li>
+              <li>方法2：可选参数，当鼠标离开时执行的方法，如果不传这个参数，则鼠标离开时什么都不会做。</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>方法1：当鼠标进入时执行的方法</li>
-            <li>方法2：可选参数，当鼠标离开时执行的方法，如果不传这个参数，则鼠标离开时什么都不会做。</li>
-          </ul>
         </span>
       </div>
 
@@ -259,7 +284,7 @@
         </span>
         <span class="subtitle"><span>基础使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _(<元素>).CustomContextmenu({<br />
                 "选项1":function(){<br />
@@ -285,16 +310,16 @@
                 .<br />
               });
             </pre>
-            <button id="test_rightclick">右键点击我试试</button>
+            <button id="test_rightclick">右键单击这里试试</button>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>选项：选项的标题，其中可以使用icon(url)来为选单项目添加小图标，也可以在尾部使用 if(条件)来限定显示的条件，你也可以用---作为标题，它将为菜单添加一条分割线，如果要添加多条分割线你可以用"---1" "---2"或是任何以「--- + 不同字符」作为标题，这是因为Object类型的key不允许重复</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>选项：选项的标题，其中可以使用icon(url)来为选单项目添加小图标，也可以在尾部使用 if(条件)来限定显示的条件，你也可以用---作为标题，它将为菜单添加一条分割线，如果要添加多条分割线你可以用"---1" "---2"或是任何以「--- + 不同字符」作为标题，这是因为Object类型的key不允许重复</li>
-          </ul>
         </span>
         <span class="subtitle" style="width:300px;"><span style="width:300px;">特殊选项使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _(<元素>).CustomContextmenu({<br />
                 "icon('/ex/ex.icon')选项1":function(){ //添加一个带有小图标的菜单项<br />
@@ -305,10 +330,10 @@
                 }<br />
               });
             </pre>
+            <ul>
+              <li>条件：用于控制选项是否显示的条件表达式，但是需要注意的是，由于变量作用域的原因，调用自定义菜单的地方与生成菜单的地方并不相同，变量也就无法直接使用，因此此处如过需要用到变量，那么只能是以下变量作用域：全局变量，注册到window的属性，注册到velfun的属性（推荐），以及元素的值或属性等。建议使用&#12288;_.变量名&#12288;将变量变为VelFun4的属性来调用。</li>
+            </ul>
           </div>
-          <ul>
-            <li>条件：用于控制选项是否显示的条件表达式，但是需要注意的是，由于变量作用域的原因，调用自定义菜单的地方与生成菜单的地方并不相同，变量也就无法直接使用，因此此处如过需要用到变量，那么只能是以下变量作用域：全局变量，注册到window的属性，注册到velfun的属性（推荐），以及元素的值或属性等。建议使用&#12288;_.变量名&#12288;将变量变为VelFun4的属性来调用。</li>
-          </ul>
         </span>
         <span class="subtitle" style="width:300px;"><span style="width:300px;">与动态方法的差异</span></span>
         <span class="content">
@@ -330,7 +355,7 @@
         </span>
         <span class="subtitle"><span>基础使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _(<元素>).CustomContextmenuDynamic({<br />
                 "选择器1":{
@@ -376,13 +401,13 @@
                 .<br />
               });
             </pre>
-            <button id="test_rightclick">右键点击我试试</button>
+            <button id="test_rightclick">右键单击这里试试</button>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>选择器：与VelFun选择器使用同样的字串（"#id",".class"等），用以表示对应的子元素</li>
+              <li>选项：选项的标题，其中可以使用icon(url)来为选单项目添加小图标，也可以在尾部使用 if(条件)来限定显示的条件，你也可以用---作为标题，它将为菜单添加一条分割线，如果要添加多条分割线你可以用"---1" "---2"或是任何以「--- + 不同字符」作为标题，这是因为Object类型的key不允许重复</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>选择器：与VelFun选择器使用同样的字串（"#id",".class"等），用以表示对应的子元素</li>
-            <li>选项：选项的标题，其中可以使用icon(url)来为选单项目添加小图标，也可以在尾部使用 if(条件)来限定显示的条件，你也可以用---作为标题，它将为菜单添加一条分割线，如果要添加多条分割线你可以用"---1" "---2"或是任何以「--- + 不同字符」作为标题，这是因为Object类型的key不允许重复</li>
-          </ul>
         </span>
         <span class="subtitle" style="width:300px;"><span style="width:300px;">特殊选项使用方法</span></span>
         <span class="content">
@@ -410,7 +435,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code htmlHigh notranslate">
               &lt;v-select name="&lt;名字&gt;"&gt;
                 &lt;v-option value="&lt;值1&gt;"&gt;选项1&lt;/v-option&gt;
@@ -422,38 +447,30 @@
                 .
               &lt;/v-select&gt;
             </pre>
-            <v-select name="test" style="display: block;background-color: white;width:200px;height:30px;line-height:30px;box-shadow:0px 0px 3px gray;border-radius:5px;margin-bottom:10px;">
-              <v-option value="" style="background-color:white;">这是一个下拉框</v-option>
-              <v-option value="" style="background-color:white;">选项1</v-option>
-              <v-option value="" style="background-color:white;">选项2</v-option>
-              <v-option value="" style="background-color:white;" disable>选项3</v-option>
-              <v-option value="" style="background-color:white;">选项4</v-option>
-              <v-option value="" style="background-color:white;">选项5</v-option>
-            </v-select>
+            <ul>
+              <li>名字：表单提交需要的name字段</li>
+              <li>值：选项的值</li>
+              <li>选项：选项显示的文本</li>
+              <li>你可以自定义每一个选项，以及下拉框本身的样式，框架只提供功能</li>
+              <li>如果你的下拉框是页面加载就存在的，那么你不需要做任何事，VelFun会自动处里所有工作</li>
+              <li>下拉框框架不包含任何的样式，这需要你自己来做。</li>
+              <li>你可以使用disable来禁用某些选项，它会变成灰色</li>
+              <li>你可以通过_(下拉框).val()获取当前选择的值或设定选择项</li>
+            </ul>
           </div>
-          <ul>
-            <li>名字：表单提交需要的name字段</li>
-            <li>值：选项的值</li>
-            <li>选项：选项显示的文本</li>
-            <li>你可以自定义每一个选项，以及下拉框本身的样式，框架只提供功能</li>
-            <li>如果你的下拉框是页面加载就存在的，那么你不需要做任何事，VelFun会自动处里所有工作</li>
-            <li>下拉框框架不包含任何的样式，这需要你自己来做。</li>
-            <li>你可以使用disable来禁用某些选项，它会变成灰色</li>
-            <li>你可以通过_(下拉框).val()获取当前选择的值或设定选择项</li>
-          </ul>
         </span>
         <span class="subtitle"><span>动态加载</span></span>
         <span class="content">
           如果你的下拉框是动态加载的，那么你需要在加载完成时执行一次初始化操作。
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <h4>手动初始化下拉框</h4>
             <pre class="w3-code jsHigh notranslate">
               _(<下拉框>).setSelect();
             </pre>
+            <ul>
+              <li>下拉框：选择动态加载的下拉框，或是直接用_("v-select")初始化所有页面上的下拉框</li>
+            </ul>
           </div>
-          <ul>
-            <li>下拉框：选择动态加载的下拉框，或是直接用_("v-select")初始化所有页面上的下拉框</li>
-          </ul>
         </span>
       </div>
 
@@ -465,46 +482,46 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code htmlHigh notranslate">
               &lt;v-coloricon src="&lt;图标路径&gt;" width="&lt;宽度&gt;" height="&lt;高度&gt;"&gt;&lt;/v-coloricon&gt;
               或
               &lt;v-coloricon src="&lt;图标路径&gt;" width="&lt;宽度&gt;" height="&lt;高度&gt;" /&gt;
             </pre>
             演示图标：<v-coloricon src="help_data/images/icon.png" width="24" height="24"></v-coloricon>
+            <ul>
+              <li>图标路径：要显示的图标的路径，图片必须是具有透明通道的，建议使用黑色与透明来做，不透明的图片只会得到一个纯色方块。</li>
+              <li>宽度/高度：这是必要的，需要定义宽度与高度。不需要单位。不可以通过CSS设定</li>
+            </ul>
           </div>
-          <ul>
-            <li>图标路径：要显示的图标的路径，图片必须是具有透明通道的，建议使用黑色与透明来做，不透明的图片只会得到一个纯色方块。</li>
-            <li>宽度/高度：这是必要的，需要定义宽度与高度。不需要单位。不可以通过CSS设定</li>
-          </ul>
         </span>
         <span class="subtitle"><span>动态加载</span></span>
         <span class="content">
           如果你的图标是动态加载的，那么你需要在加载完成时执行一次初始化操作。
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <h4>手动初始化变色图标</h4>
             <pre class="w3-code jsHigh notranslate">
               _.setColoricon();
             </pre>
+            <ul>
+              <li>直接初始化即可，无需元素选择器</li>
+            </ul>
           </div>
-          <ul>
-            <li>直接初始化即可，无需元素选择器</li>
-          </ul>
         </span>
         <span class="subtitle"><span>改变颜色</span></span>
         <span class="content">
           初始化之后，默认颜色是黑色，你可以改变它的颜色
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <h4>改变颜色</h4>
             <pre class="w3-code jsHigh notranslate">
               _(<变色图标>).setColor(<颜色>);
             </pre>
             演示图标：<v-coloricon id="test_coloricon" src="help_data/images/icon.png" width="24" height="24"></v-coloricon>
+            <ul>
+              <li>变色图标：已经初始化完成的变色图标元素</li>
+              <li>颜色：文本类型，所有支持的颜色书写方式，例如red rgb() #000000等</li>
+            </ul>
           </div>
-          <ul>
-            <li>变色图标：已经初始化完成的变色图标元素</li>
-            <li>颜色：文本类型，所有支持的颜色书写方式，例如red rgb() #000000等</li>
-          </ul>
         </span>
       </div>
 
@@ -517,7 +534,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).autoTile();
             </div>
@@ -532,11 +549,11 @@
               <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;</div>
             </div>
             <button id="test_autoTile">平铺元素</button>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>当窗口大小发生变化时，需要重新调用，放一个监听窗口大小变化的事件吧</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>当窗口大小发生变化时，需要重新调用，放一个监听窗口大小变化的事件吧</li>
-          </ul>
         </span>
       </div>
 
@@ -548,22 +565,22 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _.Msgbox(<消息内容>[,<标题>[,<按钮类型>]][,<显示位置>][,<回调函数>]);</br>
               _.Msgbox(<消息内容>[,<标题>[,<按钮类型>]][,<显示位置>]).then(<肯定函数>[,<否定函数>]);
             </div>
-            <button id="test_Msgbox">点这里试试</button>
+            <button id="test_Msgbox">点击这里试试</button>
+            <ul>
+              <li>消息内容：必要参数，提示消息的主要内容</li>
+              <li>标题：消息框的标题，可选参数，如果不提供此参数，将会显示无标题的样式，没有缺省标题。</li>
+              <li>按钮类型：<strong>字符串类型</strong>，指定消息框的按钮类型，默认只有确认按钮，可以设置为"MSG_OK"仅确认，"MSG_OK_Cancel"确定与取消，和"MSG_YES_NO"是与否三种类型。</li>
+              <li>显示位置：数组类型，可选参数，以[0.5,0.5]格式指定消息框的位置，取值范围0-1，左上为[0,0]，右下为[1,1]，但你通常不需要去设定这个参数，默认的位置刚刚好</li>
+              <li>回调函数：可选参数，指定一个函数在点击按钮后执行，函数的第一个参数指示点击的按钮，此参数是布尔型，true表示确定/是，false表示取消/否</li>
+              <li>Promise方式：then中第一个函数为用户选择「是/确定」等肯定按钮时返回，第二个函数为用户选择「否/取消」等按钮时触发。无需在函数内判断返回值。第二个可以省略，但会在控制台报错，不影响使用，有强迫症的朋友可以传一个空的函数（例如 ()=>{} 即可），如果同时给出回调函数则会同时触发两个处理</li>
+              <li>消息框拥有队列，多个消息框会依次显示</li>
+            </ul>
           </div>
-          <ul>
-            <li>消息内容：必要参数，提示消息的主要内容</li>
-            <li>标题：消息框的标题，可选参数，如果不提供此参数，将会显示无标题的样式，没有缺省标题。</li>
-            <li>按钮类型：<strong>字符串类型</strong>，指定消息框的按钮类型，默认只有确认按钮，可以设置为"MSG_OK"仅确认，"MSG_OK_Cancel"确定与取消，和"MSG_YES_NO"是与否三种类型。</li>
-            <li>显示位置：数组类型，可选参数，以[0.5,0.5]格式指定消息框的位置，取值范围0-1，左上为[0,0]，右下为[1,1]，但你通常不需要去设定这个参数，默认的位置刚刚好</li>
-            <li>回调函数：可选参数，指定一个函数在点击按钮后执行，函数的第一个参数指示点击的按钮，此参数是布尔型，true表示确定/是，false表示取消/否</li>
-            <li>Promise方式：then中第一个函数为用户选择「是/确定」等肯定按钮时返回，第二个函数为用户选择「否/取消」等按钮时触发。无需在函数内判断返回值。第二个可以省略，但会在控制台报错，不影响使用，有强迫症的朋友可以传一个空的函数（例如 ()=>{} 即可），如果同时给出回调函数则会同时触发两个处理</li>
-            <li>消息框拥有队列，多个消息框会依次显示</li>
-          </ul>
         </span>
       </div>
 
@@ -575,7 +592,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.Options({
                 "选项名":function(){
@@ -592,14 +609,14 @@
                 .
               }[,<标题>]);
             </pre>
-            <button id="test_options">点这里试试</button>
+            <button id="test_options">点击这里试试</button>
+            <ul>
+              <li>选项名：必要参数，选项的标题，可以比较长</li>
+              <li>选项操作：必要参数，选择选项后对应的操作</li>
+              <li>标题：全屏选项的标题，可选参数，如果不提供此参数，将会显示无标题的样式，没有缺省标题。</li>
+              <li>全屏选择拥有队列，多个消息框会依次显示</li>
+            </ul>
           </div>
-          <ul>
-            <li>选项名：必要参数，选项的标题，可以比较长</li>
-            <li>选项操作：必要参数，选择选项后对应的操作</li>
-            <li>标题：全屏选项的标题，可选参数，如果不提供此参数，将会显示无标题的样式，没有缺省标题。</li>
-            <li>全屏选择拥有队列，多个消息框会依次显示</li>
-          </ul>
         </span>
       </div>
 
@@ -611,15 +628,17 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.random(<最小数>,<最大数>);
               _.random(<最大数>);
             </pre>
+            参数1：<input id="test_int1" type="number" style="margin-bottom:10px;" />&#12288;参数2：<input id="test_int2" type="number" style="margin-bottom:10px;" /><br />
+            <button id="test_intbutton">给我一个数字</button>
+            <ul>
+              <li>整数随机数提供了两种形式，传递两个参数时，第一个为最小值，第二个为最大值。但是只传递一个参数时，第一个值将被视为最大值，而最小值是0</li>
+            </ul>
           </div>
-          <ul>
-            <li>整数随机数提供了两种形式，传递两个参数时，第一个为最小值，第二个为最大值。但是只传递一个参数时，第一个值将被视为最大值，而最小值是0</li>
-          </ul>
         </span>
       </div>
 
@@ -631,19 +650,19 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.Tip(<内容>[,<标题>][,<显示时间>]);
             </pre>
             <button id="test_tip">点这里试试</button>
+            <ul>
+              <li>内容：提示框的内容，必要参数</li>
+              <li>标题：提示框的标题，可选参数</li>
+              <li>显示时间：提示框显示的时间，可选参数，如果不提供这个参数，那么默认显示3秒</li>
+              <li>提示框是可穿透的，它不会阻挡鼠标的点击，也不会响应任何的操作</li>
+              <li>提示框具有队列，并发的提示也可以良好显示</li>
+            </ul>
           </div>
-          <ul>
-            <li>内容：提示框的内容，必要参数</li>
-            <li>标题：提示框的标题，可选参数</li>
-            <li>显示时间：提示框显示的时间，可选参数，如果不提供这个参数，那么默认显示3秒</li>
-            <li>提示框是可穿透的，它不会阻挡鼠标的点击，也不会响应任何的操作</li>
-            <li>提示框具有队列，并发的提示也可以良好显示</li>
-          </ul>
         </span>
       </div>
 
@@ -655,7 +674,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <h2>html</h2>
             <pre class="w3-code htmlHigh notranslate">
               &lt;div title="@t-名称;"&gt;@t-名称;&lt;/div&gt;
@@ -665,7 +684,7 @@
               <li>多语言模板字串同样可以用于属性，目前支持的属性有alt title placeholder value四个</li>
             </ul>
           </div>
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <h2>语言文件</h2>
             <pre class="w3-code jsHigh notranslate">
               {
@@ -679,16 +698,16 @@
               <li>语言文件中定义的键值对可以多于使用的模板字串，但是不可以少，虽然不会报错，但是语言文件中未定义的名称的模板字串将直接显示出来</li>
             </ul>
           </div>
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <h2>JavaScript</h2>
             <pre class="w3-code jsHigh notranslate">
               _.setLang(<语言文件>);
             </pre>
+            <button id="test_setlang" title="@t-langbutton;" data-lang="cn">@t-langbutton;</button>
             <ul>
               <li>语言文件：语言文件的路径，指示程序要读取的语言文件</li>
               <li style="color:red;"><strong>如果使用了多语言框架写法，那么你必须在页面开始时调用一次此方法，否则多语言框架将不会执行。（因为每个人定义的语言文件的路径都不相同，所以程序无法自动完成多语言框架的初始化）</strong></li>
             </ul>
-            <button id="test_setlang" title="@t-langbutton;" data-lang="cn">@t-langbutton;</button>
           </div>
         </span>
       </div>
@@ -701,7 +720,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <h2>html</h2>
             <pre class="w3-code htmlHigh notranslate">
               &lt;v-upload data-name="" data-title="" data-eximg="" titletype="" showpreview=""&gt;&lt;/v-upload&gt;
@@ -739,7 +758,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.test.password(<密码>);
             </pre>
@@ -747,19 +766,19 @@
             <span style="display:inline-block;position: relative;width:200px;height:10px;margin-left:10px;border-radius:5px;border:1px solid gray;padding:0px;overflow:hidden;">
               <span id="test_password_pro" style="display: block;position: absolute;top: 0px;left: 0px;height:10px;width:0%;transition:100ms;margin: 0px;background-color:red;">&nbsp;</span>
             </span><span id="test_password_strong" style="margin-left:10px; font-size:15px;">输入密码测试强度</span>
+            <ul>
+              <li>密码：字符串类型，必要参数，需要验证的密码。</li>
+              <li>返回类型为浮点型</li>
+              <li>验证规则1：是否包含大写字母</li>
+              <li>验证规则2：是否包含小写字母</li>
+              <li>验证规则3：是否包含数字</li>
+              <li>验证规则4：是否包含特殊符号</li>
+              <li>验证规则5：密码长度是否达到8位</li>
+              <li>验证规则6：密码长度是否达到15位</li>
+              <li>验证规则7：是否不包含连续的/重复的数字</li>
+              <li>验证规则8：是否不包含连续的/重复的字母</li>
+            </ul>
           </div>
-          <ul>
-            <li>密码：字符串类型，必要参数，需要验证的密码。</li>
-            <li>返回类型为浮点型</li>
-            <li>验证规则1：是否包含大写字母</li>
-            <li>验证规则2：是否包含小写字母</li>
-            <li>验证规则3：是否包含数字</li>
-            <li>验证规则4：是否包含特殊符号</li>
-            <li>验证规则5：密码长度是否达到8位</li>
-            <li>验证规则6：密码长度是否达到15位</li>
-            <li>验证规则7：是否不包含连续的/重复的数字</li>
-            <li>验证规则8：是否不包含连续的/重复的字母</li>
-          </ul>
         </span>
       </div>
 
@@ -771,17 +790,17 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.test.cellphone(<电话号码>);
             </pre>
             <input id="test_cellphone" type="text" style="margin-bottom:10px;" />
             <span id="test_cellphone_check" style="margin-left:10px; font-size:15px;">输入手机号码验证格式</span>
+            <ul>
+              <li>电话号码：字符串类型，必要参数，需要验证的电话号码。</li>
+              <li>返回类型为布尔型</li>
+            </ul>
           </div>
-          <ul>
-            <li>电话号码：字符串类型，必要参数，需要验证的电话号码。</li>
-            <li>返回类型为布尔型</li>
-          </ul>
         </span>
       </div>
 
@@ -793,17 +812,17 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.test.cellphone(<邮箱地址>);
             </pre>
             <input id="test_email" type="text" style="margin-bottom:10px;" />
             <span id="test_email_check" style="margin-left:10px; font-size:15px;">输入邮箱地址验证格式</span>
+            <ul>
+              <li>邮箱地址：字符串类型，必要参数，需要验证的邮箱地址。</li>
+              <li>返回类型为布尔型</li>
+            </ul>
           </div>
-          <ul>
-            <li>邮箱地址：字符串类型，必要参数，需要验证的邮箱地址。</li>
-            <li>返回类型为布尔型</li>
-          </ul>
         </span>
       </div>
 
@@ -811,22 +830,23 @@
         <span class="title">数字转汉字</span>
         <span class="subtitle"><span>说明</span></span>
         <span class="content">
-          可以将整数数字转换为汉字表达方式，例如将123转换为一百二十三，同时提供金融用大写形式，最多只能转换到万亿位，超出会使得单位错乱。
+          可以将数字转换为汉字表达方式，例如将123转换为一百二十三，同时提供金融用大写形式，最多只能转换到千亿位，达到1万亿会使得单位错乱。
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.trans.NumToChar(<数字>[,<是否大写>]);
             </pre>
+            <label><input type="checkbox" id="test_ntc_upperCase">大写</label>
             <input id="test_ntc" type="text" style="margin-bottom:10px;" />
-            <span id="test_ntc_check" style="margin-left:10px; font-size:15px;">输入整数数字以转换</span>
+            <span id="test_ntc_check" style="margin-left:10px; font-size:15px;">输入任意数字以转换</span>
+            <ul>
+              <li>数字：需要转换的数字，支持小数</li>
+              <li>是否大写：布尔型，可选参数，指示是否使用金融大写形式</li>
+              <li>不能超过千亿位，最大值9999亿9999万9999</li>
+            </ul>
           </div>
-          <ul>
-            <li>数字：需要转换的数字</li>
-            <li>是否大写：布尔型，可选参数，指示是否使用金融大写形式</li>
-            <li>不能超过万亿位</li>
-          </ul>
         </span>
       </div>
 
@@ -838,7 +858,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.info.mobileType();
             </pre>
@@ -854,7 +874,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.info.isMobile();
             </pre>
@@ -870,7 +890,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.info.host();
             </pre>
@@ -879,16 +899,17 @@
       </div>
 
       <div class="part" id="isie">
-        <span class="title">判断是否是IE浏览器</span>
+        <span class="title"><img src="help_data/images/no.svg" alt="不可用" title="不可用">判断是否是IE浏览器</span>
         <span class="subtitle"><span>说明</span></span>
         <span class="content">
+          <span class="warning">不可用：因IE会将含有不支持的代码的js文件整体停用，所以包含在velfun4.js中的此函数并不会工作，应该将此方法从velfun4.js中复制到单独的文件调用。</span>
           isIE提供两种用法，你可以直接调用，并用回调函数执行需要的操作，需要注意的是因为使用了回调函数，因此在内部的return并不能中断isIE后续代码的操作，只能中断回调函数的执行。
 另一种用法是使用if判断isIE的返回值来执行操作。<br />
 由于VelFun4不支持任何版本的IE，因此当处在IE浏览器时，VelFun4不会进行初始化。
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               //<strong>正确格式</strong><br />
               _.info.isIE(<回调函数>);<br /><br />
@@ -898,12 +919,12 @@
               &nbsp;&nbsp;_.info.isIE(<回调函数>);<br />
               })
             </div>
+            <ul>
+              <li>回调函数：当浏览器是IE时将会执行的函数，如果浏览器不是IE，此函数不会被执行</li>
+              <li>isIE同样具有返回值，是IE则为true。因此可以用if判断返回值处理，而无需使用回调函数</li>
+              <li style="color:red;">使用isIE判定时，需要将isIE放在外面，不能套在_(function(){})里面，因为这也是一个VelFun选择器，它无法在IE下工作</li>
+            </ul>
           </div>
-          <ul>
-            <li>回调函数：当浏览器是IE时将会执行的函数，如果浏览器不是IE，此函数不会被执行</li>
-            <li>isIE同样具有返回值，是IE则为true。因此可以用if判断返回值处理，而无需使用回调函数</li>
-            <li style="color:red;">使用isIE判定时，需要将isIE放在外面，不能套在_(function(){})里面，因为这也是一个VelFun选择器，它无法在IE下工作</li>
-          </ul>
         </span>
       </div>
 
@@ -915,20 +936,20 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               //<strong>属性形式（推荐）</strong><br />
               _.info.args.<参数名>;<br /><br />
               //<strong>方法形式</strong><br />
               _.info.args(<参数名>);
             </div>
+            <ul>
+              <li>参数名：要获取的参数的名称，如果参数不存在，方法形式会返回false而属性形式会返回undefined</li>
+              <li>属性形式是在页面加载时获取参数，并作为velfun.info.args的属性，因此当读取时不必再次解析地址栏，更加快速</li>
+              <li>方法形式是在调用时解析地址栏并且只提取特定的参数，方法形式可以保证时效性，但是每次都要进行多次字符串运算，因此性能上不如属性形式</li>
+              <li style="color:red;">仅支持GET方式传递的参数</li>
+            </ul>
           </div>
-          <ul>
-            <li>参数名：要获取的参数的名称，如果参数不存在，方法形式会返回false而属性形式会返回undefined</li>
-            <li>属性形式是在页面加载时获取参数，并作为velfun.info.args的属性，因此当读取时不必再次解析地址栏，更加快速</li>
-            <li>方法形式是在调用时解析地址栏并且只提取特定的参数，方法形式可以保证时效性，但是每次都要进行多次字符串运算，因此性能上不如属性形式</li>
-            <li style="color:red;">仅支持GET方式传递的参数</li>
-          </ul>
         </span>
       </div>
 
@@ -940,20 +961,20 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.ajax(<类型>,<路径>[,<数据>],<回调函数>);<br>
               _.io.ajax(<类型>,<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
             </pre>
+            <ul>
+              <li>类型：必要参数，字符串类型，AJAX提交的method，参数为post或get</li>
+              <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，无论传递类型是get还是post，此处连接的参数一律视为GET</li>
+              <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
+              <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
+              <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，如果同时给出回调函数则会同时触发两个处理</li>
+              <li>通过使用url连接参数与post + 数据的提交方式，可以给后台同时传递GET的参数与POST的参数，以PHP为例，$_POST只能获取到POST的参数而$_GET则只能获取GET的参数，并不是说类型设为post就都是post传递。但是GET类型没有这个区别。</li>
+            </ul>
           </div>
-          <ul>
-            <li>类型：必要参数，字符串类型，AJAX提交的method，参数为post或get</li>
-            <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，无论传递类型是get还是post，此处连接的参数一律视为GET</li>
-            <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
-            <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
-            <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，如果同时给出回调函数则会同时触发两个处理</li>
-            <li>通过使用url连接参数与post + 数据的提交方式，可以给后台同时传递GET的参数与POST的参数，以PHP为例，$_POST只能获取到POST的参数而$_GET则只能获取GET的参数，并不是说类型设为post就都是post传递。但是GET类型没有这个区别。</li>
-          </ul>
         </span>
       </div>
 
@@ -965,19 +986,19 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.post(<路径>[,<数据>],<回调函数>);
               _.io.post(<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
             </pre>
+            <ul>
+              <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，此处连接的参数一律视为GET</li>
+              <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
+              <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
+              <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，如果同时给出回调函数则会同时触发两个处理</li>
+              <li>通过使用url连接的参数方式，可以给后台同时传递GET的参数与POST的参数。</li>
+            </ul>
           </div>
-          <ul>
-            <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，此处连接的参数一律视为GET</li>
-            <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
-            <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
-            <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，如果同时给出回调函数则会同时触发两个处理</li>
-            <li>通过使用url连接的参数方式，可以给后台同时传递GET的参数与POST的参数。</li>
-          </ul>
         </span>
       </div>
 
@@ -989,19 +1010,19 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.get(<路径>[,<数据>],<回调函数>);
               _.io.get(<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
             </pre>
+            <ul>
+              <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可直接拼接参数</li>
+              <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
+              <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
+              <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，如果同时给出回调函数则会同时触发两个处理</li>
+              <li>可以将参数连接到网址也可以使用 数据 参数传递，这二者并无差别，也可以网址与数据都带有参数，但是这样的书写方式并不推荐。</li>
+            </ul>
           </div>
-          <ul>
-            <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可直接拼接参数</li>
-            <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
-            <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
-            <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，如果同时给出回调函数则会同时触发两个处理</li>
-            <li>可以将参数连接到网址也可以使用 数据 参数传递，这二者并无差别，也可以网址与数据都带有参数，但是这样的书写方式并不推荐。</li>
-          </ul>
         </span>
       </div>
 
@@ -1013,7 +1034,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.setCookie({
                 "name": &lt;名称&gt;,
@@ -1023,27 +1044,27 @@
                 "domain": &lt;域名&gt;,
               },&lt;使用Session模式&gt;);
             </pre>
+            <ul>
+              <li>setCookie的参数以对象方式传入</li>
+              <li>名称：用于指定Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
+              <li>值：用于指定Cookie的值</li>
+              <li>过期时间(可选)：过期时间是一个具体的时间，但是在VelFun中提供了更高的易用性，你可以在这里输入new Date()支持的参数以外，还可以用以下参数表示时间:
+                <ul>
+                  <li>+#y：#为数字，以此表示#<strong>年</strong>后，#可以是任意位数</li>
+                  <li>+#m：#为数字，以此表示#<strong>月</strong>后，#可以是任意位数</li>
+                  <li>+#d：#为数字，以此表示#<strong>日</strong>后，#可以是任意位数</li>
+                  <li>+#h：#为数字，以此表示#<strong>小时</strong>后，#可以是任意位数</li>
+                  <li>+#i：#为数字，以此表示#<strong>分钟</strong>后，#可以是任意位数</li>
+                  <li>+#s：#为数字，以此表示#<strong>秒</strong>后，#可以是任意位数</li>
+                </ul>
+              </li>
+              <li>路径(可选)：用于指定Cookie的作用范围，默认在文件当前目录，Session模式下无效</li>
+              <li>域名(可选)：用于指定Cookie所属域，默认为当前域，Session模式下无效</li>
+              <li>使用Session模式(可选)：布尔型，默认为False，指示是否采用sessionStorage来替代Cookie的功能，sessionStorage的优势是关闭标签页即删除，而Cookie不设定过期时间也需要关闭整个浏览器才可以清除。而sessionStorage还具有更严格的限定范围，只有由设定它的页面开启的分页才能够共享session，而新开页面即使网址URL完全一样也无法共享session。</li>
+              <li>Session Mode下依然可以为其设定过期时间，使用方法与Cookie Mode完全一致</li>
+              <li>设定的时间均非自然计算，例如+1d表示的是到第二天的这个时间，而非是自然日，因此并非过0点就失效</li>
+            </ul>
           </div>
-          <ul>
-            <li>setCookie的参数以对象方式传入</li>
-            <li>名称：用于指定Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
-            <li>值：用于指定Cookie的值</li>
-            <li>过期时间(可选)：过期时间是一个具体的时间，但是在VelFun中提供了更高的易用性，你可以在这里输入new Date()支持的参数以外，还可以用以下参数表示时间:
-              <ul>
-                <li>+#y：#为数字，以此表示#<strong>年</strong>后，#可以是任意位数</li>
-                <li>+#m：#为数字，以此表示#<strong>月</strong>后，#可以是任意位数</li>
-                <li>+#d：#为数字，以此表示#<strong>日</strong>后，#可以是任意位数</li>
-                <li>+#h：#为数字，以此表示#<strong>小时</strong>后，#可以是任意位数</li>
-                <li>+#i：#为数字，以此表示#<strong>分钟</strong>后，#可以是任意位数</li>
-                <li>+#s：#为数字，以此表示#<strong>秒</strong>后，#可以是任意位数</li>
-              </ul>
-            </li>
-            <li>路径(可选)：用于指定Cookie的作用范围，默认在文件当前目录，Session模式下无效</li>
-            <li>域名(可选)：用于指定Cookie所属域，默认为当前域，Session模式下无效</li>
-            <li>使用Session模式(可选)：布尔型，默认为False，指示是否采用sessionStorage来替代Cookie的功能，sessionStorage的优势是关闭标签页即删除，而Cookie不设定过期时间也需要关闭整个浏览器才可以清除。而sessionStorage还具有更严格的限定范围，只有由设定它的页面开启的分页才能够共享session，而新开页面即使网址URL完全一样也无法共享session。</li>
-            <li>Session Mode下依然可以为其设定过期时间，使用方法与Cookie Mode完全一致</li>
-            <li>设定的时间均非自然计算，例如+1d表示的是到第二天的这个时间，而非是自然日，因此并非过0点就失效</li>
-          </ul>
         </span>
       </div>
 
@@ -1055,17 +1076,17 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.getCookie(&lt;Cookie名&gt;,&lt;使用Session模式&gt;);
             </pre>
+            <ul>
+              <li>名称：字符串类型，用于指定要获取的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
+              <li>使用Session模式(可选)：布尔型，默认为True</li>
+              <li>关于Session Mode：getCookie会智能读取项目，优先读取sessionStorage，如果没有项目则尝试读取Cookie，因此设定了同名的二者则会以sessionStorage为准，你也可以通过手动把Session Mode设定为False来强制仅读取Cookie</li>
+              <li>智能读取的设计目的是在同时使用了Session Mode与Cookie Mode的项目中方便读取，例如：id存在了sessionStorage中而nickname存在了Cookie中，此时智能读取能够省去区分模式的麻烦，而Session Mode与Cookie Mode中存在同名不同内容的项目是极其不推荐的，就算智能读取依然可以很好的工作。</li>
+            </ul>
           </div>
-          <ul>
-            <li>名称：字符串类型，用于指定要获取的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
-            <li>使用Session模式(可选)：布尔型，默认为True</li>
-            <li>关于Session Mode：getCookie会智能读取项目，优先读取sessionStorage，如果没有项目则尝试读取Cookie，因此设定了同名的二者则会以sessionStorage为准，你也可以通过手动把Session Mode设定为False来强制仅读取Cookie</li>
-            <li>智能读取的设计目的是在同时使用了Session Mode与Cookie Mode的项目中方便读取，例如：id存在了sessionStorage中而nickname存在了Cookie中，此时智能读取能够省去区分模式的麻烦，而Session Mode与Cookie Mode中存在同名不同内容的项目是极其不推荐的，就算智能读取依然可以很好的工作。</li>
-          </ul>
         </span>
       </div>
 
@@ -1077,17 +1098,17 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.delCookie(&lt;Cookie名&gt;,&lt;使用Session模式&gt;);
             </pre>
+            <ul>
+              <li>名称：字符串类型，用于指定要删除的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
+              <li>使用Session模式(可选)：布尔型，默认为True</li>
+              <li>关于Session Mode：delCookie会默认同时删除sessionStorage与Cookie中符合名称的项目，你也可以通过手动把Session Mode设定为False来强制仅删除Cookie</li>
+              <li>智能删除的设计目的是在同时使用了Session Mode与Cookie Mode的项目中方便删除，例如：id存在了sessionStorageStorage中而nickname存在了Cookie中，此时智能删除能够省去区分模式的麻烦，而Session Mode与Cookie Mode中存在同名不同内容的项目是极其不推荐的，就算智能删除依然可以很好的工作。</li>
+            </ul>
           </div>
-          <ul>
-            <li>名称：字符串类型，用于指定要删除的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
-            <li>使用Session模式(可选)：布尔型，默认为True</li>
-            <li>关于Session Mode：delCookie会默认同时删除sessionStorage与Cookie中符合名称的项目，你也可以通过手动把Session Mode设定为False来强制仅删除Cookie</li>
-            <li>智能删除的设计目的是在同时使用了Session Mode与Cookie Mode的项目中方便删除，例如：id存在了sessionStorageStorage中而nickname存在了Cookie中，此时智能删除能够省去区分模式的麻烦，而Session Mode与Cookie Mode中存在同名不同内容的项目是极其不推荐的，就算智能删除依然可以很好的工作。</li>
-          </ul>
         </span>
       </div>
 
@@ -1099,17 +1120,17 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.import(<路径>,<类型>);
             </pre>
+            <ul>
+              <li>路径：必要参数，字符串类型，要加载的资源文件的路径</li>
+              <li>类型：可选参数，强制指定资源的类型，目前支持两种类型javascript(js)，stylesheet(css)全称与简写都可以</li>
+              <li>类型参数通常可以省略，VelFun4会自动判定文件的类型，即使你加了参数也没有关系。需要用到这个参数的情况只有你使用了非标准的后缀名，例如你的js脚本不是xxx.js或是你的css样式表不是xxx.css的情况</li>
+              <li>此方法会返回一个路径</li>
+            </ul>
           </div>
-          <ul>
-            <li>路径：必要参数，字符串类型，要加载的资源文件的路径</li>
-            <li>类型：可选参数，强制指定资源的类型，目前支持两种类型javascript(js)，stylesheet(css)全称与简写都可以</li>
-            <li>类型参数通常可以省略，VelFun4会自动判定文件的类型，即使你加了参数也没有关系。需要用到这个参数的情况只有你使用了非标准的后缀名，例如你的js脚本不是xxx.js或是你的css样式表不是xxx.css的情况</li>
-            <li>此方法会返回一个路径</li>
-          </ul>
         </span>
       </div>
 
@@ -1121,15 +1142,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.unimport(<路径>);
             </pre>
+            <ul>
+              <li>路径：书写代码时使用的路径，或动态引入时返回的路径</li>
+              <li>卸载不需要指定类型，因为我们不认为会有同一个文件既是脚本又是样式表的情况</li>
+            </ul>
           </div>
-          <ul>
-            <li>路径：书写代码时使用的路径，或动态引入时返回的路径</li>
-            <li>卸载不需要指定类型，因为我们不认为会有同一个文件既是脚本又是样式表的情况</li>
-          </ul>
         </span>
       </div>
 
@@ -1143,7 +1164,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               _.io.loadPatchsFrom(<路径>); //在初始化函数之前调用<br>
               _(function(){
@@ -1152,19 +1173,19 @@
                 .
               })
             </pre>
+            <ul>
+              <li>路径：存放补丁文件的文件夹的路径，不要直接指定单个补丁文件</li>
+              <li><strong>补丁所在目录需要开放目录列表权限，即访问的目录没有index时允许展示目录列表而不是返回403</strong></li>
+              <li><strong>此方法必须在调用相应功能前调用！否则在补丁文件加载完成前将会调用旧方法</strong></li>
+              <li>建议放在_(function(){...})之前调用，此时页面尚未加载完成，可保证补丁及时加载</li>
+              <li>应为当前版本启用的补丁建立单独的路径，不建议把已废弃的旧补丁放在一起，以免影响加载速度</li>
+              <li>加载优先级依文件名排序，补丁文件名无要求，但需要避开index.html index.php等常用网站入口文件，可以使用 01-main.js 02-window.js 这样的命名方式表示优先级，后面的补丁覆盖前面的补丁</li>
+              <li>暂无黑/白名单，会载入指定目录下所有可用的补丁文件，如果某个补丁不需要，请移出文件夹，或更改其后缀名为非可用补丁类型</li>
+              <li>html文件片段需要具有id或class的元素，你不能通过补丁直接替换所有的div或是其它标签。</li>
+              <li>js补丁/插件主要用以重写函数，也可以添加新的功能。如果你想改变某个函数的功能，只需要在补丁文件中定义一个同名函数即可</li>
+              <li>css补丁主要用以添加样式，或重写样式。请注意优先级的问题，当某个样式未能生效时，请优先检查是否优先级比以前的低，因而无法达到覆盖样式的效果</li>
+            </ul>
           </div>
-          <ul>
-            <li>路径：存放补丁文件的文件夹的路径，不要直接指定单个补丁文件</li>
-            <li><strong>补丁所在目录需要开放目录列表权限，即访问的目录没有index时允许展示目录列表而不是返回403</strong></li>
-            <li><strong>此方法必须在调用相应功能前调用！否则在补丁文件加载完成前将会调用旧方法</strong></li>
-            <li>建议放在_(function(){...})之前调用，此时页面尚未加载完成，可保证补丁及时加载</li>
-            <li>应为当前版本启用的补丁建立单独的路径，不建议把已废弃的旧补丁放在一起，以免影响加载速度</li>
-            <li>加载优先级依文件名排序，补丁文件名无要求，但需要避开index.html index.php等常用网站入口文件，可以使用 01-main.js 02-window.js 这样的命名方式表示优先级，后面的补丁覆盖前面的补丁</li>
-            <li>暂无黑/白名单，会载入指定目录下所有可用的补丁文件，如果某个补丁不需要，请移出文件夹，或更改其后缀名为非可用补丁类型</li>
-            <li>html文件片段需要具有id或class的元素，你不能通过补丁直接替换所有的div或是其它标签。</li>
-            <li>js补丁/插件主要用以重写函数，也可以添加新的功能。如果你想改变某个函数的功能，只需要在补丁文件中定义一个同名函数即可</li>
-            <li>css补丁主要用以添加样式，或重写样式。请注意优先级的问题，当某个样式未能生效时，请优先检查是否优先级比以前的低，因而无法达到覆盖样式的效果</li>
-          </ul>
         </span>
       </div>
 
@@ -1176,18 +1197,18 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
               date.getFullMonth(<是否+1>); <br>//或者<br>
               date.FullMonth;
             </pre>
             月份:<span id="test_Month"></span>
+            <ul>
+              <li>是否+1：布尔型，可选参数，因为Date默认获取的月份是从0开始的，因此加1后才是我们需要的月份。此参数为true时返回的月份是正常月份，而传递false时，返回的是Date自身获取的月份。缺省为false</li>
+              <li>使用属性形式时固定+1，返回通常的月份。</li>
+            </ul>
           </div>
-          <ul>
-            <li>是否+1：布尔型，可选参数，因为Date默认获取的月份是从0开始的，因此加1后才是我们需要的月份。此参数为true时返回的月份是正常月份，而传递false时，返回的是Date自身获取的月份。缺省为false</li>
-            <li>使用属性形式时固定+1，返回通常的月份。</li>
-          </ul>
         </span>
       </div>
 
@@ -1199,7 +1220,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
               date.getFullDate(); <br>//或者<br>
@@ -1218,7 +1239,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
               date.getFullHours(); <br>//或者<br>
@@ -1237,7 +1258,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
               date.getFullMinutes(); <br>//或者<br>
@@ -1256,7 +1277,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code jsHigh notranslate">
               var date = new Date();
               date.getFullSeconds(); <br>//或者<br>
@@ -1275,7 +1296,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <pre class="w3-code htmlHigh notranslate">
               &lt;input type="text" inputbox /&gt;
               &lt;v-key value="1"&gt;1&lt;/v-key&gt;
@@ -1295,16 +1316,16 @@
             <v-key value="backspace">&lt;-</v-key>
             <v-key value="0">0</v-key>
             <v-key value="clear">C</v-key>
+            <ul>
+              <li>特殊值backspace：退格键</li>
+              <li>特殊值space：空格键</li>
+              <li>特殊值clear：清空输入框</li>
+              <li>特殊值minus：正负数转换</li>
+              <li>特殊值shift：大小写转换，大写开启时会添加shiftON类，可以利用这个类定义大写状态下shift键样式</li>
+              <li>按键不会夺取输入框的焦点，因此不会触发focus与blur事件</li>
+              <li>当按键时，会触发输入框的change事件</li>
+            </ul>
           </div>
-          <ul>
-            <li>特殊值backspace：退格键</li>
-            <li>特殊值space：空格键</li>
-            <li>特殊值clear：清空输入框</li>
-            <li>特殊值minus：正负数转换</li>
-            <li>特殊值shift：大小写转换，大写开启时会添加shiftON类，可以利用这个类定义大写状态下shift键样式</li>
-            <li>按键不会夺取输入框的焦点，因此不会触发focus与blur事件</li>
-            <li>当按键时，会触发输入框的change事件</li>
-          </ul>
         </span>
       </div>
 
@@ -1323,15 +1344,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<选择器>[,<上下文>]);
             </div>
+            <ul>
+              <li>选择器：可以是CSS选择器的文本，原生Dom元素，又或者是一个velfun对象</li>
+              <li>上下文：可选参数，可以传入的内容与选择器一样，用来限定查找范围，当一个上下文有效时，将只会在限定的范围中查找，当上下文出错，会在控制台报错，并自动使用全局查找。</li>
+            </ul>
           </div>
-          <ul>
-            <li>选择器：可以是CSS选择器的文本，原生Dom元素，又或者是一个velfun对象</li>
-            <li>上下文：可选参数，可以传入的内容与选择器一样，用来限定查找范围，当一个上下文有效时，将只会在限定的范围中查找，当上下文出错，会在控制台报错，并自动使用全局查找。</li>
-          </ul>
         </span>
       </div>
 
@@ -1343,16 +1364,16 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).attr(<属性名>[，<属性值>]);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>属性名：要操作的属性名</li>
+              <li>属性值：字符串类型，可选参数，不传此参数时为读取属性值，传递空的字符串("")时，视为删除属性，传递非空字符串时设置属性值</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>属性名：要操作的属性名</li>
-            <li>属性值：字符串类型，可选参数，不传此参数时为读取属性值，传递空的字符串("")时，视为删除属性，传递非空字符串时设置属性值</li>
-          </ul>
         </span>
       </div>
 
@@ -1364,15 +1385,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).val([<值>]);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>值：字符串类型，可选参数，不传此参数时为读取value值，传递值时设置value值</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>值：字符串类型，可选参数，不传此参数时为读取value值，传递值时设置value值</li>
-          </ul>
         </span>
       </div>
 
@@ -1384,15 +1405,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).css(<样式文本>);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>样式文本：字符串类型，必要参数，我们希望代码拥有智慧，以此减少开发者需要考虑的东西，因此如果你给出一个样式名，他会认为是读取，告诉你这个样式的值。但如果你传递了类似"width:100px;"，它也会聪明的知道这是要进行设置，而不是读取。</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>样式文本：字符串类型，必要参数，我们希望代码拥有智慧，以此减少开发者需要考虑的东西，因此如果你给出一个样式名，他会认为是读取，告诉你这个样式的值。但如果你传递了类似"width:100px;"，它也会聪明的知道这是要进行设置，而不是读取。</li>
-          </ul>
         </span>
       </div>
 
@@ -1404,15 +1425,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).html(&lt;HTML文本&gt;);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>HTML文本：字符串类型，可选参数，如果不传此值，则读取元素内的HTML代码。如果传了此参数，则会将元素内部使用此参数的值替代</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>HTML文本：字符串类型，可选参数，如果不传此值，则读取元素内的HTML代码。如果传了此参数，则会将元素内部使用此参数的值替代</li>
-          </ul>
         </span>
       </div>
 
@@ -1424,15 +1445,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).text(&lt;文本&gt;);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>文本：字符串类型，可选参数，如果不传此值，则读取元素内的文本，会排除所有的HTML标签。如果传了此参数，则会将元素内部使用此参数的值替代</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>文本：字符串类型，可选参数，如果不传此值，则读取元素内的文本，会排除所有的HTML标签。如果传了此参数，则会将元素内部使用此参数的值替代</li>
-          </ul>
         </span>
       </div>
 
@@ -1444,7 +1465,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).getClass(); //获取元素所有类名<br />
               _(<元素>).addClass(<类名>); //添加类名<br />
@@ -1452,10 +1473,10 @@
               _(<元素>).hasClass(<类名>); //判断元素是否拥有指定类名<br />
               _(<元素>).replaceClass(<旧类名>,<新类名>); //用新类名替换旧类名
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-          </ul>
         </span>
       </div>
 
@@ -1467,20 +1488,20 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).bind(<事件>,<方法>); //绑定静态元素（已加载的元素）事件<br>
               _(document).bind(<事件>,<选择器>,<方法>,<允许间接触发>); //绑定动态元素（未来将加载的元素）事件<br>
               _.bind(<事件>,<选择器>,<方法>,<允许间接触发>); //此写法也可以绑定动态元素（未来将加载的元素）事件
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>事件：要监听的事件，需要不带on的形式，例如单击是click而不是onclick</li>
+              <li>选择器：VelFun4选择器兼容的任意形式（文本，元素，velfun对象等），最常用文本类型，因为在元素加载前，其它类型无法获取到，需要注意的是_(selector)返回的是<strong>当前存在</strong>的对象，因此不能匹配未来加载的元素，即使他们的selector一样</li>
+              <li>方法：当事件发生时要执行的方法，可以是匿名函数。需要注意变量的作用域，以免触发时拿到的变量值与绑定时不同。方法可以通过第二个参数接收原始绑定元素对象</li>
+              <li>允许间接触发：默认值False，仅动态绑定有效，默认情况下，动态元素为精准匹配模式，即点击子元素时，不会触发父级绑定的事件，这对按钮，文本框等非常有用，不会因为点按按钮触发背后父级的点击事件。但一些情况下可以手动设定为True来使父级能够响应由子元素传递而来的间接触发。</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>事件：要监听的事件，需要不带on的形式，例如单击是click而不是onclick</li>
-            <li>选择器：VelFun4选择器兼容的任意形式（文本，元素，velfun对象等），最常用文本类型，因为在元素加载前，其它类型无法获取到，需要注意的是_(selector)返回的是<strong>当前存在</strong>的对象，因此不能匹配未来加载的元素，即使他们的selector一样</li>
-            <li>方法：当事件发生时要执行的方法，可以是匿名函数。需要注意变量的作用域，以免触发时拿到的变量值与绑定时不同。方法可以通过第二个参数接收原始绑定元素对象</li>
-            <li>允许间接触发：默认值False，仅动态绑定有效，默认情况下，动态元素为精准匹配模式，即点击子元素时，不会触发父级绑定的事件，这对按钮，文本框等非常有用，不会因为点按按钮触发背后父级的点击事件。但一些情况下可以手动设定为True来使父级能够响应由子元素传递而来的间接触发。</li>
-          </ul>
         </span>
       </div>
 
@@ -1492,15 +1513,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).trigger(<事件>);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>事件：要触发的事件，需要不带on的形式，例如单击是click而不是onclick</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>事件：要触发的事件，需要不带on的形式，例如单击是click而不是onclick</li>
-          </ul>
         </span>
       </div>
 
@@ -1512,7 +1533,7 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).append(&lt;HTML代码&gt;); //在元素内部最后追加<br />
               _(<元素>).prepend(&lt;HTML代码&gt;); //在元素内部最开头追加<br />
@@ -1521,11 +1542,11 @@
               _(<元素>).remove(); //移除元素本身及其子元素<br />
               _(<元素>).empty(); //移除元素内部所有的子元素(清空)
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>HTML代码：文本形式的HTML代码，不支持其他的形式</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>HTML代码：文本形式的HTML代码，不支持其他的形式</li>
-          </ul>
         </span>
       </div>
 
@@ -1537,14 +1558,14 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).parent();
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-          </ul>
         </span>
       </div>
 
@@ -1556,14 +1577,14 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).next();
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-          </ul>
         </span>
       </div>
 
@@ -1575,14 +1596,14 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).prev();
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-          </ul>
         </span>
       </div>
 
@@ -1594,15 +1615,15 @@
         </span>
         <span class="subtitle"><span>使用方法</span></span>
         <span class="content">
-          <div class="w3-panel w3-card w3-light-grey">
+          <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
               _(<元素>).each(<方法>);
             </div>
+            <ul>
+              <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li>方法：每次循环都会执行的方法，方法的第一个参数是序号，从0开始。第二个参数是当前一次循环的DOM元素。同时使用this也可以获取当前的DOM元素。</li>
+            </ul>
           </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>方法：每次循环都会执行的方法，方法的第一个参数是序号，从0开始。第二个参数是当前一次循环的DOM元素。同时使用this也可以获取当前的DOM元素。</li>
-          </ul>
         </span>
       </div>
 

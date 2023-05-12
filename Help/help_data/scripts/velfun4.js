@@ -1,13 +1,14 @@
 /********************
 腳本名:VelFun
-版本號:4-2.81
+版本號:4-3.10
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2022-02-28
+更新日期:2023-05-11
 ********************/
 ;(function(window,undefined){
-  var version = "4-2.80";
+  var isOffline = !!location.origin.match(/^file:\/\//);
+  var version = "4-3.00";
   var channel = "Release"
   var velfun = function(selector,context){
     if(_.info.isIE()){
@@ -15,6 +16,8 @@
     }
     return new velfun.fn.init(selector,context);
   }
+
+  velfun.global = {};
 
   //Init
   velfun.fn = velfun.prototype = {
@@ -508,9 +511,13 @@
 
   velfun.fn.back = function(size){
     if(this.length == 0) return this;
+    clearTimeout(velfun.global.unbacktimer);
     var _this = this;
     if(_this[0].tagName.toLowerCase() == "body"){
-      _("html").css("background-color:black;");
+      _("html").addClass("html_alt_back");
+      if(window.getComputedStyle(_this[0]).background.match(/rgba\s*?\(\d+?,\s*?\d+?,\s*?\d+?,\s*?0\)/i)) {
+        _this.addClass("body_alt_back");
+      }
     }
 
     if(size === undefined){
@@ -521,8 +528,6 @@
     if(!nowLaySize){
       nowLaySize = size;
       _this.attr("data-start-opacity",_this.css("opacity"));
-      _this.attr("data-start-pointerevents",_this.css("pointer-events"));
-      _this.attr("data-start-cursor",_this.css("cursor"));
     }else{
       nowLaySize += "," + size;
     }
@@ -552,9 +557,9 @@
         newTransform = "translateZ(" + newsize + "px)";
       }
     }
-    _this.css("transition-duration: 300ms;transform: " + newTransform + ";opacity: " + newOpa + ";");
+    _this.css("transform: " + newTransform + ";opacity: " + newOpa + ";");
     if(newsize !== 0){
-      _this.css("pointer-events: none;cursor: default;");
+      _this.addClass("body_inback");
     }
 
     return _this;
@@ -589,14 +594,12 @@
     if(nowLaySizes.length === 0){
       var startOpacity = _this.attr("data-start-opacity");
       _this.attr("data-start-opacity","");
-      var startPointerEvents = _this.attr("data-start-pointerevents");
-      _this.attr("data-start-pointerevents","");
-      var startCursor = _this.attr("data-start-cursor");
-      _this.attr("data-start-cursor","");
-      _this.css("opacity:" + startOpacity + ";pointer-events:" + startPointerEvents + ";cursor:" + startCursor + ";");
+      _this.css("opacity:" + startOpacity + ";");
       if(_this[0].tagName.toLowerCase() == "body"){
-        setTimeout(function(){
-          _("html").css("background-color:white;");
+        velfun.global.unbacktimer = setTimeout(function(){
+          _("html").removeClass("html_alt_back");
+          _this.removeClass("body_inback");
+          _this.removeClass("body_alt_back");
         },300);
       }
     }
@@ -631,12 +634,14 @@
 
     var startOpacity = _this.attr("data-start-opacity");
     _this.attr("data-start-opacity","");
-    var startPointerEvents = _this.attr("data-start-pointerevents");
-    _this.attr("data-start-pointerevents","");
-    var startCursor = _this.attr("data-start-cursor");
-    _this.attr("data-start-cursor","");
-    _this.css("opacity:" + startOpacity + ";pointer-events:" + startPointerEvents + ";cursor:" + startCursor + ";");
-
+    _this.css("opacity:" + startOpacity + ";");
+    if(_this[0].tagName.toLowerCase() == "body"){
+      velfun.global.unbacktimer = setTimeout(function(){
+        _("html").removeClass("html_alt_back");
+        _this.removeClass("body_inback");
+        _this.removeClass("body_alt_back");
+      },300);
+    }
     return _this;
   }
 
@@ -699,10 +704,10 @@
       var vel_funthisid = Math.floor(Math.random()*89999999+10000000);
       vel_funthis.attr("data-contextmenuid",vel_funthisid);
       var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
-      if(CSS.supports("backdrop-filter","blur(30px)")){
-        backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+      if(CSS.supports("backdrop-filter","blur(30px)") || CSS.supports("-webkit-backdrop-filter","blur(30px)")){
+        backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);-webkit-backdrop-filter: blur(30px);";
       }
-      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 10px rgba(0,0,0,0.5);overflow: hidden;position: absolute;" + backgroundStyle + ";backdrop-filter:blur(15px);border-radius: 10px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + vel_funthisid + "'>";
+      var menucontant = "<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 10px rgba(0,0,0,0.5);overflow: hidden;position: absolute;" + backgroundStyle + "border-radius: 10px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + vel_funthisid + "'>";
       vel_menufuns[vel_funthisid]=new Object();
       for (var i in funarr) {
           if(i.match(/^\-{3}/)){
@@ -814,10 +819,10 @@
 
           var funarr = vel_dynamic_menus[thisid][trueTarget];
           var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
-          if(CSS.supports("backdrop-filter","blur(30px)")){
-            backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+          if(CSS.supports("backdrop-filter","blur(30px)") || CSS.supports("-webkit-backdrop-filter","blur(30px)")){
+            backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);-webkit-backdrop-filter: blur(30px);";
           }
-          _("body").append("<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 10px rgba(0,0,0,0.5);overflow: hidden;position: absolute;" + backgroundStyle + ";backdrop-filter:blur(15px);border-radius: 10px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic></ul>");
+          _("body").append("<ul class='_Velfun_Contextmenu_' style='transition: opacity 120ms;box-shadow:0px 0px 10px rgba(0,0,0,0.5);overflow: hidden;position: absolute;" + backgroundStyle + "border-radius: 10px;padding: 0;z-index: 9999;min-width: 160px;opacity: 0;display:none;margin:0;' for='" + thisid + "' dynamic></ul>");
           var _ul = _("body ._Velfun_Contextmenu_[dynamic]");
           for (var i in funarr) {
             if(i.match(/^\-{3}/)){
@@ -1138,8 +1143,8 @@
     }
 
     var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
-    if(CSS.supports("backdrop-filter","blur(30px)")){
-      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+    if(CSS.supports("backdrop-filter","blur(30px)") || CSS.supports("-webkit-backdrop-filter","blur(30px)")){
+      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);-webkit-backdrop-filter: blur(30px);";
     }
 
     var appstr="<div id='_MessageBox_' style='transition:300ms;" + backgroundStyle + "border:1px #CCC solid;border-radius: 10px;box-shadow: 1px 1px 10px rgba(0,0,0,0.5);box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(5px);opacity:0;max-width:80%;width:450px;box-shadow:0px 0px 50px gray;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
@@ -1221,8 +1226,8 @@
     }
 
     var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
-    if(CSS.supports("backdrop-filter","blur(30px)")){
-      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+    if(CSS.supports("backdrop-filter","blur(30px)") || CSS.supports("-webkit-backdrop-filter","blur(30px)")){
+      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);-webkit-backdrop-filter: blur(30px);";
     }
 
     var appstr="<div id='_MessageBox_' style='box-shadow:0px 0px 5px black;" + backgroundStyle + "border:1px #CCC solid;border-radius: 10px;box-shadow: 1px 1px 10px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:80%;width:450px;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
@@ -1242,7 +1247,7 @@
     }
     appstr+="</div></div>";
     _("body").after(appstr);
-    _("body").css("opacity:0.8;pointer-events: none;cursor:default;");
+    _("body").addClass("body_lite_disabled");
 
     _("._MsgButton_").hover(function(){
       this.css("background-color:rgb(255,255,255);");
@@ -1269,7 +1274,7 @@
   velfun.inside.MsgRe = function (re,lite) {
     if(lite){
       _("#_MessageBox_").remove();
-      _("body").css("opacity:1;pointer-events: all;cursor:auto;");
+      _("body").removeClass("body_lite_disabled");
       if(msgboxList.length > 0){
         var fun = msgboxList.shift();
         fun();
@@ -1284,7 +1289,7 @@
           var fun = msgboxList.shift();
           fun();
         }
-      },150)
+      },200)
     }
     msgfun(re);
   }
@@ -1305,8 +1310,8 @@
     var lihtml = "";
     optionsArr = opt_arr;
     var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
-    if(CSS.supports("backdrop-filter","blur(30px)")){
-      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+    if(CSS.supports("backdrop-filter","blur(30px)") || CSS.supports("-webkit-backdrop-filter","blur(30px)")){
+      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);-webkit-backdrop-filter: blur(30px);";
     }
 
     if(title!=""){
@@ -1480,6 +1485,7 @@
         background-color: rgba(0,0,0,0.2);
         cursor: pointer;
         backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
       }
     </style>`);
 
@@ -1567,7 +1573,7 @@
           resolve(msg,XHR);
         }
       }
-      
+
       if(method.toLowerCase() == "get"){
         if (url.match(/\?/) != null) {
           url += "&" + data;
@@ -1575,11 +1581,9 @@
           url += "?" + data;
         }
         XHR.open(method,url);
-        XHR.setRequestHeader("X-Requested-With","XMLHttpRequest");
         XHR.send();
       }else if(method.toLowerCase() == "post"){
         XHR.open(method,url);
-        XHR.setRequestHeader("X-Requested-With","XMLHttpRequest");
         XHR.send(data);
       }else{
         try {
@@ -1622,6 +1626,7 @@
   }
 
   velfun.io.loadPatchsFrom = function(path){ //實驗性
+    if(isOffline) return;
     var request = new XMLHttpRequest();
     request.open("get",path,false);
     request.send();
@@ -1854,6 +1859,10 @@
   velfun.trans.NumToChar = function(number,upperCase){
 		upperCase = upperCase || false;
     number = String(number);
+    numArr = number.split(".");
+    numInt = numArr[0];
+    numFloat = numArr[1] || "";
+    //定义对应数组
 		if(upperCase){
 			var numlang = new Array("零","壹","贰","叁","肆","伍","陆","柒","捌","玖","拾");
 			var levellang = new Array("","拾","佰","仟");
@@ -1862,22 +1871,34 @@
 			var levellang = new Array("","十","百","千");
 		}
 		var biglevellang = new Array("","万","亿");
+
+    //整数计算
 		num = new Array();
-		if(number.length > 4 && number.length <= 8){
-			num[0] = number.substring(0,number.length - 4);
-			num[1] = number.substring(number.length - 4,number.length);
-		}else if(number.length > 8){
-			num[0] = number.substring(0,number.length - 8);
-			num[1] = number.substring(number.length - 8,number.length-4);
-			num[2] = number.substring(number.length - 4,number.length);
+		if(numInt.length > 8){
+			num[0] = numInt.substring(0,numInt.length - 8);
+			num[1] = numInt.substring(numInt.length - 8,numInt.length-4);
+			num[2] = numInt.substring(numInt.length - 4,numInt.length);
+		}else if(numInt.length > 4){
+			num[0] = numInt.substring(0,numInt.length - 4);
+			num[1] = numInt.substring(numInt.length - 4,numInt.length);
 		}else{
-			num[0] = number;
+			num[0] = numInt;
 		}
 		var showNum = "";
 		for (var i = 0; i < num.length; i++) {
-			showNum += velfun.trans.inside.toChar(num[i],numlang,levellang) + biglevellang[num.length - i - 1];
+      let in_k = velfun.trans.inside.toChar(num[i],numlang,levellang);
+      if(in_k != ""){
+        if(i>0 && in_k.indexOf("零") != 0 && num[i-1].substring(num[i-1].length - 1,num[i-1].length) == "0") showNum += "零"
+        showNum += velfun.trans.inside.toChar(num[i],numlang,levellang) + biglevellang[num.length - i - 1];
+      }
 		}
-		return showNum;
+    //小数计算
+    var showNum_float = velfun.trans.inside.toChar(numFloat,numlang,["","","",""]);
+    if(showNum_float){
+      return showNum + "点" + showNum_float;
+    }else{
+      return showNum;
+    }
 	}
 
   //info
@@ -1949,8 +1970,8 @@
     }
     var appendHtml = "";
     var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
-    if(CSS.supports("backdrop-filter","blur(30px)")){
-      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);";
+    if(CSS.supports("backdrop-filter","blur(30px)") || CSS.supports("-webkit-backdrop-filter","blur(30px)")){
+      backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);-webkit-backdrop-filter: blur(30px);";
     }
     if(title !== undefined){
       appendHtml = "<div class='velfun_tip' style='display: block;position: fixed;top:5px;right:-310px;width:300px; min-height:50px;" + backgroundStyle + "border-radius:10px;box-shadow: 0px 0px 5px gray;pointer-events:none;transition:right 300ms ease-in,filter 500ms ease-out;transition-delay:0ms 350ms;filter: brightness(5) sepia(1);'><span class='velfun_tip_title' style='display:block;width:calc(100% - 10px);height:30px;line-height:30px;top:0px;margin:0px 5px;box-sizing:border-box;border-bottom:1px lightgray solid;font-weight:bold;'>" + title + "</span><span class='velfun_tip_content' style='display:block;width:100%;top:40px;padding:5px 10px;box-sizing:border-box;'>" + content + "</span></div>";
@@ -2001,6 +2022,7 @@
   }
 
   velfun.setLang = function(langfile = ""){
+    if(isOffline) return;
     if(langfile == "") return;
     if(_.observer != undefined) _.observer.disconnect();
 
@@ -2092,6 +2114,22 @@
       }
     }
     return textnodes;
+  }
+
+  velfun.deepCopy = function (from) {
+    let new_obj = new Object();
+    if(Array.isArray(from)) {
+        new_obj = new Array();
+    }
+    for (const key in from) {
+        let val = from[key];
+        if(typeof val == "object") {
+            new_obj[key] = velfun.deepCopy(val);
+        }else{
+            new_obj[key] = val;
+        }
+    }
+    return new_obj;
   }
 
   velfun.fn.init.prototype = velfun.fn;
@@ -2249,10 +2287,33 @@ _(function(){
 
   //Init Auto
   _("html").css("perspective: 100px; min-height:100%; min-width: 100%;");
-  _("body").css("opacity: 1;transform: translateZ(0px);min-width:100vw; min-height:100vh;margin:0;");
-  if(new Array("rgba(0, 0, 0, 0)","rgba(0,0,0,0)","transparent").indexOf(_("body").css("background-color")) > -1){
-    _("body").css("background-color:rgba(255, 255, 255, 1)");
-  }
+  _("head").append(`
+      <style id="vel_needed_styles">
+        .html_alt_back {
+          background-color: black !important;
+        }
+        .body_alt_back {
+          background-color: white !important;
+        }
+        .body_lite_disabled {
+          opacity:0.8 !important;
+          pointer-events: none !important;
+          cursor:default !important;
+        }
+        .body_inback {
+          pointer-events: none;
+          cursor: default;
+          transition-duration: 300ms;
+        }
+        body {
+          opacity: 1;
+          transform: translateZ(0px);
+          min-width:100vw;
+          min-height:100vh;
+          margin:0;
+        }
+      </style>
+      `);
 
   _(document).click(function(){
     _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");

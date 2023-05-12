@@ -118,6 +118,16 @@ _(function(){
     tipTimes ++;
   })
 
+  _("#test_intbutton").bind("click",function(){
+    let int1 = parseInt(_("#test_int1").val());
+    let int2 = parseInt(_("#test_int2").val());
+    if(int2){
+      _.Msgbox("你得到了数字：" + _.random(int1,int2));
+    }else{
+      _.Msgbox("你得到了数字：" + _.random(int1));
+    }
+  })
+
   _("#test_setlang").bind("click",function(){
     if(this.attr("data-lang") == "cn"){
       _.setLang("/online/Help/help_data/lang/en.lang");
@@ -171,13 +181,13 @@ _(function(){
       _("#test_email_check").css("color:" + color + ";").text("输入邮箱地址验证格式");
     }
   })
-
+  _("#test_ntc_upperCase").bind("change",function(){_("#test_ntc").trigger("keyup")})
   _("#test_ntc").bind("keyup",function(){
     if(_("#test_ntc").val() !== ""){
-      var str = _.trans.NumToChar(_("#test_ntc").val());
+      var str = _.trans.NumToChar(_("#test_ntc").val(),_("#test_ntc_upperCase")[0].checked);
       _("#test_ntc_check").text(str);
     }else{
-      _("#test_ntc_check").text("输入邮箱地址验证格式");
+      _("#test_ntc_check").text("输入整数数字以转换");
     }
   })
 
