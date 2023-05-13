@@ -1,10 +1,10 @@
 /********************
 腳本名:VelFun
-版本號:4-3.10
+版本號:4-3.20
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2023-05-11
+更新日期:2023-05-13
 ********************/
 ;(function(window,undefined){
   var isOffline = !!location.origin.match(/^file:\/\//);
@@ -884,130 +884,6 @@
       })
 
     }
-  }
-
-  velfun.fn.setSelect = function(){
-    if(this.length == 0) return this;
-
-    var _this = this;
-    for (var i = 0; i < _this.length; i++) {
-      var th = _this[i];
-      var _th = _(th);
-      if(_th.css("cursor") == "auto"){
-        _th.css("cursor:default;");
-      }
-      var defvalue = _(_("v-option",th)[0]).val();
-      var deftext = _(_("v-option",th)[0]).text();
-      var thname = _th.attr("name");
-
-      var baseLeft,baseTop;
-      if(_th.css("position") == "static"){
-        _th.css("position:relative;")
-      }
-
-      var pwidth = _th.css("width");
-      var pheight = _th.css("height");
-      var palign = _th.css("text-align");
-      var pcolor = _th.css("color");
-      var pfontF = _th.css("font-family");
-      _th.prepend("<input type='hidden' name='" + thname + "'><v-selectval style='display:block;position:absolute;z-index:1000;width:" + pwidth + ";height:" + pheight + ";top:0px;left:0px;text-align:" + palign + ";color:" + pcolor + ";font-family:" + pfontF + ";'></v-selectval>");
-
-      var options = _("v-option",th);
-      for (var i2 = 0; i2 < options.length; i2++) {
-        var ops = _(options[i2]);
-        var opswidth = ops.css("width");
-        var opsheight = ops.css("height");
-        var zIndex = 999 - i2;
-        ops.css("display:block;position:absolute;z-index:" + zIndex + ";opacity:0;top:0px;left:0px;");
-        var opentop = parseFloat(pheight);
-        if(i2 > 0){
-          var prevops = _(options[i2-1]);
-          var prevops_top = parseFloat(prevops.attr("data-opentop"));
-          var prevops_height = parseFloat(prevops.css("height"));
-
-          opentop = prevops_top + prevops_height;
-        }
-
-        ops.attr("data-opentop",opentop);
-        if(opswidth == "auto"){
-          ops.css("width:" + pwidth);
-        }
-        if(opsheight == "auto"){
-          ops.css("height:" + pheight);
-        }
-        if(ops.hasAttr("selected")){
-          defvalue = ops.val();
-          deftext = ops.text();
-        }
-      }
-      options.bind("click",function(e){
-        e.stopPropagation();
-        this.clickSelect();
-      })
-      _("input[type='hidden']",th).val(defvalue);
-      _("v-selectval",th).text(deftext).bind("click",function(e){
-        e.stopPropagation();
-        if(this.parent().hasAttr("data-opening")){
-          this.parent().closeSelect();
-        }else{
-          this.openSelect();
-        }
-      });
-    }
-  }
-
-  velfun.fn.openSelect = function(){
-    var _this = this.parent();
-    if(_this.hasAttr("readonly") || _this.hasAttr("disable")){
-      return;
-    }
-    setTimeout(function(){
-      _this.attr("data-opening","true");
-    },300);
-
-    var options = _("v-option",_this);
-    for (var i = 0; i < options.length; i++) {
-      var ops = _(options[i]);
-      var toTop = ops.attr("data-opentop");
-      ops.css("transition:300ms;opacity:1;top:" + toTop + "px;");
-      if(ops.hasAttr("disable")){
-        ops.attr("data-enablecolor",ops.css("color"));
-        ops.css("color:gray;");
-      }else{
-        if(ops.hasAttr("data-enablecolor")){
-          ops.css("color:" + ops.attr("data-enablecolor") + ";");
-        }
-      }
-    }
-  }
-
-  velfun.fn.clickSelect = function(){
-    var _th = this;
-    var _this = this.parent();
-
-    if(_th.hasAttr("disable")){
-      return;
-    }
-
-    _this.closeSelect();
-
-    _("v-option",_this).attr("selected","");
-    _th.attr("selected","selected");
-
-    if(_("input[type='hidden']",_this).val() !== _th.val()){
-      _this.trigger("change");
-    }
-
-    _("input[type='hidden']",_this).val(_th.val());
-    _("v-selectval",_this).text(_th.text());
-  }
-
-  velfun.fn.closeSelect = function(){
-    var _this = this;
-
-    _this.attr("data-opening","");
-    var options = _("v-option",_this);
-    options.css("opacity:0;top:0px;");
   }
 
   velfun.fn.setColor = function (col) {
@@ -2223,7 +2099,6 @@ _.selfpath=_.selfpath[_.selfpath.length-1].src.substring(0,_.selfpath[_.selfpath
 _.io.loadPatchsFrom(_.selfpath + "plugins/");
 
 function controllerInit() {
-  _("v-select").setSelect();
   _.initUpload();
   _.setColoricon();
   _.observer.observe(_.obbody,_.obconfig);
