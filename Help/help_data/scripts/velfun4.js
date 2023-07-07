@@ -1,10 +1,10 @@
 /********************
 腳本名:VelFun
-版本號:4-3.20
+版本號:4-3.21
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2023-05-13
+更新日期:2023-07-07
 ********************/
 ;(function(window,undefined){
   var isOffline = !!location.origin.match(/^file:\/\//);
@@ -2179,6 +2179,7 @@ _(function(){
           pointer-events: none;
           cursor: default;
           transition-duration: 300ms;
+          border-radius: 10px;
         }
         body {
           opacity: 1;
