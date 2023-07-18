@@ -1,15 +1,17 @@
 /********************
 腳本名:VelFun
-版本號:4-3.21
+版本號:4-3.22
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2023-07-07
+更新日期:2023-07-18
 ********************/
 ;(function(window,undefined){
   var isOffline = !!location.origin.match(/^file:\/\//);
-  var version = "4-3.00";
-  var channel = "Release"
+  var version = "4-3.22";
+  var channel = "Release";
+  var author = "Velade";
+  var releaseDate = "2023-07-18";
   var velfun = function(selector,context){
     if(_.info.isIE()){
       return false;
@@ -18,17 +20,27 @@
   }
 
   velfun.global = {};
+  velfun.version = {
+    velfun:version,
+    channel:channel,
+    author:author,
+    releaseDate:releaseDate
+  };
 
   //Init
   velfun.fn = velfun.prototype = {
     length:0,
     velfun:version,
     channel:channel,
+    author:author,
+    releaseDate:releaseDate,
     selector:"",
     init:function(selector,context){
       var _this = this;
       _this.velfun = version;
       _this.channel = channel;
+      _this.author = author;
+      _this.releaseDate = releaseDate;
       try {
         if(selector === undefined){
           console.error("VelFun Error:\n    Selector:The selector cannot be empty and an empty object was returned!");
@@ -1502,10 +1514,17 @@
   }
 
   velfun.io.loadPatchsFrom = function(path){ //實驗性
-    if(isOffline) return;
+    if(isOffline) return "Offline";
     var request = new XMLHttpRequest();
     request.open("get",path,false);
     request.send();
+    if(request.status != 200) {
+      console.clear();
+      if(request.status == 404) console.info("There is not have valid patches, or given path is wrong!");
+      console.info("Patches is not loaded!");
+      return "Error";
+    }
+
     for (var a of _.htmltodom(request.responseText).querySelectorAll('a')) {
       var patchfile = a.innerText;
       var start = patchfile.lastIndexOf('.');
@@ -2096,7 +2115,11 @@ Object.defineProperty(Date.prototype,"FullSeconds",{
 //Auto Exec
 _.selfpath=document.scripts;
 _.selfpath=_.selfpath[_.selfpath.length-1].src.substring(0,_.selfpath[_.selfpath.length-1].src.lastIndexOf("/")+1);
-_.io.loadPatchsFrom(_.selfpath + "plugins/");
+let _return = _.io.loadPatchsFrom(_.selfpath + "plugins/");
+if(_return == "Error") {
+  console.clear();
+  console.info("VelFun: Not found any plugins, Let's go on!");
+}
 
 function controllerInit() {
   _.initUpload();
