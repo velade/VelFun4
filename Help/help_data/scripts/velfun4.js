@@ -1,17 +1,27 @@
 /********************
 腳本名:VelFun
-版本號:4-4.00
+版本號:4-4.10
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2023-07-31
+更新日期:2024-03-02
 ********************/
 ; (function (window, undefined) {
-    var isOffline = !!location.origin.match(/^file:\/\//);
-    var version = "4-4.00";
+    var isOffline = !location.origin.match(/^(http:|https:)\/\//);
+    var version = "4-4.10";
     var channel = "Release";
     var author = "Velade";
-    var releaseDate = "2023-07-31";
+    var releaseDate = "2024-03-02";
+
+    /**
+     * @typedef {object} velfunEle VelFun元素
+     */
+    /**
+     * VelFun 入口&选择器
+     * @param {string|HTMLElement} selector 主选择器 
+     * @param {string|HTMLElement|velfunEle} context 父级（上下文）选择器 
+     * @returns {velfunEle}
+     */
     var velfun = function (selector, context) {
         if (_.info.isIE()) {
             return false;
@@ -91,7 +101,7 @@
                 return _this;
             } catch (e) {
                 try {
-                    console.error("VelFun Error:\n    Selector:An error occurred and an empty object was returned!");
+                    console.error("VelFun Error:\n    Selector:An error occurred and an empty object was returned!",e);
                 } catch (e) {
                     document.writeln("VelFun Error:\n    Selector:An error occurred and an empty object was returned!");
                 }
@@ -104,6 +114,12 @@
     }
 
     //Object Function
+    /**
+     * 获取或设定元素属性
+     * @param {string} attrname 属性名
+     * @param {string} attrvalue 属性值，如果省略此参数，则为读取
+     * @returns {velfunEle|string} 如果为设定则返回元素对象。如果为读取则返回属性值，返回的属性值一律为字符串类型
+     */
     velfun.fn.attr = function (attrname, attrvalue) {
         if (this.length == 0) return this;
         if (this[0].nodeType == 3) return null;
@@ -123,12 +139,20 @@
             return this;
         }
     }
-
+    /**
+     * 判断元素是否具有某个属性
+     * @param {string} attrname 属性名 
+     * @returns {boolean} 属性是否存在
+     */
     velfun.fn.hasAttr = function (attrname) {
         if (this.length == 0) return this;
         return (this.attr(attrname) !== null) ? true : false;
     }
-
+    /**
+     * 获取或设定元素的值
+     * @param {string} value 值，省略时为获取元素的值 
+     * @returns {string|velfunEle} 获取时获取元素的值，设定时返回元素对象
+     */
     velfun.fn.val = function (value) {
         if (this.length == 0) return this;
         var _this = this;
@@ -158,11 +182,20 @@
             }
         }
     }
-
+    /**
+     * 获取或设定元素样式
+     * @param {string} css 样式，设定时同style写法，获取时填写样式属性名，获取只能单个获取 
+     * @param {number} index 第几个元素，以0开始，仅用于获取，未指定时默认读取第一个元素的属性
+     * @returns {string|velfunEle} 设定时返回元素对象，获取时返回获取的值
+     */
     velfun.fn.css = function (css, index) {
         if (this.length == 0) return this;
         var _this = this;
         var isRead = false;
+
+        // 轉譯dataurl中的特殊符號
+        css = css.replaceAll(/data:(.+?);base64,/g, "data[Colon]$1[Semicolon]base64,");
+
         css = css.replace(/\s*?:\s*?/, ":");
         css = css.replace(/\s*?;\s*?/, ";");
         var newstyles = css.split(";");
@@ -201,6 +234,7 @@
                     var tostyle = _(_this[i]).attr("style");
                     var oldstyles = {};
                     if (tostyle != null) {
+                        tostyle = tostyle.replaceAll(/data:(.+?);base64,/g, "data[Colon]$1[Semicolon]base64,");
                         tostyle = tostyle.replace(/\s*?:\s*?/, ":");
                         tostyle = tostyle.replace(/\s*?;\s*?/, ";");
                         oldstyles = tostyle.split(";");
@@ -214,7 +248,7 @@
                             var cssvals = [];
                             for (var n = 1; n <= NaA.length; n++) {
                                 if (NaA[n]) {
-                                    cssvals.push(NaA[n]);
+                                    cssvals.push(NaA[n].replaceAll(/data\[Colon\](.+?)\[Semicolon\]base64,/g, "data:$1;base64,"));
                                 }
                             }
                             newstyles_a[NaA[0].trim()] = cssvals.join(":");
@@ -227,7 +261,7 @@
                             var cssvals = [];
                             for (var n = 1; n <= NaA.length; n++) {
                                 if (NaA[n]) {
-                                    cssvals.push(NaA[n]);
+                                    cssvals.push(NaA[n].replaceAll(/data\[Colon\](.+?)\[Semicolon\]base64,/g, "data:$1;base64,"));
                                 }
                             }
                             oldstyles_a[NaA[0].trim()] = cssvals.join(":");
@@ -250,7 +284,12 @@
             return this;
         }
     }
-
+    /**
+     * 获取或设定对象html内容/代码
+     * @param {string} html 文本类型的html代码，用于设定
+     * @param {number} index 第几个元素，以0开始，仅用于获取，未指定时默认读取第一个元素的属性
+     * @returns {string|velfunEle} 获取时返回文本类型的html代码，设定时返回该元素对象（非设定/添加的html对象）
+     */
     velfun.fn.html = function (html, index) {
         if (this.length == 0) return this;
         var _this = this;
@@ -273,7 +312,12 @@
             return _this;
         }
     }
-
+    /**
+     * 获取或设定对象纯文本内容
+     * @param {string} text 要设定的纯文本， 即使包含html内容，也会被转换为文本直接显示出来
+     * @param {number} index 第几个元素，以0开始，仅用于获取，未指定时默认读取第一个元素的属性
+     * @returns {string|velfunEle} 获取时返回文本，设定时返回该元素对象
+     */
     velfun.fn.text = function (text, index) {
         if (this.length == 0) return this;
         var _this = this;
@@ -295,10 +339,14 @@
             return _this;
         }
     }
-
+    /**
+     * 获取元素类名
+     * @param {number} index 第几个元素，以0开始，仅用于获取，未指定时默认读取第一个元素的属性
+     * @returns {array} 返回元素类名的数组
+     */
     velfun.fn.getClass = velfun.fn.getclass = function (index) {
         if (this.length == 0) return this;
-        if (!index && index != 0) {
+        if (index == undefined) {
             var classStr = this[0].className;
         } else {
             var classStr = this[index].className;
@@ -307,55 +355,78 @@
         classArr = classArr.filter(Boolean);
         return classArr;
     }
-
+    /**
+     * 判断元素是否存在/包含类名
+     * @param {string} classname 要查询的类名
+     * @returns {boolean} 返回元素是否包含查询的类名
+     */
     velfun.fn.hasClass = velfun.fn.hasclass = function (classname) {
         if (this.length == 0) return this;
         var classes = this.getClass();
         return (classes.indexOf(classname) == -1) ? false : true;
     }
-
+    /**
+     * 为元素添加类名
+     * @param {string} classname 要添加的类名
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.addClass = velfun.fn.addclass = function (classname) {
         if (this.length == 0) return this;
         var _this = this;
-        for (var i = 0; i < _this.length; i++) {
-            if (_this.hasOwnProperty(i)) {
-                var nowClass = this.getclass(i);
-                if (nowClass.indexOf(classname) === -1) {
-                    nowClass.push(classname);
-                    nowClass = nowClass.filter(Boolean);
-                    var newClassStr = nowClass.join(" ");
-                    this.attr("class", newClassStr, i);
-                }
+        _this.each((i, item) => {
+            var nowClasses = _(item).getclass();
+            if (nowClasses.indexOf(classname) === -1) {
+                nowClasses.push(classname);
+                nowClasses = nowClasses.filter(Boolean);
+                var newClassStr = nowClasses.join(" ");
+                _(item).attr("class", newClassStr, i);
             }
-        }
-        return this
+        })
+        return _this;
     }
-
+    /**
+     * 从元素移除类名
+     * @param {string} classname 要移除的类名
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.removeClass = velfun.fn.removeclass = function (classname) {
         if (this.length == 0) return this;
         var _this = this;
-        for (var i = 0; i < _this.length; i++) {
-            var nowClass = _this.getclass(i);
-            for (var i2 = 0; i2 < nowClass.length; i2++) {
-                if (nowClass[i2] === classname) {
-                    nowClass.splice(i2, 1);
+        _this.each((i, item) => {
+            var nowClasses = _(item).getclass();
+            for (const nowClassi in nowClasses) {
+                const nowClass = nowClasses[nowClassi];
+                if (nowClass == classname) {
+                    delete nowClasses[nowClassi];
                 }
             }
-            nowClass = nowClass.filter(Boolean);
-            var newClassStr = nowClass.join(" ");
-            _this.attr("class", newClassStr, i);
-        }
+            nowClasses = nowClasses.filter(Boolean);
+            var newClassStr = nowClasses.join(" ");
+            _(item).attr("class", newClassStr, i);
+        })
 
         return _this;
     }
-
+    /**
+     * 替换元素类名
+     * @param {string} oldclass 要被替换的旧类名 
+     * @param {string} newclass 要替换的新类名
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.replaceClass = velfun.fn.replaceclass = function (oldclass, newclass) {
         if (this.length == 0) return this;
         this.addClass(newclass);
         this.removeClass(oldclass);
         return this;
     }
-
+    /**
+     * 将事件绑定到元素
+     * @param {string} ev 事件名称，不包括on（和addEventListener一样）
+     * @param {string} selector 子元素选择器，用以指定具体元素，此处只接受字符串类型，在使用委托/代理模式捕捉动态元素时有效
+     * @param {function} func 事件触发的函数
+     * @param {boolean} pop 允许间接触发？默认值 False，子元素的事件不会传递给父元素。
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.bind = function (ev, selector = "", func, pop = false) {
         if (this.length == 0) return this;
         var _this = this;
@@ -398,23 +469,32 @@
 
         return _this;
     }
-
+    /**
+     * 触发元素事件，注意因为浏览器安全设计，部份事件通过代码产生的触发是无效的，而部份事件需要用户有明确交互（点击、输入等）后才能通过代码触发
+     * @param {string} event 事件名称，不包含on
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.trigger = function (event) {
         if (this.length == 0) return this;
         var _this = this;
-        var e = new Event(event);
         for (var i = 0; i < _this.length; i++) {
             var th = _this[i];
             if (typeof th[event] == "function") {
                 th[event]();
             } else {
+                var e = new Event(event);
                 th.dispatchEvent(e);
             }
         }
 
         return _this;
     }
-
+    /**
+     * [已废弃] 单独的click事件绑定，请统一使用.bind()实现
+     * @deprecated since version 4.50
+     * @param {function} func 事件触发的函数 
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.click = function (func) {
         if (this.length == 0) return this;
         if (func === undefined) {
@@ -425,7 +505,11 @@
 
         return this;
     }
-
+    /**
+     * 在元素（外部）之后追加
+     * @param {string} html 要追加的html代码
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.after = function (html) {
         if (this.length == 0) return this;
         var dom = this[0];
@@ -436,7 +520,11 @@
         })
         return this;
     }
-
+    /**
+     * 在元素（外部）之前插入
+     * @param {string} html 要追加的html代码
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.before = function (html) {
         if (this.length == 0) return this;
         var dom = this[0];
@@ -447,7 +535,11 @@
         })
         return this;
     }
-
+    /**
+     * 在元素（内部）最后追加
+     * @param {string} html 要追加的html代码
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.append = function (html) {
         if (this.length == 0) return this;
         var dom = this[0];
@@ -458,7 +550,11 @@
         })
         return this;
     }
-
+    /**
+     * 在元素（内部）开头插入
+     * @param {string} html 要追加的html代码
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.prepend = function (html) {
         if (this.length == 0) return this;
         var dom = this[0];
@@ -469,7 +565,10 @@
         })
         return this;
     }
-
+    /**
+     * 移除元素本身
+     * @returns {boolean} 成功
+     */
     velfun.fn.remove = function () {
         if (this.length == 0) return this;
         var _this = this;
@@ -479,7 +578,10 @@
         }
         return true;
     }
-
+    /**
+     * 清空元素所有子节点，即清空内部内容
+     * @param {velfunEle} 返回该元素
+     */
     velfun.fn.empty = function () {
         if (this.length == 0) return this;
         var _this = this;
@@ -489,23 +591,52 @@
                 dom.removeChild(dom.firstChild);
             }
         }
+        return _this;
     }
-
-    velfun.fn.parent = function () {
+    /**
+     * 查找元素父元素
+     * @param {number} times 查找次数/级数，默认向上查找一级，通过此参数可以向上查找任意级数 
+     * @returns {HTMLElement|null} 找到的元素，非VelFun元素
+     */
+    velfun.fn.parent = function (times = 1) {
         if (this.length == 0) return this;
-        return _(this[0].parentElement);
+        let parent = this[0];
+        for (let i = 0; i < times; i++) {
+            parent = parent.parentElement;
+        }
+        return parent;
     }
-
-    velfun.fn.next = function () {
+    /**
+     * 返回元素的下一个元素，注意不是节点，因此#TEXT节点不会被捕获
+     * @param {number} times 向下查找的次数，默认一次
+     * @returns {HTMLElement|null} 找到的元素，非VelFun元素
+     */
+    velfun.fn.next = function (times = 1) {
         if (this.length == 0) return this;
-        return _(this[0].nextElementSibling);
+        let next = this[0];
+        for (let i = 0; i < times; i++) {
+            next = next.nextElementSibling;
+        }
+        return next;
     }
-
-    velfun.fn.prev = function () {
+    /**
+     * 返回元素的上一个元素，注意不是节点，因此#TEXT节点不会被捕获
+     * @param {number} times 向上查找的次数，默认一次
+     * @returns {HTMLElement|null} 找到的元素，非VelFun元素
+     */
+    velfun.fn.prev = function (times = 1) {
         if (this.length == 0) return this;
-        return _(this[0].previousSibling);
+        let prev = this[0];
+        for (let i = 0; i < times; i++) {
+            prev = prev.previousElementSibling;
+        }
+        return prev;
     }
-
+    /**
+     * 遍历VelFun对象
+     * @param {function} func 每次遍历要执行的函数，函数第一个参数是元素序号，第二个参数是元素对象（非VelFun对象）
+     * @returns {velfunEle} 返回该对象
+     */
     velfun.fn.each = function (func) {
         if (this.length == 0) return this;
         var _this = this;
@@ -520,8 +651,12 @@
         }
         return _this;
     }
-
-    velfun.fn.back = function (size) {
+    /**
+     * 将元素置于背景（Z轴距离）
+     * @param {number} size 后退的距离，默认每级后退5个单位 
+     * @returns {velfunEle} 返回该元素
+     */
+    velfun.fn.back = function (size = 5) {
         if (this.length == 0) return this;
         clearTimeout(velfun.global.unbacktimer);
         var _this = this;
@@ -530,10 +665,6 @@
             if (window.getComputedStyle(_this[0]).background.match(/rgba\s*?\(\d+?,\s*?\d+?,\s*?\d+?,\s*?0\)/i)) {
                 _this.addClass("body_alt_back");
             }
-        }
-
-        if (size === undefined) {
-            size = 5;
         }
 
         var nowLaySize = _this.attr("data-laysizes");
@@ -576,7 +707,10 @@
 
         return _this;
     }
-
+    /**
+     * 将元素从背景回到前景，每次恢复之前一次back操作
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.unback = function () {
         if (this.length == 0) return this;
         var _this = this;
@@ -618,7 +752,10 @@
 
         return _this;
     }
-
+    /**
+     * 一次性取消之前所有back操作
+     * @returns {velfunEle} 返回该对象
+     */
     velfun.fn.resetback = function () {
         if (this.length == 0) return this;
         var _this = this;
@@ -656,7 +793,13 @@
         }
         return _this;
     }
-
+    /**
+     * 执行代码，自动选择是否同步执行
+     * @deprecated since version 4.50
+     * @param {funciton} func 要执行的函数
+     * @param {number} delay 延迟执行，单位为毫秒，当设定延迟时将会异步执行，否则同步执行
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.exec = function (func, delay) {
         if (this.length == 0) return this;
         if (typeof func !== "function") {
@@ -678,7 +821,12 @@
 
         return this;
     }
-
+    /**
+     * 绑定鼠标悬浮在该元素触发的事件
+     * @param {function} func1 当鼠标进入时触发
+     * @param {function} func2 当鼠标移出时触发（可省略）
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.fn.hover = function (func1, func2) {
         if (this.length == 0) return this;
         if (func1 === undefined) {
@@ -708,6 +856,10 @@
     }
 
     var vel_menufuns = new Object();
+    /**
+     * 为静态对象绑定上下文选单（右键选单）
+     * @param {object} funarr JSON格式的对象，具体格式请参考官网手册
+     */
     velfun.fn.CustomContextmenu = velfun.fn.ccm = function (funarr) {
         if (this.length == 0) return this;
         var _this = this;
@@ -790,6 +942,10 @@
     }
 
     var vel_dynamic_menus = new Object();
+    /**
+     * 为动态对象绑定上下文选单（右键选单），需要将此功能绑定到静态的父级，然后通过funarr中的选择器自动应用在动态添加的子元素上。
+     * @param {object} funarr JSON格式的对象，具体格式请参考官网手册
+     */
     velfun.fn.CustomContextmenuDynamic = velfun.fn.ccmd = function (funarr) {
         if (this.length == 0) return this;
         var _this = this;
@@ -886,7 +1042,11 @@
 
         }
     }
-
+    /**
+     * 设定可变色图标的颜色，需要搭配 变色图标 的html标签一同使用
+     * @param {string} col 颜色，支持英文、16禁制、rgb()、rgba()的形式
+     * @returns {velfunEle|null} 当发生错误时返回该元素用以排查，无错误时不返回任何内容
+     */
     velfun.fn.setColor = function (col) {
         if (this.length == 0) return this;
         if (this[0].tagName.toLowerCase() != "v-coloricon") {
@@ -900,7 +1060,11 @@
         var coloricon = _("img", this);
         coloricon.css('filter:drop-shadow(' + this.attr("width") + 'px 0 0 ' + col + ')');
     }
-
+    /**
+     * [已废弃] 自动平铺，现已废弃，请使用flex和grid布局代替
+     * @deprecated since version 4.50
+     * @returns {null}
+     */
     velfun.fn.autoTile = function () {
         if (this.length == 0) return this;
         var _items = this;
@@ -919,6 +1083,12 @@
 
     //Static Function
     velfun.inside = new Object();
+    /**
+     * 将文本类型的html代码转换为HTMLElement对象
+     * @param {string} html 文本类型的html代码
+     * @param {function} callback 回调，可选利用回调异步执行或同步执行，二者同时存在，也可以同时使用。
+     * @returns {HTMLElement} 返回html对象
+     */
     velfun.htmltodom = function (html, callback) {
         var template = document.createElement('template');
         let range = document.createRange();
@@ -929,7 +1099,14 @@
         }
         return range.createContextualFragment(html);
     }
-
+    /**
+     * 将事件绑定到元素，默认绑定到document的版本，是_(document).bind()的简化写法
+     * @param {string} ev 事件名称，不包括on（和addEventListener一样）
+     * @param {string} selector 子元素选择器，用以指定具体元素，此处只接受字符串类型，在使用委托/代理模式捕捉动态元素时有效
+     * @param {function} func 事件触发的函数
+     * @param {boolean} pop 允许间接触发？默认值 False，子元素的事件不会传递给父元素。
+     * @returns {velfunEle} 返回该元素
+     */
     velfun.bind = function (ev, selector = "", func, pop = false) {
         var _this = _(document);
         if (typeof func == "boolean") {
@@ -986,7 +1163,14 @@
 
     var msgboxList = new Array();
     var msgfun = function (e) { return true; };
-
+    /**
+     * 提示框
+     * @param {string} Message 消息内容，支持html
+     * @param {string} Title 弹窗标题，可以省略
+     * @param {string} Type 按钮类型：MSG_OK 默认 仅确定；MSG_YES_NO 是、否两个按钮；MSG_OK_Cancel 确定、取消两个按钮
+     * @param {array} Position 弹窗的座标，[x, y]的格式
+     * @param {function} callback 按下按钮后的回调，参数1为按钮是否是「肯定」的，即OK YES按钮为肯定，其他为否定。
+     */
     velfun.Msgbox = async function (Message, Title, Type, Position, callback) {
         msgboxList.push(function () { return _.inside.Msgbox_do(Message, Title, Type, Position, callback) });
         if (_("#_MessageBox_").length == 0) {
@@ -994,6 +1178,9 @@
             fun();
         }
     }
+    /**
+     * 内部实现，不要直接调用
+     */
     velfun.inside.Msgbox_do = async function (Message, Title, Type, Position, callback) {
         var msg = Message || "";
         var title = Title || "";
@@ -1074,7 +1261,14 @@
             })
         })
     }
-
+    /**
+     * 提示框-精简版 为低配电脑而设计，去除了一些效果和所有动画
+     * @param {string} Message 消息内容，支持html
+     * @param {string} Title 弹窗标题，可以省略
+     * @param {string} Type 按钮类型：MSG_OK 默认 仅确定；MSG_YES_NO 是、否两个按钮；MSG_OK_Cancel 确定、取消两个按钮
+     * @param {array} Position 弹窗的座标，[x, y]的格式
+     * @param {function} callback 按下按钮后的回调，参数1为按钮是否是「肯定」的，即OK YES按钮为肯定，其他为否定。
+     */
     velfun.Msgbox_lite = async function (Message, Title, Type, Position, callback) {
         msgboxList.push(function () { return _.inside.Msgbox_lite_do(Message, Title, Type, Position, callback) });
         if (_("#_MessageBox_").length == 0) {
@@ -1082,7 +1276,9 @@
             fun();
         }
     }
-
+    /**
+     * 内部实现，不要直接调用
+     */
     velfun.inside.Msgbox_lite_do = async function (Message, Title, Type, Position, callback) {
         var msg = Message || "";
         var title = Title || "";
@@ -1152,7 +1348,9 @@
             })
         })
     };
-
+    /**
+     * 内部实现，不要直接调用
+     */
     velfun.inside.MsgRe = function (re, lite) {
         if (lite) {
             _("#_MessageBox_").remove();
@@ -1184,6 +1382,11 @@
 
     var optionsList = new Array();
     var optionsArr = new Array();
+    /**
+     * 全屏显示的选择项
+     * @param {object} opt_arr JSON格式的选项，具体格式请参考官网手册
+     * @param {string} title 标题，可以省略，省略后不显示标题
+     */
     velfun.Options = function (opt_arr, title) {
         optionsList.push(function () { _.inside.Options_do(opt_arr, title) });
         if (_("#_OPTIONS_").length == 0) {
@@ -1191,7 +1394,9 @@
             fun();
         }
     }
-
+    /**
+     * 内部实现，不要直接调用
+     */
     velfun.inside.Options_do = function (opt_arr, title) {
         var title = title || "";
         var ulhtml = "<ul id='_Velfun_OPTIONS_' style='position: fixed;display: block;width: 100%;height: auto;left: 0px;top: 50%;transform: translateY(-50%);margin:0px;padding: 0px;z-index: 1000;overflow: hidden;cursor:default;'>";
@@ -1220,7 +1425,9 @@
             }, 30 * index);
         })
     }
-
+    /**
+     * 内部实现，不要直接调用
+     */
     velfun.inside.OptionsRe = function (th, index) {
         var _this = _(th);
         _this.back();
@@ -1239,7 +1446,12 @@
             }
         }, 500);
     }
-
+    /**
+     * 整数随机数
+     * @param {number} min 两个参数时为最小值，但只指定一个参数时为最大值
+     * @param {number} max 最大值，省略时min视为最大值
+     * @returns {number} 随机的结果
+     */
     velfun.random = function (min, max) {
         var vel_minval, vel_maxval, vel_randomval;
         if (typeof min == 'number' & typeof max == 'number') {
@@ -1259,7 +1471,11 @@
         }
         return vel_randomval;
     }
-
+    /**
+     * [已废弃] 初始化上传控件，上传控件现在移动到libvelui库，此处的已不再维护，并很快将彻底移除
+     * @deprecated since version 4.50
+     * @returns 
+     */
     velfun.initUpload = function () {
         var veluploads = _("v-upload");
         for (var i = 0; i < veluploads.length; i++) {
@@ -1431,6 +1647,14 @@
 
     //IO
     velfun.io = new Object();
+    /**
+     * AJAX异步请求
+     * @param {string} method 请求类型[post,get]
+     * @param {string} url 请求的地址
+     * @param {object} data 包含的数据，以Object格式提供，post模式下会以post提交，get模式会自动合并到请求地址
+     * @param {function} callback 回调函数，第一个参数为返回的内容
+     * @returns {Promise<function>} 返回Promise对象
+     */
     velfun.io.ajax = async function (method, url, data, callback) {
         if (typeof data == "function") {
             callback = data;
@@ -1481,15 +1705,32 @@
             }
         })
     }
-
+    /**
+     * AJAX GET异步请求，基于.ajax()的简易实现
+     * @param {string} url 请求的地址
+     * @param {object} data 包含的数据，以Object格式提供，get模式会自动合并到请求地址
+     * @param {function} callback 回调函数，第一个参数为返回的内容
+     * @returns {Promise<function>} 返回Promise对象
+     */
     velfun.io.get = async function (url, data, callback) {
         return velfun.io.ajax("get", url, data, callback);
     }
-
+    /**
+     * AJAX POST异步请求，基于.ajax()的简易实现
+     * @param {string} url 请求的地址
+     * @param {object} data 包含的数据，以Object格式提供，post模式下会以post提交
+     * @param {function} callback 回调函数，第一个参数为返回的内容
+     * @returns {Promise<function>} 返回Promise对象
+     */
     velfun.io.post = async function (url, data, callback) {
         return velfun.io.ajax("post", url, data, callback);
     }
-
+    /**
+     * 动态导入资源
+     * @param {string} url 资源的路径，可以使用绝对路径、相对路径、远端网址等
+     * @param {string} type 手动指定资源的类型，通常程序会以后缀名自动判断类型，但当后缀名与实际类型不匹配时，就需要手动指定
+     * @returns {string} 返回资源路径
+     */
     velfun.io.import = function (url, type) {
         if (type == undefined) {
             var filepath = url.split("?");
@@ -1506,12 +1747,19 @@
         }
         return url;
     }
-
+    /**
+     * 动态移除资源
+     * @param {string} url 资源的路径（src或href上的路径）
+     */
     velfun.io.unimport = function (url) {
         _("[src='" + url + "']").remove();
         _("[href='" + url + "']").remove();
     }
-
+    /**
+     * 补丁目录加载
+     * @param {string} path 指定补丁目录的路径，不支持单个文件 
+     * @returns 
+     */
     velfun.io.loadPatchsFrom = function (path) { //實驗性
         if (isOffline) return "Offline";
         var request = new XMLHttpRequest();
@@ -1519,7 +1767,7 @@
         request.send();
         if (request.status != 200) {
             console.clear();
-            if (request.status == 404) console.info("There is not have valid patches, or given path is wrong!");
+            if (request.status == 404) console.error("There is not have valid patches, or given path is wrong!");
             console.info("Patches is not loaded!");
             return "Error";
         }
@@ -1562,7 +1810,11 @@
         }
         return true;
     }
-
+    /**
+     * 设置Cookie或Session
+     * @param {object} opts JSON格式的参数对象，具体格式请参考官网手册
+     * @param {boolean} usingSessionMode 是否使用Session模式
+     */
     velfun.io.setCookie = function (opts, usingSessionMode = false) {
         if (usingSessionMode) {
             window.sessionStorage.setItem(opts.name, opts.value);
@@ -1632,7 +1884,12 @@
             document.cookie = cookieStr;
         }
     }
-
+    /**
+     * 获取Cookie或Session
+     * @param {string} name Cookie或Session的名字
+     * @param {boolean} usingSessionMode 使否使用Session模式，默认使用，将优先搜索Session之后是Cookie，设为False将只搜索Cookie。
+     * @returns {string} Cookie或Session的值
+     */
     velfun.io.getCookie = function (name, usingSessionMode = true) {
 
         if (usingSessionMode) {
@@ -1653,7 +1910,11 @@
 
     //Test
     velfun.test = new Object();
-
+    /**
+     * 测试密码强度
+     * @param {string} password 要测试的密码
+     * @returns {number} 密码的分数，范围0-100，可能存在小数点
+     */
     velfun.test.password = function (password) {
         var vel_t0 = /[A-Z]+/.test(password);
         var vel_t1 = /[a-z]+/.test(password);
@@ -1675,7 +1936,11 @@
 
         return vel_safe;
     }
-
+    /**
+     * 测试电话号格式
+     * @param {string} cellphone 要测试的电话号 
+     * @returns {boolean} 输入的内容是否是电话号码。注意：此功能只能判断是否为合法电话号，但不能判断是否是有效的，或是特定要求的电话号。
+     */
     velfun.test.cellphone = function (cellphone) {
         cellphone = cellphone.replace(/[\s-\(\)]/g, "")
         var areacode = cellphone.match(/^(\+|0{1,3}|\+0{1,3})(86|852|853|886|1|81|44)/);
@@ -1716,7 +1981,11 @@
 
         return test;
     }
-
+    /**
+     * 测试邮箱格式
+     * @param {string} email 要测试的邮箱
+     * @returns {boolean} 是否是合法的邮箱格式。注意：此功能只能判断格式是否正确，但不能判断邮箱可用性等因素
+     */
     velfun.test.email = function (email) {
         var vel_t0 = /(^[A-z]+[\d_]*)\@(\w+\.?)(\.\w+)$/.test(email.trim());
         return vel_t0;
@@ -1725,7 +1994,9 @@
     //Translate
     velfun.trans = new Object();
     velfun.trans.inside = new Object();
-
+    /**
+     * 内部实现，不要直接调用
+     */
     velfun.trans.inside.toChar = function (num, numlang, levellang) {
         var num = num.split("");
         var showNum = "";
@@ -1749,7 +2020,12 @@
         }
         return showNum;
     }
-
+    /**
+     * 数字到汉字转换
+     * @param {number} number 要转换的数字
+     * @param {boolean} upperCase 是否使用大写汉字
+     * @returns {string} 转换后的汉字数字
+     */
     velfun.trans.NumToChar = function (number, upperCase) {
         upperCase = upperCase || false;
         number = String(number);
@@ -1797,7 +2073,10 @@
 
     //info
     velfun.info = new Object();
-
+    /**
+     * 获取移动端类型
+     * @returns {string} 移动端的英文类型，NOT表示不是移动端
+     */
     velfun.info.mobileType = function () {
         var u = navigator.userAgent;
         if (u.match(/Android/i)) {
@@ -1813,22 +2092,37 @@
         }
         return Mobile;
     }
-
+    /**
+     * 获取是否是移动端
+     * @returns {boolean} 是否是移动端
+     */
     velfun.info.isMobile = function () {
         return (velfun.info.mobileType() != 'NOT') ? true : false;
     }
-
+    /**
+     * 获取主机地址
+     * @returns {string} 主机地址
+     */
     velfun.info.host = function () {
         return window.location.host;
     }
-
+    /**
+     * [不工作] 判断是否是IE浏览器访问，但因为IE会让VelFun整体不能工作，所以此处代码仅供参考，无法实际应用
+     * @deprecated
+     * @param {function} func 如果为IE则执行的操作 
+     * @returns {boolean} 是否是IE
+     */
     velfun.info.isIE = function (func) {
         if ((!!window.ActiveXObject || "ActiveXObject" in window) && typeof func == "function") {
             func();
         }
         return (!!window.ActiveXObject || "ActiveXObject" in window) ? true : false;
     }
-
+    /**
+     * 获取GET方式传递的网页参数
+     * @param {string} needvar 需要获取的参数的参数名
+     * @returns {string} 返回的参数值，此值永远是字符串类型
+     */
     velfun.info.args = function (needvar) {
         let query = window.location.search.substring(1);
         let reg = new RegExp(`(^|&)${needvar}=(.*?)(&|$)`);
@@ -1845,6 +2139,12 @@
 
     var tipList = new Array();
     var tipReady = true;
+    /**
+     * 弹出提示
+     * @param {string} content 弹出提示的内容
+     * @param {string} title 提示的标题
+     * @param {number} duration 多久自动关闭，单位毫秒，默认三秒
+     */
     velfun.Tip = function (content, title, duration) {
         tipList.push(function () { _.inside.Tip_do(content, title, duration) });
         if (tipReady) {
@@ -1853,7 +2153,9 @@
             fun();
         }
     }
-
+    /**
+     * 内部实现，不要直接调用
+     */
     velfun.inside.Tip_do = function (content, title, duration) {
         if (typeof title === "number") {
             duration = title;
@@ -1902,11 +2204,14 @@
             }
         }, 500)
     }
-
+    /**
+     * 手动初始化所有v-coloricon元素
+     */
     velfun.setColoricon = function () {
         var coloricons = _("v-coloricon");
         for (var i = 0; i < coloricons.length; i++) {
             var thisicon = _(coloricons[i]);
+            if(_("img",thisicon).length > 0) continue;
             var width = thisicon.attr("width") || thisicon.css("width");
             var height = thisicon.attr("height") || thisicon.css("height");
             var src = thisicon.attr("src");
@@ -1914,7 +2219,11 @@
             thisicon.append("<img src='" + src + "' style='width:" + width + "px;height:" + height + "px;position:relative;left:-" + width + "px;border-right:1px solid transparent;filter:drop-shadow(" + width + "px 0 0 black)'>");
         }
     }
-
+    /**
+     * 设置网页语言（需要网页以VelFun多语言方式开发）
+     * @param {string} langfile 指定语言文件路径
+     * @returns 
+     */
     velfun.setLang = function (langfile = "") {
         if (isOffline) return;
         if (langfile == "") return;
@@ -1945,7 +2254,9 @@
             _.observer.observe(_.obbody, _.obconfig);
         })
     }
-
+    /**
+     * 内部实现，不要直接调用
+     */
     velfun.setAttrsLang = function (th, langdata) {
         if (_(th).hasAttr("alt")) {
             if (!_(th).hasAttr("data-altTempStr")) {
@@ -1992,7 +2303,11 @@
             }
         }
     }
-
+    /**
+     * 获取元素下所有纯文本节点
+     * @param {HTMLElement} ele 父元素对象
+     * @returns {array} 所有#TEXT节点
+     */
     velfun.getTextNodes = function (ele) {
         if (ele.nodeType == 3) return [ele];
         var nodes = ele.childNodes;
@@ -2009,7 +2324,11 @@
         }
         return textnodes;
     }
-
+    /**
+     * 数组/对象深度拷贝
+     * @param {array} from 从那个数组/对象拷贝
+     * @returns {array} 得到的独立的新数组/对象
+     */
     velfun.deepCopy = function (from) {
         let new_obj = new Object();
         if (Array.isArray(from)) {
@@ -2031,6 +2350,11 @@
 })(window);
 
 //Base Ext
+/**
+ * 获取两位数的完整月份
+ * @param {boolean} addone 是否+1偏移 
+ * @returns {string} 月份字符串
+ */
 Date.prototype.getFullMonth = function (addone) {
     var addo = addone || false;
     var vel_date = this;
@@ -2044,6 +2368,10 @@ Date.prototype.getFullMonth = function (addone) {
         return vel_month;
     }
 }
+/**
+ * 获取两位数的完整日期
+ * @returns {string} 天数字符串
+ */
 Date.prototype.getFullDate = function () {
     var vel_date = this;
     var vel_fdate = vel_date.getDate();
@@ -2053,6 +2381,10 @@ Date.prototype.getFullDate = function () {
         return vel_fdate;
     }
 }
+/**
+ * 获取两位数的完整小时
+ * @returns {string} 小时字符串
+ */
 Date.prototype.getFullHours = function () {
     var vel_date = this;
     var vel_hours = vel_date.getHours();
@@ -2062,6 +2394,10 @@ Date.prototype.getFullHours = function () {
         return vel_hours;
     }
 }
+/**
+ * 获取两位数的完整分钟
+ * @returns {string} 分钟字符串
+ */
 Date.prototype.getFullMinutes = function () {
     var vel_date = this;
     var vel_minutes = vel_date.getMinutes();
@@ -2071,6 +2407,10 @@ Date.prototype.getFullMinutes = function () {
         return vel_minutes;
     }
 }
+/**
+ * 获取两位数的完整秒数
+ * @returns {string} 秒数字符串
+ */
 Date.prototype.getFullSeconds = function () {
     var vel_date = this;
     var vel_seconds = vel_date.getSeconds();
@@ -2114,7 +2454,6 @@ Object.defineProperty(Date.prototype, "FullSeconds", {
 //Auto Exec
 _.selfpath = document.scripts;
 _.selfpath = _.selfpath[_.selfpath.length - 1].src.substring(0, _.selfpath[_.selfpath.length - 1].src.lastIndexOf("/") + 1);
-console.log(_.selfpath);
 let _return = _.io.loadPatchsFrom(_.selfpath + "plugins/");
 if (_return == "Error") {
     console.clear();

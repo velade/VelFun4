@@ -1587,10 +1587,11 @@
         <span class="content">
           <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
-              _(<元素>).parent();
+              _(<元素>).parent(<层数>);
             </div>
             <ul>
               <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li><层数>：向上寻找父级的次数（层数），省略默认为一层父级</li>
             </ul>
           </div>
         </span>
@@ -1606,10 +1607,11 @@
         <span class="content">
           <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
-              _(<元素>).next();
+              _(<元素>).next(<次数>);
             </div>
             <ul>
               <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li><层数>：向后寻找兄弟元素的次数，省略默认为下一个元素</li>
             </ul>
           </div>
         </span>
@@ -1625,10 +1627,11 @@
         <span class="content">
           <div class="w3-panel w3-card w3-light-vel">
             <div class="w3-code jsHigh notranslate">
-              _(<元素>).prev();
+              _(<元素>).prev(<层数>);
             </div>
             <ul>
               <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+              <li><层数>：向前寻找兄弟元素的次数，省略默认为上一个元素</li>
             </ul>
           </div>
         </span>
