@@ -1,17 +1,17 @@
 /********************
 腳本名:VelFun
-版本號:4-4.10
+版本號:4-4.20
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2024-03-02
+更新日期:2024-04-20
 ********************/
 ; (function (window, undefined) {
     var isOffline = !location.origin.match(/^(http:|https:)\/\//);
-    var version = "4-4.10";
+    var version = "4-4.20";
     var channel = "Release";
     var author = "Velade";
-    var releaseDate = "2024-03-02";
+    var releaseDate = "2024-04-20";
 
     /**
      * @typedef {object} velfunEle VelFun元素
@@ -101,7 +101,7 @@
                 return _this;
             } catch (e) {
                 try {
-                    console.error("VelFun Error:\n    Selector:An error occurred and an empty object was returned!",e);
+                    console.error("VelFun Error:\n    Selector:An error occurred and an empty object was returned!", e);
                 } catch (e) {
                     document.writeln("VelFun Error:\n    Selector:An error occurred and an empty object was returned!");
                 }
@@ -121,11 +121,11 @@
      * @returns {velfunEle|string} 如果为设定则返回元素对象。如果为读取则返回属性值，返回的属性值一律为字符串类型
      */
     velfun.fn.attr = function (attrname, attrvalue) {
-        if (this.length == 0) return this;
-        if (this[0].nodeType == 3) return null;
         var _this = this;
+        if (_this.length == 0) return this;
+        if (!_this[0] || _this[0].nodeType == 3) return null;
         if (attrvalue === undefined) {
-            return _this[0].getAttribute(attrname);
+            return (_this[0].getAttribute) ? _this[0].getAttribute(attrname) : null;
         } else {
             for (var i = 0; i < _this.length; i++) {
                 if (attrvalue === "") {
@@ -1682,6 +1682,8 @@
                     var msg = XHR.responseText;
                     if (typeof callback == "function") callback(msg, XHR);
                     resolve(msg, XHR);
+                } else if (XHR.readyState == 4 && XHR.status != 200) {
+                    reject(XHR.status, XHR);
                 }
             }
 
@@ -1768,7 +1770,7 @@
         if (request.status != 200) {
             console.clear();
             if (request.status == 404) console.error("There is not have valid patches, or given path is wrong!");
-            console.info("Patches is not loaded!");
+            console.log("Patches is not loaded!");
             return "Error";
         }
 
@@ -1900,12 +1902,36 @@
         let result = document.cookie.match("(^|[^;]+)\\s*" + name + "\\s*=\\s*([^;]+)");
         return result ? result.pop() : "";
     }
-
+    /**
+     * 删除Cookie和Session
+     * @param {string} name 要删除的Cookie或Session的名字
+     * @param {boolean} usingSessionMode 是否删除Session，默认为true。如果设为false则仅会删除Cookie
+     */
     velfun.io.delCookie = function (name, usingSessionMode = true) {
         if (usingSessionMode) {
             window.sessionStorage.removeItem(name);
         }
         document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    }
+    /**
+     * 调用并打开「打开文件」对话框，仅支持Promise返回值，不支持回调函数。
+     * @param {object} options 包含input:file的属性，目前只针对accept和multiple生效。
+     * @returns 
+     */
+    velfun.io.openFileDialog = async function (options = { "accept": "*", "multiple": false }) {
+        return new Promise((resolve, reject) => {
+            const f = document.createElement("input");
+            f.type = "file";
+            f.style.display = "none";
+            if (options.accept) f.setAttribute("accept", options.accept);
+            if (options.multiple) f.setAttribute("multiple", "multiple");
+
+            f.onchange = (e) => {
+                resolve(e.target.files);
+            }
+
+            f.click();
+        })
     }
 
     //Test
@@ -1989,6 +2015,78 @@
     velfun.test.email = function (email) {
         var vel_t0 = /(^[A-z]+[\d_]*)\@(\w+\.?)(\.\w+)$/.test(email.trim());
         return vel_t0;
+    }
+    /**
+     * 等待完全读取后触发回调
+     * @param {function} callback 完成后触发回调
+     * @returns {Promise<function>} 返回Promise对象
+     */
+    velfun.test.fullyLoad = async function (area, callback, logs = true) {
+        if (typeof callback == "boolean") {
+            logs = callback;
+            callback = () => { };
+        }
+        return new Promise((resolve, reject) => {
+            let num = 0;
+            let skipnum = 0;
+            let errnum = 0;
+            let fontsReady = false;
+            _("img", area).each(function () {
+                if (this.src == "") {
+                    skipnum++;
+                    if (logs) {
+                        if (skipnum > 1) {
+                            console.log(`Images ${skipnum}/${_("img", area).length} skipped.`);
+                        } else {
+                            console.log(`Image  ${skipnum}/${_("img", area).length} skipped.`);
+                        }
+                    }
+                    if (num + errnum + skipnum >= _("img", area).length && fontsReady) {
+                        callback();
+                        resolve(true);
+                    }
+                    return;
+                }
+                var oImg = new Image();
+                oImg.onload = function () {
+                    num++;
+                    if (logs) {
+                        if (num > 1) {
+                            console.log(`Images ${num}/${_("img", area).length} loaded.`);
+                        } else {
+                            console.log(`Image  ${num}/${_("img", area).length} loaded.`);
+                        }
+                    }
+                    if (num + errnum + skipnum >= _("img", area).length && fontsReady) {
+                        callback();
+                        resolve(true);
+                    }
+                }
+                oImg.onerror = function () {
+                    errnum++;
+                    if (logs) {
+                        if (errnum > 1) {
+                            console.log(`Failed to load images ${errnum}/${_("img", area).length}.`);
+                        } else {
+                            console.log(`Failed to load image  ${errnum}/${_("img", area).length}.`);
+                        }
+                    }
+                    if (num + errnum + skipnum >= _("img", area).length && fontsReady) {
+                        callback();
+                        resolve(true);
+                    }
+                }
+                oImg.src = this.src;
+            })
+            document.fonts.ready.then(function () {
+                if (logs) console.log("Fonts loaded");
+                fontsReady = true;
+                if (num + errnum >= _("img", area).length) {
+                    callback();
+                    resolve(true);
+                }
+            })
+        })
     }
 
     //Translate
@@ -2211,7 +2309,7 @@
         var coloricons = _("v-coloricon");
         for (var i = 0; i < coloricons.length; i++) {
             var thisicon = _(coloricons[i]);
-            if(_("img",thisicon).length > 0) continue;
+            if (_("img", thisicon).length > 0) continue;
             var width = thisicon.attr("width") || thisicon.css("width");
             var height = thisicon.attr("height") || thisicon.css("height");
             var src = thisicon.attr("src");
@@ -2457,7 +2555,7 @@ _.selfpath = _.selfpath[_.selfpath.length - 1].src.substring(0, _.selfpath[_.sel
 let _return = _.io.loadPatchsFrom(_.selfpath + "plugins/");
 if (_return == "Error") {
     console.clear();
-    console.info("VelFun: Not found any plugins, Let's go on!");
+    console.log("VelFun: Not found any plugins, Let's go on!");
 }
 
 function controllerInit() {
