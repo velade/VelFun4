@@ -1,0 +1,79 @@
+/* 置于背景时HTML(最终背景)样式
+     背景颜色必须使用 !important 修饰符
+*/
+.html_alt_back {
+    background-color: #333 !important;
+}
+
+/* body置于背景时若无背景则应用的样式
+     背景颜色必须使用 !important 修饰符
+*/
+.body_alt_back {
+    background-color: white !important;
+}
+
+/* body置于背景时应用的样式
+*/
+.body_inback {
+    border-radius: 10px;
+}
+
+/* 消息框样式 */
+#_MessageBox_ {
+    /* 背景颜色
+         --bg-color: 无背景模糊时的颜色
+         --bg-color-blur: 有背景模糊时的颜色
+         都要进行设定，建议无背景模糊时透明度不要太高，否则会难以辨识
+    */
+    --bg-color: rgba(253, 253, 253, 1);
+    --bg-color-blur: rgba(253, 253, 253, 1);
+    /* color: black; */
+    border: 1px rgba(253, 253, 253, 0.5) solid;
+    border-radius: 0 !important;
+}
+
+/* 右键选单样式 */
+._Velfun_Contextmenu_ {
+    /* 背景颜色
+         --bg-color: 无背景模糊时的颜色
+         --bg-color-blur: 有背景模糊时的颜色
+         都要进行设定，建议无背景模糊时透明度不要太高，否则会难以辨识
+    */
+    --bg-color: rgba(253, 253, 253, 1);
+    --bg-color-blur: rgba(253, 253, 253, 1);
+    /* color: black; */
+    border-radius: 0;
+}
+
+/* 右键选单hover著色 */
+._Velfun_Contextmenu_option:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 全屏选择项样式 */
+._Velfun_Options_Item {
+    /* 选项按钮的颜色
+         --button-color: 无背景模糊时的颜色
+         --button-color-blur: 有背景模糊时的颜色
+         都要进行设定，建议无背景模糊时透明度不要太高，否则会难以辨识
+    */
+    --button-color: rgba(253, 253, 253, 0.9);
+    --button-color-blur: rgba(253, 253, 253, 0.5);
+    /* color: black; */
+    border-radius: 20px;
+}
+
+/* 无中断提醒样式 */
+._Velfun_Tip {
+    /* 背景颜色
+         --bg-color: 无背景模糊时的颜色
+         --bg-color-blur: 有背景模糊时的颜色
+         --st-color-mask: 起始颜色，可以做出弹出时以强调色覆盖，之后再慢慢变回正常颜色的效果
+         都要进行设定，建议无背景模糊时透明度不要太高，否则会难以辨识
+    */
+    --bg-color: rgba(253, 253, 253, 0.9);
+    --bg-color-blur: rgba(253, 253, 253, 0.5);
+    --st-color-mask:  rgba(255, 200, 0,0.5);
+    /* color: black; */
+    border-radius: 0px;
+}
