@@ -1,17 +1,17 @@
 /********************
 腳本名:VelFun
-版本號:4-4.30
+版本號:4-4.31
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2024-04-25
+更新日期:2024-04-28
 ********************/
 ; (function (window, undefined) {
     var isOffline = !location.origin.match(/^(http:|https:)\/\//);
-    var version = "4-4.30";
+    var version = "4-4.31";
     var channel = "Release";
     var author = "Velade";
-    var releaseDate = "2024-04-25";
+    var releaseDate = "2024-04-28";
 
     /**
      * @typedef {object} velfunEle VelFun元素
@@ -933,7 +933,7 @@
 
             _("._Velfun_Contextmenu_[for='" + vel_funthisid + "'] ._Velfun_Contextmenu_option").click(function () {
                 var th_p = _(this).parent();
-                var ft_id = th_p.attr("for");
+                var ft_id = _(th_p).attr("for");
                 if (typeof vel_menufuns[ft_id][_(this).text()] === "function") {
                     vel_menufuns[ft_id][_(this).text()].call(_("[data-contextmenuid='" + ft_id + "']"));
                 }
@@ -1046,13 +1046,6 @@
             })
         }
         let menu = new Object(menuids);
-        /**
-         * 向右键选单添加项目
-         * @param {string} selector 选择器，因为cmmd每个选择器下是独立的一个选单，因此只能向某个选择器下的具体选单添加项目。
-         * @param {string} key 项目的的key，也就是显示的选项
-         * @param {function} func 按下时的回调
-         * @param {string} before 在某一项之前添加，默认会添加到选单尾部，传递已有的选项的key
-         */
         menu.add = function (selector, key, func, before="") {
             let nowMenu = vel_dynamic_menus[this[0]][selector];
             let newMenu = new Map();
@@ -1068,11 +1061,6 @@
                 vel_dynamic_menus[menuid][selector] = Object.fromEntries(newMenu);
             }
         }
-        /**
-         * 
-         * @param {string} selector 选择器，因为cmmd每个选择器下是独立的一个选单，因此只能从某个选择器下的具体选单移除项目
-         * @param {string} key 要移除的选单的key
-         */
         menu.remove = function (selector, key) {
             let nowMenu = vel_dynamic_menus[this[0]][selector];
             delete nowMenu[key];
