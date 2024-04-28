@@ -1,17 +1,17 @@
 /********************
 腳本名:VelFun
-版本號:4-4.20
+版本號:4-4.30
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2024-04-20
+更新日期:2024-04-25
 ********************/
 ; (function (window, undefined) {
     var isOffline = !location.origin.match(/^(http:|https:)\/\//);
-    var version = "4-4.20";
+    var version = "4-4.30";
     var channel = "Release";
     var author = "Velade";
-    var releaseDate = "2024-04-20";
+    var releaseDate = "2024-04-25";
 
     /**
      * @typedef {object} velfunEle VelFun元素
@@ -944,17 +944,22 @@
     var vel_dynamic_menus = new Object();
     /**
      * 为动态对象绑定上下文选单（右键选单），需要将此功能绑定到静态的父级，然后通过funarr中的选择器自动应用在动态添加的子元素上。
-     * @param {object} funarr JSON格式的对象，具体格式请参考官网手册
+     * @param {object | map} funarr JSON格式的对象，具体格式请参考官网手册
      */
     velfun.fn.CustomContextmenuDynamic = velfun.fn.ccmd = function (funarr) {
         if (this.length == 0) return this;
-        var _this = this;
+        let _this = this;
+        let menuids = [];
         for (var index = 0; index < _this.length; index++) {
             var vel_funthis = _(_this[index]);
-            var vel_funthisid = Math.floor(Math.random() * 89999999 + 10000000);
+            var vel_funthisid = null;
+            do {
+                vel_funthisid = Math.floor(Math.random() * 89999999 + 10000000);
+            } while (vel_dynamic_menus[vel_funthisid]);
             vel_funthis.attr("data-contextmenuid", vel_funthisid);
 
             vel_dynamic_menus[vel_funthisid] = funarr;
+            menuids.push(vel_funthisid);
 
             _(_this).bind("contextmenu", function (e) {
                 e.preventDefault();
@@ -962,14 +967,14 @@
 
             _("[data-contextmenuid='" + vel_funthisid + "']").bind("mousedown", function (e, self) {
                 if (e.button == 2) {
-                    _("body ._Velfun_Contextmenu_[dynamic]").remove();
+                    _(`body ._Velfun_Contextmenu_[dynamic]`).remove();
                     var thisid = _(self).attr("data-contextmenuid");
                     var trueTarget = "";
                     if (this[0] == self) {
                         trueTarget = "self";
                     } else {
                         for (var s in vel_dynamic_menus[thisid]) {
-                            if (Object.values(_(s)).includes(e.target)) {
+                            if (e.target.matches(s)) {
                                 trueTarget = s;
                                 break;
                             }
@@ -985,7 +990,7 @@
                         backgroundStyle = "background-color: var(--bg-color-blur);";
                     }
                     _("body").append("<ul class='_Velfun_Contextmenu_' style='" + backgroundStyle + "' for='" + thisid + "' dynamic></ul>");
-                    var _ul = _("body ._Velfun_Contextmenu_[dynamic]");
+                    var _ul = _(`body ._Velfun_Contextmenu_[dynamic]`);
                     for (var i in funarr) {
                         if (i.match(/^\-{3}/)) {
                             _ul.append(`<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;padding: 0 10px;"></li>`);
@@ -1039,8 +1044,45 @@
 
                 }
             })
-
         }
+        let menu = new Object(menuids);
+        /**
+         * 向右键选单添加项目
+         * @param {string} selector 选择器，因为cmmd每个选择器下是独立的一个选单，因此只能向某个选择器下的具体选单添加项目。
+         * @param {string} key 项目的的key，也就是显示的选项
+         * @param {function} func 按下时的回调
+         * @param {string} before 在某一项之前添加，默认会添加到选单尾部，传递已有的选项的key
+         */
+        menu.add = function (selector, key, func, before="") {
+            let nowMenu = vel_dynamic_menus[this[0]][selector];
+            let newMenu = new Map();
+            for (const k in nowMenu) {
+                const v = nowMenu[k];
+                if(before != "" && before == k) {
+                    newMenu.set(key,func);
+                }
+                newMenu.set(k,v);
+            }
+            for (let i = 0; i < this.length; i++) {
+                const menuid = this[i];
+                vel_dynamic_menus[menuid][selector] = Object.fromEntries(newMenu);
+            }
+        }
+        /**
+         * 
+         * @param {string} selector 选择器，因为cmmd每个选择器下是独立的一个选单，因此只能从某个选择器下的具体选单移除项目
+         * @param {string} key 要移除的选单的key
+         */
+        menu.remove = function (selector, key) {
+            let nowMenu = vel_dynamic_menus[this[0]][selector];
+            delete nowMenu[key];
+            nowMenu = nowMenu.filter(Boolean);
+            for (let i = 0; i < this.length; i++) {
+                const menuid = this[i];
+                vel_dynamic_menus[menuid][selector] = nowMenu;
+            }
+        }
+        return menu;
     }
     /**
      * 设定可变色图标的颜色，需要搭配 变色图标 的html标签一同使用

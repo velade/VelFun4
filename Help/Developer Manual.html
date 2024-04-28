@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <title>VelFun4开发者手册 - 4.20</title>
+  <title>VelFun4开发者手册 - 4.30</title>
   <link rel="stylesheet" href="help_data/styles/style.css?ver=2.50" />
   <link rel="stylesheet" href="help_data/styles/w3.css" />
-  <script src="help_data/scripts/velfun4.js?ver=4.20" type="text/javascript"></script>
+  <script src="help_data/scripts/velfun4.js?ver=4.30" type="text/javascript"></script>
   <script src="help_data/scripts/help.js" type="text/javascript"></script>
   <script src="help_data/scripts/w3codecolor.js" type="text/javascript"></script>
   <style id="vel_needed_styles">
@@ -43,7 +43,7 @@
 <body>
   <div class="top">
     <img src="help_data/images/Logo.png" alt="VelFun4" />
-    <div class="version">Ver 4.20</div>
+    <div class="version">Ver 4.30</div>
   </div>
   <div class="menu">
     <div class="type">
@@ -374,7 +374,7 @@
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <pre class="w3-code jsHigh notranslate">
-              _(<元素>).CustomContextmenuDynamic({<br />
+              let menu = _(<元素>).CustomContextmenuDynamic({<br />
                 "选择器1":{
                   "选项1":function(){<br />
                     //选项1的操作<br />
@@ -395,7 +395,7 @@
                 .<br />
                 .<br />
               });<br />
-              //你也可以使用缩写ccmd<br />
+              // 你也可以使用缩写ccmd<br />
               _(<元素>).ccmd({<br />
                 "选择器1":{
                   "选项1":function(){<br />
@@ -417,6 +417,8 @@
                 .<br />
                 .<br />
               });
+              menu.add(<选择器>, <选项名>,<方法/事件回调>,<在某项之前>);<br />
+              menu.remove(<选择器>, <选项名>);<br />
             </pre>
           <button id="test_rightclick">右键单击这里试试</button>
           <ul>
@@ -425,6 +427,21 @@
             <li>选项：选项的标题，其中可以使用icon(url)来为选单项目添加小图标，也可以在尾部使用
               if(条件)来限定显示的条件，你也可以用---作为标题，它将为菜单添加一条分割线，如果要添加多条分割线你可以用"---1" "---2"或是任何以「--- +
               不同字符」作为标题，这是因为Object类型的key不允许重复</li>
+            <li>返回menu对象，可用于动态操作</li>
+            <li>通过menu.add方法可以向选单添加选项：
+              <ul>
+                <li>选择器：需要与已有选单的选择器完全一致（包括空格），才能添加到具体选单</li>
+                <li>选项名：同ccmd，如果选项名与已有的选项相同，则会覆盖功能，而不会额外添加</li>
+                <li>方法：按下时执行的操作</li>
+                <li>在某项之前：可选，通过选项名指定在哪项之前插入，分隔线也有效。但要与选项名完全一致（包括空格）默认会添加到选单尾部</li>
+              </ul>
+            </li>
+            <li>通过menu.remove方法可以从选单移除选项：
+              <ul>
+                <li>选择器：需要与已有选单的选择器完全一致（包括空格）</li>
+                <li>选项名：通过选项名只指定要删除的项目，要与目标选项名完全一致（包括空格）</li>
+              </ul>
+            </li>
           </ul>
         </div>
       </span>
