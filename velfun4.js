@@ -1,17 +1,17 @@
 /********************
 腳本名:VelFun
-版本號:4-4.31
+版本號:4-4.33
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2024-04-28
+更新日期:2024-05-07
 ********************/
 ; (function (window, undefined) {
     var isOffline = !location.origin.match(/^(http:|https:)\/\//);
-    var version = "4-4.31";
+    var version = "4-4.33";
     var channel = "Release";
     var author = "Velade";
-    var releaseDate = "2024-04-28";
+    var releaseDate = "2024-05-07";
 
     /**
      * @typedef {object} velfunEle VelFun元素
@@ -121,22 +121,29 @@
      * @returns {velfunEle|string} 如果为设定则返回元素对象。如果为读取则返回属性值，返回的属性值一律为字符串类型
      */
     velfun.fn.attr = function (attrname, attrvalue) {
-        var _this = this;
+        const _this = this;
         if (_this.length == 0) return this;
-        if (!_this[0] || _this[0].nodeType == 3) return null;
-        if (attrvalue === undefined) {
-            return (_this[0].getAttribute) ? _this[0].getAttribute(attrname) : null;
-        } else {
-            for (var i = 0; i < _this.length; i++) {
+        let values = [];
+        _this.each((i, item) => {
+            if (item.nodeType == 3) return;
+            if (attrvalue === undefined) {
+                values.push((item.getAttribute) ? item.getAttribute(attrname) : null);
+            } else {
                 if (attrvalue === "") {
-                    _this[i].removeAttribute(attrname);
+                    item.removeAttribute(attrname);
                 } else if (attrvalue === attrname) {
-                    _this[i].setAttribute(attrname, "");
+                    item.setAttribute(attrname, "");
                 } else {
-                    _this[i].setAttribute(attrname, attrvalue);
+                    item.setAttribute(attrname, attrvalue);
                 }
             }
-            return this;
+        })
+        if (attrvalue === undefined) {
+            if (values.length == 1) return values[0];
+            else if (values.length == 0) return null;
+            else return values;
+        } else {
+            return _this;
         }
     }
     /**
@@ -155,31 +162,31 @@
      */
     velfun.fn.val = function (value) {
         if (this.length == 0) return this;
-        var _this = this;
-        if (_this[0].tagName.toLowerCase() == "v-select") {
-            if (value === undefined) {
-                return _("input[type='hidden']", _this).attr("value");
-            } else {
-                if (_this.hasAttr("readonly") || _this.hasAttr("disable")) {
-                    return _this;
+        const _this = this;
+        let values = [];
+        _this.each((i, item) => {
+            if (_this[0].tagName.toLowerCase() == "v-select") {
+                if (value === undefined) {
+                    values.push(_("input[type='hidden']", item).attr("value"));
+                } else {
+                    if (!_this[0].hasAttr("readonly") && !_this[0].hasAttr("disable")) {
+                        _("v-option[value='" + value + "']", item).trigger("click");
+                    }
                 }
-                _("v-option[value='" + value + "']").trigger("click");
-                return _this;
-            }
-        } else if (_this[0].tagName.toLowerCase() == "input" || _this[0].tagName.toLowerCase() == "textarea") {
-            if (value === undefined) {
-                return _this[0].value;
             } else {
-                this[0].value = value;
-                return _this;
+                if (value === undefined) {
+                    values.push(item.value);
+                } else {
+                    item.value = value;
+                }
             }
+        })
+        if (value === undefined) {
+            if (values.length == 1) return values[0];
+            else if (values.length == 0) return null;
+            else return values;
         } else {
-            if (value === undefined) {
-                return _this.attr("value");
-            } else {
-                _this.attr("value", value);
-                return _this;
-            }
+            return _this;
         }
     }
     /**
@@ -1046,15 +1053,15 @@
             })
         }
         let menu = new Object(menuids);
-        menu.add = function (selector, key, func, before="") {
+        menu.add = function (selector, key, func, before = "") {
             let nowMenu = vel_dynamic_menus[this[0]][selector];
             let newMenu = new Map();
             for (const k in nowMenu) {
                 const v = nowMenu[k];
-                if(before != "" && before == k) {
-                    newMenu.set(key,func);
+                if (before != "" && before == k) {
+                    newMenu.set(key, func);
                 }
-                newMenu.set(k,v);
+                newMenu.set(k, v);
             }
             for (let i = 0; i < this.length; i++) {
                 const menuid = this[i];
@@ -2799,7 +2806,7 @@ _(function () {
         if (_(velfun.nowinputbox).hasAttr('readonly') || _(velfun.nowinputbox).hasAttr('disable') || !velfun.nowinputbox) {
             return false;
         }
-        var keychar = _this.val();
+        var keychar = _this.attr("value");
         var pos = velfun.nowinputbox.selectionStart;
         if (keychar == "clear") {
             velfun.nowinputbox.value = "";
@@ -2829,10 +2836,10 @@ _(function () {
                 var keys = _("v-key", _this.parent());
                 for (var i = 0; i < keys.length; i++) {
                     var key = _(keys[i]);
-                    var isEn = /^[a-zA-Z]$/i.test(key.val());
+                    var isEn = /^[a-zA-Z]$/i.test(key.attr("value"));
                     if (isEn) {
-                        var normal = key.val().toLowerCase();
-                        key.val(normal);
+                        var normal = key.attr("value").toLowerCase();
+                        key.attr("value", normal);
                         key.text(normal);
                     }
                 }
@@ -2841,10 +2848,10 @@ _(function () {
                 var keys = _("v-key", _this.parent());
                 for (var i = 0; i < keys.length; i++) {
                     var key = _(keys[i]);
-                    var isEn = /^[a-zA-Z]$/i.test(key.val());
+                    var isEn = /^[a-zA-Z]$/i.test(key.attr("value"));
                     if (isEn) {
-                        var upper = key.val().toUpperCase();
-                        key.val(upper);
+                        var upper = key.attr("value").toUpperCase();
+                        key.attr("value", upper);
                         key.text(upper);
                     }
                 }

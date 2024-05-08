@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>VelFun4开发者手册 - 4.31</title>
+  <title>VelFun4开发者手册 - 4.33</title>
   <link rel="stylesheet" href="help_data/styles/style.css?ver=2.50" />
   <link rel="stylesheet" href="help_data/styles/w3.css" />
   <script src="help_data/scripts/velfun4.js?ver=4.31" type="text/javascript"></script>
@@ -43,7 +43,7 @@
 <body>
   <div class="top">
     <img src="help_data/images/Logo.png" alt="VelFun4" />
-    <div class="version">Ver 4.31</div>
+    <div class="version">Ver 4.33</div>
   </div>
   <div class="menu">
     <div class="type">
@@ -1520,6 +1520,8 @@
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>属性名：要操作的属性名</li>
             <li>属性值：字符串类型，可选参数，不传此参数时为读取属性值，传递空的字符串("")时，视为删除属性，传递非空字符串时设置属性值</li>
+            <li>设定值时将会同时设定选择器选中的所有元素</li>
+            <li>获取值时如果选择单一元素则直接返回值，如果选择多个元素则返回包含每一个元素的值的数组</li>
           </ul>
         </div>
       </span>
@@ -1529,7 +1531,7 @@
       <span class="title">值操作</span>
       <span class="subtitle"><span>说明</span></span>
       <span class="content">
-        用于velfun对象的值操作方法，获取或设定value属性值，内部通过attr实现，因此等效于_(<元素>).attr("value"[,<值>]);
+        用于velfun对象的值操作方法，获取或设定value属性值。<br><strong>从4.33版本开始统一使用HTMLElement.value = value;实现，不再操作attr设定和读取HTML属性，不具有value对象属性的元素不再能被读取，请转而使用attr("value")读取自定义的HTML中的value。</strong>
       </span>
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
@@ -1540,6 +1542,8 @@
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>值：字符串类型，可选参数，不传此参数时为读取value值，传递值时设置value值</li>
+            <li>设定值时将会同时设定选择器选中的所有元素</li>
+            <li>获取值时如果选择单一元素则直接返回值，如果选择多个元素则返回包含每一个元素的值的数组</li>
           </ul>
         </div>
       </span>
