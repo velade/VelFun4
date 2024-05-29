@@ -1,32 +1,348 @@
 /********************
 腳本名:VelFun
-版本號:4-4.33
+版本號:4-4.50
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2024-05-07
+更新日期:2024-05-29
 ********************/
 ; (function (window, undefined) {
-    var isOffline = !location.origin.match(/^(http:|https:)\/\//);
-    var version = "4-4.33";
-    var channel = "Release";
-    var author = "Velade";
-    var releaseDate = "2024-05-07";
+    const isOffline = !location.origin.match(/^(http:|https:)\/\//);
+    const version = "4-4.50";
+    const channel = "Release";
+    const author = "Velade";
+    const releaseDate = "2024-05-29";
 
     /**
      * @typedef {object} velfunEle VelFun元素
      */
+
     /**
      * VelFun 入口&选择器
      * @param {string|HTMLElement} selector 主选择器 
      * @param {string|HTMLElement|velfunEle} context 父级（上下文）选择器 
      * @returns {velfunEle}
      */
-    var velfun = function (selector, context) {
+    const velfun = function (selector, context) {
+
         if (_.info.isIE()) {
             return false;
         }
+
         return new velfun.fn.init(selector, context);
+    }
+    /**
+     * 将文本类型的html代码转换为HTMLElement对象
+     * @param {string} html 文本类型的html代码
+     * @param {function} callback 回调，可选利用回调异步执行或同步执行，二者同时存在，也可以同时使用。
+     * @returns {HTMLElement} 返回html对象
+     */
+    velfun.htmltodom = function (html, callback) {
+        const template = document.createElement('template');
+        let range = document.createRange();
+        range.selectNodeContents(template);
+
+        if (callback !== undefined) {
+            callback.call(range.createContextualFragment(html), range.createContextualFragment(html));
+        }
+
+        return range.createContextualFragment(html);
+    }
+    /**
+     * 将事件绑定到元素，默认绑定到document的版本，是_(document).bind()的简化写法
+     * @param {string} ev 事件名称，不包括on（和addEventListener一样）
+     * @param {string} selector 子元素选择器，用以指定具体元素，此处只接受字符串类型，在使用委托/代理模式捕捉动态元素时有效
+     * @param {function} func 事件触发的函数
+     * @param {boolean} pop 允许间接触发？默认值 False，子元素的事件不会传递给父元素。
+     * @returns {velfunEle} 返回该元素
+     */
+    velfun.bind = function (ev, selector, func, bubbling) {
+        const _this = _(document);
+        if (typeof ev == "object") {
+            const _args = ev;
+            ev = _args.event;
+            selector = _args.selector;
+            func = _args.callback;
+            bubbling = _args.bubbling;
+        }
+
+        if (typeof func == "boolean" && bubbling == undefined) {
+            bubbling = func;
+
+            func = undefined;
+        }
+        if (typeof selector == "function" && func == undefined) {
+            func = selector;
+            selector = undefined;
+        }
+        if(bubbling == undefined) bubbling = false;
+        if (typeof func === "function") {
+            let eventKey = "";
+            do {
+                eventKey = "ev_" + velfun.random(100000000000,999999999999);
+            } while(Object.keys(velfun.global.Events).includes(eventKey));
+
+            if(selector) {
+                velfun.global.Events[eventKey] = function (e) {
+                    if (e.target.matches(selector) || bubbling) func.call(_(e.target), e, _this);
+                };
+            }else {
+                velfun.global.Events[eventKey] = function (e) {
+                    func.call(_(e.target), e, _this);
+                };
+            }
+
+            _this.each((i,th)=>{
+                th.self = th;
+                th.addEventListener(ev, velfun.global.Events[eventKey])
+            })
+            return eventKey;
+        } else {
+            try {
+                console.error("%cVelFun%cError%c\n    %cbind%c No valid callback function found.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
+            } catch (e) {
+                document.writeln("VelFun Error:\n    bind:No valid callback function found.");
+            }
+        }
+
+        return _this;
+    }
+    /**
+     * 解除绑定的事件，解除绑定到document的版本，是_(document).unbind()的简化写法
+     * @param {String} ev 要解绑的事件
+     * @param {String} funcID 要解绑的事件对应ID（之前绑定时返回的值）
+     */
+    velfun.unbind = function (ev,funcID) {
+        document.removeEventListener(ev,velfun.global.Events[funcID]);
+    }
+    /**
+     * 提示框
+     * @param {string} Message 消息内容，支持html
+     * @param {string} Title 弹窗标题，可以省略
+     * @param {string} Type 按钮类型：MSG_OK 默认 仅确定；MSG_YES_NO 是、否两个按钮；MSG_OK_Cancel 确定、取消两个按钮
+     * @param {array} Position 弹窗的座标，[x, y]的格式
+     * @param {function} callback 按下按钮后的回调，参数1为按钮是否是「肯定」的，即OK YES按钮为肯定，其他为否定。
+     */
+    velfun.Msgbox = async function (Message, Title, Type, Position, callback) {
+
+        if (typeof Message == "object") {
+            const _args = Message;
+            Message = _args.Message || _args.message;
+            Title = _args.Title || _args.title;
+            Type = _args.Type || _args.type;
+            Position = _args.Position || _args.position;
+            callback = _args.callback;
+        }
+
+        msgboxList.push(function () { return _.inside.Msgbox_do(Message, Title, Type, Position, callback); });
+
+        if (_("#_MessageBox_").length == 0) {
+            const fun = msgboxList.shift();
+            fun();
+        }
+    }
+    /**
+     * 提示框-精简版 为低配电脑而设计，去除了一些效果和所有动画
+     * @param {string} Message 消息内容，支持html
+     * @param {string} Title 弹窗标题，可以省略
+     * @param {string} Type 按钮类型：MSG_OK 默认 仅确定；MSG_YES_NO 是、否两个按钮；MSG_OK_Cancel 确定、取消两个按钮
+     * @param {array} Position 弹窗的座标，[x, y]的格式
+     * @param {function} callback 按下按钮后的回调，参数1为按钮是否是「肯定」的，即OK YES按钮为肯定，其他为否定。
+     */
+    velfun.Msgbox_lite = async function (Message, Title, Type, Position, callback) {
+
+        if (typeof Message == "object") {
+            const _args = Message;
+            Message = _args.Message || _args.message;
+            Title = _args.Title || _args.title;
+            Type = _args.Type || _args.type;
+            Position = _args.Position || _args.position;
+            callback = _args.callback;
+        }
+
+        msgboxList.push(function () { return _.inside.Msgbox_lite_do(Message, Title, Type, Position, callback); });
+
+        if (_("#_MessageBox_").length == 0) {
+            const fun = msgboxList.shift();
+            fun();
+        }
+    }
+    /**
+     * 全屏显示的选择项
+     * @param {object} opt_arr JSON格式的选项，具体格式请参考官网手册
+     * @param {string} title 标题，可以省略，省略后不显示标题
+     */
+    velfun.Options = function (opt_arr, title) {
+
+        optionsList.push(function () { _.inside.Options_do(opt_arr, title); });
+
+        if (_("#_OPTIONS_").length == 0) {
+            const fun = optionsList.shift();
+            fun();
+        }
+    }
+    /**
+     * 整数随机数
+     * @param {number} min 两个参数时为最小值，但只指定一个参数时为最大值
+     * @param {number} max 最大值，省略时min视为最大值
+     * @returns {number} 随机的结果
+     */
+    velfun.random = function (min, max) {
+        let vel_minval, vel_maxval, vel_randomval;
+
+        if (typeof min == 'number' & typeof max == 'number') {
+            vel_minval = min;
+            vel_maxval = max - min;
+            vel_randomval = Math.round(Math.random() * vel_maxval + vel_minval);
+
+        } else if (typeof min == 'number' & max === undefined) {
+            vel_minval = 0;
+            vel_maxval = min;
+            vel_randomval = Math.round(Math.random() * vel_maxval);
+        } else {
+            try {
+                console.error("%cVelFun%cError%c\n    %crandom%c The parameter is missing or is not a number.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
+            } catch (e) {
+                document.writeln("VelFun Error:\n    random:The parameter is missing or is not a number.");
+            }
+        }
+
+        return vel_randomval;
+    }
+    /**
+     * [已废弃] 初始化上传控件，上传控件现在移动到libvelui库，此处的已不再维护，并很快将彻底移除
+     * @deprecated since version 4.50
+     * @returns
+     */
+    velfun.initUpload = function () {
+        var veluploads = _("v-upload");
+        if (veluploads.length > 0) {
+            try {
+                console.error("%cVelFun%cDeprecated Error%c\n    %cinitUpload%c This function is deprecated, You can use it under 4.40 version only.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: gray; color:white;padding: 0 5px; border-radius: 1000px;","");
+            } catch (e) { }
+        }
+        return false;
+    }
+    /**
+     * 弹出提示
+     * @param {string} content 弹出提示的内容
+     * @param {string} title 提示的标题
+     * @param {number} duration 多久自动关闭，单位毫秒，默认三秒
+     */
+    velfun.Tip = function (content, title, duration) {
+        if (typeof content == "object") {
+            const _args = content;
+            content = _args.content;
+            title = _args.title;
+            duration = _args.duration;
+        }
+        tipList.push(function () { _.inside.Tip_do(content, title, duration); });
+        if (tipReady) {
+            tipReady = false;
+            const fun = tipList.shift();
+            fun();
+        }
+    }
+    /**
+     * 手动初始化所有v-coloricon元素
+     */
+    velfun.setColoricon = function () {
+        const coloricons = _("v-coloricon");
+        for (let i = 0; i < coloricons.length; i++) {
+
+            const thisicon = _(coloricons[i]);
+
+            if (_("img", thisicon).length > 0) continue;
+            const width = thisicon.attr("width") || thisicon.css("width");
+            const height = thisicon.attr("height") || thisicon.css("height");
+            const src = thisicon.attr("src");
+            thisicon.css("width:" + width + "px;height:" + height + "px;overflow:hidden;display:inline-block;text-indent:0px;padding:0px;");
+            thisicon.append("<img src='" + src + "' style='width:" + width + "px;height:" + height + "px;position:relative;left:-" + width + "px;border-right:1px solid transparent;filter:drop-shadow(" + width + "px 0 0 black)'>");
+        }
+    }
+    /**
+     * 设置网页语言（需要网页以VelFun多语言方式开发）
+     * @param {string} langfile 指定语言文件路径
+     * @returns
+     */
+    velfun.setLang = function (langfile = "") {
+        if (isOffline) return;
+        if (langfile == "") return;
+
+        if (_.observer != undefined) _.observer.disconnect();
+
+        _.io.get(langfile, function (langfiledata) {
+
+            _.langdata = JSON.parse(langfiledata);
+
+            /**调用时强制更新**/
+
+            const nl = _.getTextNodes(_("html")[0]);
+            for (const tn of nl) {
+                if (tn.nodeValue.trim() == "") continue;
+                if (tn.tempStr == undefined) {
+                    tn.tempStr = tn.nodeValue.trim();
+                } else {
+                    tn.nodeValue = tn.tempStr;
+                }
+
+                for (const key in _.langdata) {
+                    const nt = _.langdata[key];
+                    tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`, nt);
+                }
+            }
+
+
+            const al = _("[title],[placeholder],[value]");
+            al.each(function () {
+                _.inside.setAttrsLang(this, _.langdata);
+            });
+
+            _.observer.observe(_.obbody, _.obconfig);
+        });
+    }
+    /**
+         * 获取元素下所有纯文本节点
+         * @param {HTMLElement} ele 父元素对象
+         * @returns {array} 所有#TEXT节点
+         */
+    velfun.getTextNodes = function (ele) {
+        if (ele.nodeType == 3) return [ele];
+        const nodes = ele.childNodes;
+        const textnodes = [];
+        for (const i in nodes) {
+            if (nodes[i].nodeType == 3) {
+                textnodes.push(nodes[i]);
+            } else {
+
+                const r = _.getTextNodes(nodes[i]);
+                for (const tn of r) {
+                    textnodes.push(tn);
+                }
+            }
+        }
+        return textnodes;
+    }
+    /**
+         * 数组/对象深度拷贝
+         * @param {array} from 从那个数组/对象拷贝
+         * @returns {array} 得到的独立的新数组/对象
+         */
+    velfun.deepCopy = function (from) {
+        let new_obj = new Object();
+        if (Array.isArray(from)) {
+            new_obj = new Array();
+        }
+        for (const key in from) {
+            let val = from[key];
+            if (typeof val == "object") {
+                new_obj[key] = velfun.deepCopy(val);
+            } else {
+                new_obj[key] = val;
+            }
+        }
+
+        return new_obj;
     }
 
     velfun.global = {};
@@ -40,20 +356,22 @@
     //Init
     velfun.fn = velfun.prototype = {
         length: 0,
-        velfun: version,
+        velfun: "4",
+        version: version,
         channel: channel,
         author: author,
         releaseDate: releaseDate,
         selector: "",
         init: function (selector, context) {
-            var _this = this;
-            _this.velfun = version;
+            const _this = this;
+            _this.velfun = "4";
+            _this.version = version;
             _this.channel = channel;
             _this.author = author;
             _this.releaseDate = releaseDate;
             try {
                 if (selector === undefined) {
-                    console.error("VelFun Error:\n    Selector:The selector cannot be empty and an empty object was returned!");
+                    console.error("%cVelFun%cError%c\n    %cSelector%c The selector cannot be empty and an empty object was returned!","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
                     _this.length = 0;
                     _this.selector = "";
                     return _this;
@@ -64,13 +382,15 @@
                 if (typeof selector === "function") {
                     window.addEventListener("load", function () {
                         //Callback
+
                         selector.call(_(document));
                     });
                     return _this;
                 }
-                var doms;
-                var parent = document;
+                let doms;
+                let parent = document;
                 if (context !== undefined) {
+
                     parent = _(context)[0];
                 }
                 if (typeof selector === "string") {
@@ -85,7 +405,7 @@
                     return _this;
                 } else {
                     try {
-                        console.error("VelFun Error:\n    Selector:Not support selector");
+                        console.error("%cVelFun%cError%c\n    %cSelector%c Not support selector","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
                     } catch (e) {
                         document.writeln("VelFun Error:\n    Selector:Not support selector");
                     }
@@ -95,13 +415,13 @@
                 }
                 _this.length = doms.length;
                 _this.selector = selector;
-                for (var i = 0; i < doms.length; i++) {
+                for (let i = 0; i < doms.length; i++) {
                     _this[i] = doms[i];
                 }
                 return _this;
             } catch (e) {
                 try {
-                    console.error("VelFun Error:\n    Selector:An error occurred and an empty object was returned!", e);
+                    console.error("%cVelFun%cError%c\n    %cSelector%c An error occurred and an empty object was returned!","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","", e);
                 } catch (e) {
                     document.writeln("VelFun Error:\n    Selector:An error occurred and an empty object was returned!");
                 }
@@ -124,6 +444,7 @@
         const _this = this;
         if (_this.length == 0) return this;
         let values = [];
+
         _this.each((i, item) => {
             if (item.nodeType == 3) return;
             if (attrvalue === undefined) {
@@ -152,6 +473,7 @@
      * @returns {boolean} 属性是否存在
      */
     velfun.fn.hasAttr = function (attrname) {
+
         if (this.length == 0) return this;
         return (this.attr(attrname) !== null) ? true : false;
     }
@@ -164,12 +486,15 @@
         if (this.length == 0) return this;
         const _this = this;
         let values = [];
+
         _this.each((i, item) => {
             if (_this[0].tagName.toLowerCase() == "v-select") {
                 if (value === undefined) {
+
                     values.push(_("input[type='hidden']", item).attr("value"));
                 } else {
                     if (!_this[0].hasAttr("readonly") && !_this[0].hasAttr("disable")) {
+
                         _("v-option[value='" + value + "']", item).trigger("click");
                     }
                 }
@@ -197,24 +522,26 @@
      */
     velfun.fn.css = function (css, index) {
         if (this.length == 0) return this;
-        var _this = this;
-        var isRead = false;
+        const _this = this;
+        let isRead = false;
 
         // 轉譯dataurl中的特殊符號
+
         css = css.replaceAll(/data:(.+?);base64,/g, "data[Colon]$1[Semicolon]base64,");
 
         css = css.replace(/\s*?:\s*?/, ":");
         css = css.replace(/\s*?;\s*?/, ";");
-        var newstyles = css.split(";");
+        let newstyles = css.split(";");
         newstyles = newstyles.filter(Boolean);
         if (newstyles.length <= 1) {
             if (newstyles[0]) {
-                var tmp_NaA = newstyles[0].split(":");
+                const tmp_NaA = newstyles[0].split(":");
                 if (!tmp_NaA[1]) {
                     isRead = true;
                 }
             } else if (css) {
-                var tmp_NaA = css[0].split(":");
+
+                const tmp_NaA = css[0].split(":");
                 if (!css[1]) {
                     isRead = true;
                 }
@@ -225,7 +552,7 @@
             if (index === undefined) {
                 index = 0;
             }
-            var re = null;
+            let re = null;
             switch (css) {
                 case "transform":
                     re = _this[0].style.transform;
@@ -236,10 +563,11 @@
             return re;
         } else {
             //Write css
-            for (var i = 0; i < _this.length; i++) {
+            for (let i = 0; i < _this.length; i++) {
                 if (_this.hasOwnProperty(i)) {
-                    var tostyle = _(_this[i]).attr("style");
-                    var oldstyles = {};
+
+                    let tostyle = _(_this[i]).attr("style");
+                    let oldstyles = {};
                     if (tostyle != null) {
                         tostyle = tostyle.replaceAll(/data:(.+?);base64,/g, "data[Colon]$1[Semicolon]base64,");
                         tostyle = tostyle.replace(/\s*?:\s*?/, ":");
@@ -247,26 +575,27 @@
                         oldstyles = tostyle.split(";");
                         oldstyles = oldstyles.filter(Boolean);
                     }
-                    var newstyles_a = {}, oldstyles_a = {};
-                    for (var i2 in newstyles) {
+                    let newstyles_a = {}, oldstyles_a = {};
+                    for (const i2 in newstyles) {
                         if (newstyles.hasOwnProperty(i2)) {
-                            var NaA = newstyles[i2].split(":");
+                            let NaA = newstyles[i2].split(":");
                             NaA = NaA.filter(Boolean);
-                            var cssvals = [];
-                            for (var n = 1; n <= NaA.length; n++) {
+                            let cssvals = [];
+                            for (let n = 1; n <= NaA.length; n++) {
                                 if (NaA[n]) {
+
                                     cssvals.push(NaA[n].replaceAll(/data\[Colon\](.+?)\[Semicolon\]base64,/g, "data:$1;base64,"));
                                 }
                             }
                             newstyles_a[NaA[0].trim()] = cssvals.join(":");
                         }
                     }
-                    for (var i2 in oldstyles) {
+                    for (const i2 in oldstyles) {
                         if (oldstyles.hasOwnProperty(i2)) {
-                            var NaA = oldstyles[i2].split(":");
+                            let NaA = oldstyles[i2].split(":");
                             NaA = NaA.filter(Boolean);
-                            var cssvals = [];
-                            for (var n = 1; n <= NaA.length; n++) {
+                            let cssvals = [];
+                            for (let n = 1; n <= NaA.length; n++) {
                                 if (NaA[n]) {
                                     cssvals.push(NaA[n].replaceAll(/data\[Colon\](.+?)\[Semicolon\]base64,/g, "data:$1;base64,"));
                                 }
@@ -274,17 +603,18 @@
                             oldstyles_a[NaA[0].trim()] = cssvals.join(":");
                         }
                     }
-                    for (var key in newstyles_a) {
+                    for (const key in newstyles_a) {
                         if (newstyles_a.hasOwnProperty(key)) {
                             oldstyles_a[key] = newstyles_a[key];
                         }
                     }
-                    var newstyles_s = "";
-                    for (var key in oldstyles_a) {
+                    let newstyles_s = "";
+                    for (const key in oldstyles_a) {
                         if (oldstyles_a.hasOwnProperty(key)) {
                             newstyles_s += key + ":" + oldstyles_a[key] + ";";
                         }
                     }
+
                     _(_this[i]).attr("style", newstyles_s);
                 }
             }
@@ -299,7 +629,7 @@
      */
     velfun.fn.html = function (html, index) {
         if (this.length == 0) return this;
-        var _this = this;
+        const _this = this;
         if (html === undefined) {
             //ReadHTML
             if (index === undefined) {
@@ -310,9 +640,9 @@
 
         } else {
             //WriteHTML
-            for (var i = 0; i < _this.length; i++) {
+            for (let i = 0; i < _this.length; i++) {
                 if (_this.hasOwnProperty(i)) {
-                    var tdom = _this[i];
+                    const tdom = _this[i];
                     tdom.innerHTML = html;
                 }
             }
@@ -327,7 +657,7 @@
      */
     velfun.fn.text = function (text, index) {
         if (this.length == 0) return this;
-        var _this = this;
+        const _this = this;
         if (text === undefined) {
             //ReadTEXT
             if (index === undefined) {
@@ -337,9 +667,9 @@
             }
         } else {
             //WriteTEXT
-            for (var i = 0; i < _this.length; i++) {
+            for (let i = 0; i < _this.length; i++) {
                 if (_this.hasOwnProperty(i)) {
-                    var tdom = _this[i];
+                    const tdom = _this[i];
                     tdom.innerText = text;
                 }
             }
@@ -349,18 +679,13 @@
     /**
      * 获取元素类名
      * @param {number} index 第几个元素，以0开始，仅用于获取，未指定时默认读取第一个元素的属性
-     * @returns {array} 返回元素类名的数组
+     * @returns {DOMTokenList} 返回元素类名的数组
      */
     velfun.fn.getClass = velfun.fn.getclass = function (index) {
+
         if (this.length == 0) return this;
-        if (index == undefined) {
-            var classStr = this[0].className;
-        } else {
-            var classStr = this[index].className;
-        }
-        var classArr = classStr.split(/\s+/);
-        classArr = classArr.filter(Boolean);
-        return classArr;
+        index = index || 0;
+        return this[index].classList;
     }
     /**
      * 判断元素是否存在/包含类名
@@ -368,9 +693,10 @@
      * @returns {boolean} 返回元素是否包含查询的类名
      */
     velfun.fn.hasClass = velfun.fn.hasclass = function (classname) {
+
         if (this.length == 0) return this;
-        var classes = this.getClass();
-        return (classes.indexOf(classname) == -1) ? false : true;
+        const classes = this.getClass();
+        return classes.contains(classname);
     }
     /**
      * 为元素添加类名
@@ -379,14 +705,15 @@
      */
     velfun.fn.addClass = velfun.fn.addclass = function (classname) {
         if (this.length == 0) return this;
-        var _this = this;
+        const _this = this;
+
         _this.each((i, item) => {
-            var nowClasses = _(item).getclass();
-            if (nowClasses.indexOf(classname) === -1) {
-                nowClasses.push(classname);
-                nowClasses = nowClasses.filter(Boolean);
-                var newClassStr = nowClasses.join(" ");
-                _(item).attr("class", newClassStr, i);
+
+            const nowClasses = _(item).getclass();
+            if (!nowClasses.contains(classname)) {
+                nowClasses.add(classname);
+
+                _(item)[0].classList = nowClasses;
             }
         })
         return _this;
@@ -398,18 +725,14 @@
      */
     velfun.fn.removeClass = velfun.fn.removeclass = function (classname) {
         if (this.length == 0) return this;
-        var _this = this;
+        const _this = this;
+
         _this.each((i, item) => {
-            var nowClasses = _(item).getclass();
-            for (const nowClassi in nowClasses) {
-                const nowClass = nowClasses[nowClassi];
-                if (nowClass == classname) {
-                    delete nowClasses[nowClassi];
-                }
-            }
-            nowClasses = nowClasses.filter(Boolean);
-            var newClassStr = nowClasses.join(" ");
-            _(item).attr("class", newClassStr, i);
+
+            const nowClasses = _(item).getclass();
+            nowClasses.remove(classname);
+
+            _(item)[0].classList = nowClasses;
         })
 
         return _this;
@@ -422,10 +745,18 @@
      */
     velfun.fn.replaceClass = velfun.fn.replaceclass = function (oldclass, newclass) {
         if (this.length == 0) return this;
-        this.addClass(newclass);
-        this.removeClass(oldclass);
+        const _this = this;
+
+        _this.each((i, item) => {
+
+            const nowClasses = _(item).getclass();
+            nowClasses.replace(oldclass, newclass);
+
+            _(item)[0].classList = nowClasses;
+        })
         return this;
     }
+    velfun.global.Events = new Object();
     /**
      * 将事件绑定到元素
      * @param {string} ev 事件名称，不包括on（和addEventListener一样）
@@ -434,47 +765,69 @@
      * @param {boolean} pop 允许间接触发？默认值 False，子元素的事件不会传递给父元素。
      * @returns {velfunEle} 返回该元素
      */
-    velfun.fn.bind = function (ev, selector = "", func, pop = false) {
+    velfun.fn.bind = function (ev, selector, func, bubbling) {
+        if (typeof ev == "object") {
+            const _args = ev;
+            ev = _args.event;
+            selector = _args.selector;
+            func = _args.callback;
+            bubbling = _args.bubbling;
+        }
+
         if (this.length == 0) return this;
-        var _this = this;
-        if (typeof func == "boolean" && pop == undefined) {
-            pop = func;
-            func = "";
+        const _this = this;
+        if (typeof func == "boolean" && bubbling == undefined) {
+            bubbling = func;
+
+            func = undefined;
         }
         if (typeof selector == "function" && func == undefined) {
             func = selector;
-            selector = "";
+            selector = undefined;
         }
+        if(bubbling == undefined) bubbling = false;
         if (typeof func === "function") {
-            for (var i = 0; i < _this.length; i++) {
-                var th = _this[i];
-                if (selector != "") {
-                    th.self = th;
-                    th.addEventListener(ev, (s => {
-                        return function (e) {
-                            var sdom = _(s);
-                            for (var i = 0; i < sdom.length; i++) {
-                                if (e.target === sdom[i] || pop) func.call(_(e.target), e, this);;
-                            }
-                        }
-                    })(selector))
-                } else {
-                    th.self = th;
-                    th.addEventListener(ev, function (e) {
-                        func.call(_(e.target), e, this);
+            let eventKey = "";
+            do {
+                eventKey = "ev_" + velfun.random(100000000000,999999999999);
+            } while(Object.keys(velfun.global.Events).includes(eventKey));
 
-                    })
-                }
+            
+            if(selector) {
+                velfun.global.Events[eventKey] = function (e) {
+                    if (e.target.matches(selector) || bubbling) func.call(_(e.target), e, this);
+                };
+            }else {
+                velfun.global.Events[eventKey] = function (e) {
+                    func.call(_(e.target), e, this);
+                };
             }
+
+            _this.each((i,th)=>{
+                th.self = th;
+                th.addEventListener(ev, velfun.global.Events[eventKey])
+            })
+            return eventKey;
         } else {
             try {
-                console.error("VelFun Error:\n    bind:The second parameter not a function!");
+                console.error("%cVelFun%cError%c\n    %cbind%c No valid callback function found.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
             } catch (e) {
-                document.writeln("VelFun Error:\n    bind:The second parameter not a function!");
+                document.writeln("VelFun Error:\n    bind:No valid callback function found.");
             }
         }
 
         return _this;
+    }
+    /**
+     * 解除绑定的事件
+     * @param {String} ev 要解绑的事件
+     * @param {String} funcID 要解绑的事件对应ID（之前绑定时返回的值）
+     */
+    velfun.fn.unbind = function (ev,funcID) {
+        const _this = this;
+        _this.each((i,item)=>{
+            item.removeEventListener(ev,velfun.global.Events[funcID]);
+        })
     }
     /**
      * 触发元素事件，注意因为浏览器安全设计，部份事件通过代码产生的触发是无效的，而部份事件需要用户有明确交互（点击、输入等）后才能通过代码触发
@@ -483,14 +836,13 @@
      */
     velfun.fn.trigger = function (event) {
         if (this.length == 0) return this;
-        var _this = this;
-        for (var i = 0; i < _this.length; i++) {
-            var th = _this[i];
+        const _this = this;
+        for (let i = 0; i < _this.length; i++) {
+            const th = _this[i];
             if (typeof th[event] == "function") {
                 th[event]();
             } else {
-                var e = new Event(event);
-                th.dispatchEvent(e);
+                th.dispatchEvent(new Event(event));
             }
         }
 
@@ -502,15 +854,12 @@
      * @param {function} func 事件触发的函数 
      * @returns {velfunEle} 返回该元素
      */
-    velfun.fn.click = function (func) {
-        if (this.length == 0) return this;
-        if (func === undefined) {
-            this.trigger("click");
-        } else {
-            this.bind("click", func);
-        }
 
-        return this;
+    velfun.fn.click = function (func) {
+        try {
+            console.error("%cVelFun%cDeprecated Error%c\n    %cclick%c This function is deprecated, You can use it under 4.40 version only.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
+        } catch (e) { }
+        return false;
     }
     /**
      * 在元素（外部）之后追加
@@ -519,7 +868,8 @@
      */
     velfun.fn.after = function (html) {
         if (this.length == 0) return this;
-        var dom = this[0];
+        const dom = this[0];
+
         _.htmltodom(html, function (elem) {
             if (dom.parentNode) {
                 dom.parentNode.insertBefore(elem, dom.nextSibling);
@@ -534,7 +884,8 @@
      */
     velfun.fn.before = function (html) {
         if (this.length == 0) return this;
-        var dom = this[0];
+        const dom = this[0];
+
         _.htmltodom(html, function (elem) {
             if (dom.parentNode) {
                 dom.parentNode.insertBefore(elem, dom);
@@ -549,7 +900,8 @@
      */
     velfun.fn.append = function (html) {
         if (this.length == 0) return this;
-        var dom = this[0];
+        const dom = this[0];
+
         _.htmltodom(html, function (elem) {
             if (dom.parentNode) {
                 dom.appendChild(elem);
@@ -564,7 +916,8 @@
      */
     velfun.fn.prepend = function (html) {
         if (this.length == 0) return this;
-        var dom = this[0];
+        const dom = this[0];
+
         _.htmltodom(html, function (elem) {
             if (dom.parentNode) {
                 dom.insertBefore(elem, dom.firstChild);
@@ -577,23 +930,24 @@
      * @returns {boolean} 成功
      */
     velfun.fn.remove = function () {
+
         if (this.length == 0) return this;
-        var _this = this;
-        for (var i = 0; i < _this.length; i++) {
-            var dom = _this[i];
+        const _this = this;
+        for (let i = 0; i < _this.length; i++) {
+            const dom = _this[i];
             dom.parentNode.removeChild(dom);
         }
         return true;
     }
     /**
      * 清空元素所有子节点，即清空内部内容
-     * @param {velfunEle} 返回该元素
+     * @returns {velfunEle} 返回该元素
      */
     velfun.fn.empty = function () {
         if (this.length == 0) return this;
-        var _this = this;
-        for (var i = 0; i < _this.length; i++) {
-            var dom = _this[i];
+        const _this = this;
+        for (let i = 0; i < _this.length; i++) {
+            const dom = _this[i];
             while (dom.hasChildNodes()) {
                 dom.removeChild(dom.firstChild);
             }
@@ -606,6 +960,7 @@
      * @returns {HTMLElement|null} 找到的元素，非VelFun元素
      */
     velfun.fn.parent = function (times = 1) {
+
         if (this.length == 0) return this;
         let parent = this[0];
         for (let i = 0; i < times; i++) {
@@ -619,6 +974,7 @@
      * @returns {HTMLElement|null} 找到的元素，非VelFun元素
      */
     velfun.fn.next = function (times = 1) {
+
         if (this.length == 0) return this;
         let next = this[0];
         for (let i = 0; i < times; i++) {
@@ -632,6 +988,7 @@
      * @returns {HTMLElement|null} 找到的元素，非VelFun元素
      */
     velfun.fn.prev = function (times = 1) {
+
         if (this.length == 0) return this;
         let prev = this[0];
         for (let i = 0; i < times; i++) {
@@ -646,15 +1003,14 @@
      */
     velfun.fn.each = function (func) {
         if (this.length == 0) return this;
-        var _this = this;
+        const _this = this;
         if (typeof func != "function") {
             return false;
         }
-        for (var i = 0; i < _this.length; i++) {
-            var item = _this[i];
-            var index = i;
-            var value = func.call(item, index, item);
-            if (value === false) break;
+        for (let i = 0; i < _this.length; i++) {
+            const item = _this[i];
+            const index = i;
+            if (func.call(item, index, item) === false) break;
         }
         return _this;
     }
@@ -666,15 +1022,16 @@
     velfun.fn.back = function (size = 5) {
         if (this.length == 0) return this;
         clearTimeout(velfun.global.unbacktimer);
-        var _this = this;
+        const _this = this;
         if (_this[0].tagName.toLowerCase() == "body") {
+
             _("html").addClass("html_alt_back");
             if (window.getComputedStyle(_this[0]).background.match(/rgba\s*?\(\d+?,\s*?\d+?,\s*?\d+?,\s*?0\)/i)) {
                 _this.addClass("body_alt_back");
             }
         }
 
-        var nowLaySize = _this.attr("data-laysizes");
+        let nowLaySize = _this.attr("data-laysizes");
         if (!nowLaySize) {
             nowLaySize = size;
             _this.attr("data-start-opacity", _this.css("opacity"));
@@ -683,19 +1040,14 @@
         }
         _this.attr("data-laysizes", nowLaySize);
 
-        var oldTransform = _this.css("transform");
-        var oldTZ = oldTransform.match(/.*?translateZ\((.+?)\).*?/);
-        var nowTZ;
-        if (oldTZ) {
-            nowTZ = parseInt(oldTZ[1]);
-        } else {
-            nowTZ = 0;
-        }
+        const oldTransform = _this.css("transform");
+        const oldTZ = oldTransform.match(/.*?translateZ\((.+?)\).*?/);
+        const nowTZ = (oldTZ) ? parseInt(oldTZ[1]) : 0;
 
-        var newsize = nowTZ - size;
+        const newsize = nowTZ - size;
 
-        var newOpa = 1 - Math.min((Math.abs(newsize) / 25), 1);
-        var newTransform;
+        const newOpa = 1 - Math.min((Math.abs(newsize) / 25), 1);
+        let newTransform;
         if (oldTZ) {
             newTransform = oldTransform.replace(/.*?translateZ\((.+?)\).*?/, "translateZ(" + newsize + "px)");
         } else {
@@ -720,14 +1072,14 @@
      */
     velfun.fn.unback = function () {
         if (this.length == 0) return this;
-        var _this = this;
+        const _this = this;
 
-        var nowLaySize = _this.attr("data-laysizes");
+        const nowLaySize = _this.attr("data-laysizes");
         if (!nowLaySize) {
             return _this;
         }
-        var nowLaySizes = nowLaySize.split(",");
-        var size = nowLaySizes.pop();
+        const nowLaySizes = nowLaySize.split(",");
+        const size = nowLaySizes.pop();
 
         if (nowLaySizes.length > 0) {
             _this.attr("data-laysizes", nowLaySizes.join(","));
@@ -735,21 +1087,22 @@
             _this.attr("data-laysizes", "");
         }
 
-        var oldTransform = _this.css("transform");
-        var oldTZ = oldTransform.match(/.*?translateZ\((.+?)\).*?/);
-        oldTZ = parseInt(oldTZ[1]);
-        var newsize = parseFloat(oldTZ) + parseFloat(size);
+        const oldTransform = _this.css("transform");
+        const oldTZ = parseInt((oldTransform.match(/.*?translateZ\((.+?)\).*?/))[1]);
 
-        var newOpa = 1 - Math.min((Math.abs(newsize) / 25), 1);
-        var newTransform = oldTransform.replace(/.*?translateZ\((.+?)\).*?/, "translateZ(" + newsize + "px)");
+        const newsize = parseFloat(oldTZ) + parseFloat(size);
+
+        const newOpa = 1 - Math.min((Math.abs(newsize) / 25), 1);
+        const newTransform = oldTransform.replace(/.*?translateZ\((.+?)\).*?/, "translateZ(" + newsize + "px)");
         _this.css("transform: " + newTransform + ";opacity: " + newOpa + ";");
 
         if (nowLaySizes.length === 0) {
-            var startOpacity = _this.attr("data-start-opacity");
+            const startOpacity = _this.attr("data-start-opacity");
             _this.attr("data-start-opacity", "");
             _this.css("opacity:" + startOpacity + ";");
             if (_this[0].tagName.toLowerCase() == "body") {
                 velfun.global.unbacktimer = setTimeout(function () {
+
                     _("html").removeClass("html_alt_back");
                     _this.removeClass("body_inback");
                     _this.removeClass("body_alt_back");
@@ -765,34 +1118,35 @@
      */
     velfun.fn.resetback = function () {
         if (this.length == 0) return this;
-        var _this = this;
+        const _this = this;
 
-        var nowLaySize = _this.attr("data-laysizes");
+        const nowLaySize = _this.attr("data-laysizes");
         if (!nowLaySize) {
             return _this;
         }
-        var nowLaySizes = nowLaySize.split(",");
-        var size = 0;
-        for (var i = 0; i < nowLaySizes.length; i++) {
+        const nowLaySizes = nowLaySize.split(",");
+        let size = 0;
+        for (let i = 0; i < nowLaySizes.length; i++) {
             size += parseFloat(nowLaySizes[i]);
         }
 
         _this.attr("data-laysizes", "");
 
-        var oldTransform = _this.css("transform");
-        var oldTZ = oldTransform.match(/.*?translateZ\((.+?)\).*?/);
-        oldTZ = parseInt(oldTZ[1]);
-        var newsize = parseFloat(oldTZ) + parseFloat(size);
+        const oldTransform = _this.css("transform");
+        const oldTZ = parseInt((oldTransform.match(/.*?translateZ\((.+?)\).*?/))[1]);
 
-        var newOpa = 1 - Math.min((Math.abs(newsize) / 25), 1);
-        var newTransform = oldTransform.replace(/.*?translateZ\((.+?)\).*?/, "translateZ(" + newsize + "px)");
+        const newsize = parseFloat(oldTZ) + parseFloat(size);
+
+        const newOpa = 1 - Math.min((Math.abs(newsize) / 25), 1);
+        const newTransform = oldTransform.replace(/.*?translateZ\((.+?)\).*?/, "translateZ(" + newsize + "px)");
         _this.css("transform: " + newTransform + ";opacity: " + newOpa + ";");
 
-        var startOpacity = _this.attr("data-start-opacity");
+        const startOpacity = _this.attr("data-start-opacity");
         _this.attr("data-start-opacity", "");
         _this.css("opacity:" + startOpacity + ";");
         if (_this[0].tagName.toLowerCase() == "body") {
             velfun.global.unbacktimer = setTimeout(function () {
+
                 _("html").removeClass("html_alt_back");
                 _this.removeClass("body_inback");
                 _this.removeClass("body_alt_back");
@@ -801,32 +1155,18 @@
         return _this;
     }
     /**
-     * 执行代码，自动选择是否同步执行
+     * [已废弃]执行代码，自动选择是否同步执行
      * @deprecated since version 4.50
-     * @param {funciton} func 要执行的函数
+     * @param {Function} func 要执行的函数
      * @param {number} delay 延迟执行，单位为毫秒，当设定延迟时将会异步执行，否则同步执行
      * @returns {velfunEle} 返回该元素
      */
-    velfun.fn.exec = function (func, delay) {
-        if (this.length == 0) return this;
-        if (typeof func !== "function") {
-            try {
-                console.error("VelFun Error:\n    exec:The first parameter not a function!");
-            } catch (e) {
-                document.writeln("VelFun Error:\n    exec:The first parameter not a function!");
-            }
-            return this;
-        }
-        if (delay !== undefined) {
-            var _this = this;
-            setTimeout(function (func) {
-                func.call(_this);
-            }.bind(_this, func), delay)
-        } else {
-            func.call(this);
-        }
 
-        return this;
+    velfun.fn.exec = function (func, delay) {
+        try {
+            console.error("%cVelFun%cDeprecated Error%c\n    %cexec%c This function is deprecated, You can use it under 4.40 version only.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
+        } catch (e) { }
+        return false;
     }
     /**
      * 绑定鼠标悬浮在该元素触发的事件
@@ -838,7 +1178,7 @@
         if (this.length == 0) return this;
         if (func1 === undefined) {
             try {
-                console.error("VelFun Error:\n    hover:You need to set at least one function to be executed!");
+                console.error("%cVelFun%cError%c\n    %chover%c You need to set at least one function to be executed!"),"background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","";
             } catch (e) {
                 document.writeln("VelFun Error:\n    hover:You need to set at least one function to be executed!");
             }
@@ -850,44 +1190,45 @@
 
         if (typeof func1 !== "function" || typeof func2 !== "function") {
             try {
-                console.error("VelFun Error:\n    hover:The parameter not a function!");
+                console.error("%cVelFun%cError%c\n    %chover%c The parameter not a function!","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
             } catch (e) {
                 document.writeln("VelFun Error:\n    hover:The parameter not a function!");
             }
             return this;
         }
-
-        this.bind("mouseover", func1).bind("mouseout", func2);
+        this.bind("mouseover", func1);
+        this.bind("mouseout", func2);
 
         return this;
     }
 
-    var vel_menufuns = new Object();
+    let vel_menufuns = new Object();
     /**
      * 为静态对象绑定上下文选单（右键选单）
      * @param {object} funarr JSON格式的对象，具体格式请参考官网手册
      */
     velfun.fn.CustomContextmenu = velfun.fn.ccm = function (funarr) {
         if (this.length == 0) return this;
-        var _this = this;
-        for (var index = 0; index < _this.length; index++) {
-            var vel_funthis = _(_this[index]);
-            var vel_funthisid = Math.floor(Math.random() * 89999999 + 10000000);
+        const _this = this;
+        for (let index = 0; index < _this.length; index++) {
+
+            const vel_funthis = _(_this[index]);
+            const vel_funthisid = Math.floor(Math.random() * 89999999 + 10000000);
             vel_funthis.attr("data-contextmenuid", vel_funthisid);
-            var backgroundStyle = "background-color: var(--bg-color);";
+            let backgroundStyle = "background-color: var(--bg-color);";
             if (CSS.supports("backdrop-filter", "blur(30px)") || CSS.supports("-webkit-backdrop-filter", "blur(30px)")) {
                 backgroundStyle = "background-color: var(--bg-color-blur);";
             }
-            var menucontant = "<ul class='_Velfun_Contextmenu_' style='" + backgroundStyle + "' for='" + vel_funthisid + "'>";
+            let menucontant = "<ul class='_Velfun_Contextmenu_' style='" + backgroundStyle + "' for='" + vel_funthisid + "'>";
             vel_menufuns[vel_funthisid] = new Object();
-            for (var i in funarr) {
+            for (const i in funarr) {
                 if (i.match(/^\-{3}/)) {
                     menucontant += `<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;padding: 0 10px;"></li>`;
                 } else {
-                    var imgurl = i.match(/icon\((.+?)\)/);
-                    var ifc = i.match(/\sif\((.+)\)/);
-                    var lititle = i;
-                    var append = "";
+                    const imgurl = i.match(/icon\((.+?)\)/);
+                    const ifc = i.match(/\sif\((.+)\)/);
+                    let lititle = i;
+                    let append = "";
 
                     if (imgurl) {
                         lititle = lititle.replace(/icon\((.+?)\)/, '');
@@ -904,62 +1245,83 @@
             }
 
             menucontant += '</ul>';
+
             _("body").append(menucontant);
+
 
             _(_this).bind("contextmenu", function (e) {
                 e.preventDefault();
             })
 
+
             _("[data-contextmenuid='" + vel_funthisid + "']").bind("mousedown", function (e) {
                 if (e.button == 2) {
-                    var X = e.pageX;
-                    var Y = e.pageY;
-                    var thisid = this.attr("data-contextmenuid");
+                    let X = e.pageX;
+                    let Y = e.pageY;
+                    const thisid = this.attr("data-contextmenuid");
+
                     _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
+
                     _("._Velfun_Contextmenu_[data-open]").css("display:none;");
+
                     _("._Velfun_Contextmenu_[data-open]").attr("data-open", "");
+
 
                     _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;");
 
+
                     if (Y + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height")) > parseInt(_("body").css("height"))) {
+
                         Y -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height"));
+
                         _("._Velfun_Contextmenu_[for='" + thisid + "']").css("top:" + Y + "px;");
                     }
 
+
                     if (X + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width")) > parseInt(_("body").css("width"))) {
+
                         X -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width"));
+
                         _("._Velfun_Contextmenu_[for='" + thisid + "']").css("left:" + X + "px;");
                     }
 
                     setTimeout(function (thisid) {
+
                         _("._Velfun_Contextmenu_[for='" + thisid + "']").css("opacity:1;");
+
                         _("._Velfun_Contextmenu_[for='" + thisid + "']").attr("data-open", "data-open");
                     }, 10, thisid);
                 }
             })
 
-            _("._Velfun_Contextmenu_[for='" + vel_funthisid + "'] ._Velfun_Contextmenu_option").click(function () {
-                var th_p = _(this).parent();
-                var ft_id = _(th_p).attr("for");
+
+            _("._Velfun_Contextmenu_[for='" + vel_funthisid + "'] ._Velfun_Contextmenu_option").bind("click",function () {
+
+                const th_p = _(this).parent();
+
+                const ft_id = _(th_p).attr("for");
+
                 if (typeof vel_menufuns[ft_id][_(this).text()] === "function") {
+
                     vel_menufuns[ft_id][_(this).text()].call(_("[data-contextmenuid='" + ft_id + "']"));
                 }
             })
         }
     }
 
-    var vel_dynamic_menus = new Object();
+    let vel_dynamic_menus = new Object();
     /**
      * 为动态对象绑定上下文选单（右键选单），需要将此功能绑定到静态的父级，然后通过funarr中的选择器自动应用在动态添加的子元素上。
-     * @param {object | map} funarr JSON格式的对象，具体格式请参考官网手册
+     * @param {object | Map} funarr JSON格式的对象，具体格式请参考官网手册
      */
     velfun.fn.CustomContextmenuDynamic = velfun.fn.ccmd = function (funarr) {
         if (this.length == 0) return this;
         let _this = this;
         let menuids = [];
-        for (var index = 0; index < _this.length; index++) {
-            var vel_funthis = _(_this[index]);
-            var vel_funthisid = null;
+        for (let index = 0; index < _this.length; index++) {
+
+            const vel_funthis = _(_this[index]);
+            let vel_funthisid = null;
             do {
                 vel_funthisid = Math.floor(Math.random() * 89999999 + 10000000);
             } while (vel_dynamic_menus[vel_funthisid]);
@@ -968,19 +1330,23 @@
             vel_dynamic_menus[vel_funthisid] = funarr;
             menuids.push(vel_funthisid);
 
+
             _(_this).bind("contextmenu", function (e) {
                 e.preventDefault();
             })
 
+
             _("[data-contextmenuid='" + vel_funthisid + "']").bind("mousedown", function (e, self) {
                 if (e.button == 2) {
+
                     _(`body ._Velfun_Contextmenu_[dynamic]`).remove();
-                    var thisid = _(self).attr("data-contextmenuid");
-                    var trueTarget = "";
+
+                    const thisid = _(self).attr("data-contextmenuid");
+                    let trueTarget = "";
                     if (this[0] == self) {
                         trueTarget = "self";
                     } else {
-                        for (var s in vel_dynamic_menus[thisid]) {
+                        for (const s in vel_dynamic_menus[thisid]) {
                             if (e.target.matches(s)) {
                                 trueTarget = s;
                                 break;
@@ -988,24 +1354,26 @@
                         }
                     }
                     if (trueTarget == "") return;
-                    var X = e.pageX;
-                    var Y = e.pageY;
+                    let X = e.pageX;
+                    let Y = e.pageY;
 
-                    var funarr = vel_dynamic_menus[thisid][trueTarget];
-                    var backgroundStyle = "background-color: var(--bg-color);";
+                    const funarr = vel_dynamic_menus[thisid][trueTarget];
+                    let backgroundStyle = "background-color: var(--bg-color);";
                     if (CSS.supports("backdrop-filter", "blur(30px)") || CSS.supports("-webkit-backdrop-filter", "blur(30px)")) {
                         backgroundStyle = "background-color: var(--bg-color-blur);";
                     }
+
                     _("body").append("<ul class='_Velfun_Contextmenu_' style='" + backgroundStyle + "' for='" + thisid + "' dynamic></ul>");
-                    var _ul = _(`body ._Velfun_Contextmenu_[dynamic]`);
-                    for (var i in funarr) {
+
+                    const _ul = _(`body ._Velfun_Contextmenu_[dynamic]`);
+                    for (let i in funarr) {
                         if (i.match(/^\-{3}/)) {
                             _ul.append(`<li style="width:calc(100% - 10px);height:1px;background-color:#DDD;margin:5px auto;padding: 0 10px;"></li>`);
                         } else {
-                            var imgurl = i.match(/icon\((.+?)\)/);
-                            var ifc = i.match(/\sif\((.+)\)/);
-                            var lititle = i;
-                            var append = "";
+                            const imgurl = i.match(/icon\((.+?)\)/);
+                            const ifc = i.match(/\sif\((.+)\)/);
+                            let lititle = i;
+                            let append = "";
 
                             if (imgurl) {
                                 lititle = lititle.replace(/icon\((.+?)\)/, '');
@@ -1016,11 +1384,13 @@
                                 lititle = lititle.replace(/\sif\((.+)\)/, '');
                                 if (!eval(ifc[1])) continue;
                             }
-                            var _func = funarr[i];
+                            const _func = funarr[i];
                             _ul.append("<li class='_Velfun_Contextmenu_option' style='width: 100%;height: 30px;line-height: 30px;transition: background 200ms;padding: 0 10px;margin: 0 auto;list-style-type: none;text-align: left;float: none;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;cursor: default;'>" + append + lititle + "</li>");
-                            var _last_li = _("li", _ul)[_("li", _ul).length - 1];
+
+                            const _last_li = _("li", _ul)[_("li", _ul).length - 1];
                             _last_li.addEventListener("click", ((target, func) => {
                                 return function (e) {
+
                                     func.call(_(target), e);
                                 }
                             })(e.target, _func), { "once": true });
@@ -1028,24 +1398,36 @@
                     }
 
 
+
                     _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
+
                     _("._Velfun_Contextmenu_[data-open]").css("display:none;");
+
                     _("._Velfun_Contextmenu_[data-open]").attr("data-open", "");
+
 
                     _("._Velfun_Contextmenu_[for='" + thisid + "']").css("display:block;left:" + X + "px; top:" + Y + "px;");
 
+
                     if (Y + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height")) > parseInt(_("body").css("height"))) {
+
                         Y -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("height"));
+
                         _("._Velfun_Contextmenu_[for='" + thisid + "']").css("top:" + Y + "px;");
                     }
 
+
                     if (X + parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width")) > parseInt(_("body").css("width"))) {
+
                         X -= parseInt(_("._Velfun_Contextmenu_[for='" + thisid + "']").css("width"));
+
                         _("._Velfun_Contextmenu_[for='" + thisid + "']").css("left:" + X + "px;");
                     }
 
                     setTimeout(function (thisid) {
+
                         _("._Velfun_Contextmenu_[for='" + thisid + "']").css("opacity:1;");
+
                         _("._Velfun_Contextmenu_[for='" + thisid + "']").attr("data-open", "data-open");
                     }, 10, thisid);
 
@@ -1053,6 +1435,7 @@
             })
         }
         let menu = new Object(menuids);
+
         menu.add = function (selector, key, func, before = "") {
             let nowMenu = vel_dynamic_menus[this[0]][selector];
             let newMenu = new Map();
@@ -1063,15 +1446,18 @@
                 }
                 newMenu.set(k, v);
             }
+
             for (let i = 0; i < this.length; i++) {
                 const menuid = this[i];
                 vel_dynamic_menus[menuid][selector] = Object.fromEntries(newMenu);
             }
         }
+
         menu.remove = function (selector, key) {
             let nowMenu = vel_dynamic_menus[this[0]][selector];
             delete nowMenu[key];
             nowMenu = nowMenu.filter(Boolean);
+
             for (let i = 0; i < this.length; i++) {
                 const menuid = this[i];
                 vel_dynamic_menus[menuid][selector] = nowMenu;
@@ -1088,13 +1474,14 @@
         if (this.length == 0) return this;
         if (this[0].tagName.toLowerCase() != "v-coloricon") {
             try {
-                console.error("VelFun Error:\n    setColor:This element not a coloricon");
+                console.warn("%cVelFun%cWarning%c\n    %csetColor%c This element not a coloricon","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: orange; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: orange; color:white;padding: 0 5px; border-radius: 1000px;","");
             } catch (e) {
                 document.writeln("VelFun Error:\n    setColor:This element not a coloricon");
             }
             return this;
         }
-        var coloricon = _("img", this);
+
+        const coloricon = _("img", this);
         coloricon.css('filter:drop-shadow(' + this.attr("width") + 'px 0 0 ' + col + ')');
     }
     /**
@@ -1103,126 +1490,29 @@
      * @returns {null}
      */
     velfun.fn.autoTile = function () {
-        if (this.length == 0) return this;
-        var _items = this;
-        _items.css("float:left;");
-        var parent = _items.parent();
-        var parentW = parseInt(parent[0].offsetWidth);
-        parentW -= parseInt(parent.css("border-left-width")) + parseInt(parent.css("border-right-width")) + parseInt(parent.css("padding-left")) + parseInt(parent.css("padding-right"));
-        var itemsW = parseInt(_items[0].offsetWidth);
-        var itemsInlineNum = parseInt(parentW / itemsW);
-        if (itemsInlineNum > _items.length) itemsInlineNum = _items.length;
-        var gapNum = itemsInlineNum * 2;
-        var allGap = parentW - (itemsW * itemsInlineNum);
-        var eachGapW = allGap / gapNum;
-        _items.css("margin-left:" + eachGapW + "px;margin-right:" + eachGapW + "px;");
+        try {
+            console.error("%cVelFun%cDeprecated Error%c\n    %cautoTile%c This function is deprecated, You can use it under 4.40 version only.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
+        } catch (e) { }
+
+        return false;
     }
 
     //Static Function
     velfun.inside = new Object();
-    /**
-     * 将文本类型的html代码转换为HTMLElement对象
-     * @param {string} html 文本类型的html代码
-     * @param {function} callback 回调，可选利用回调异步执行或同步执行，二者同时存在，也可以同时使用。
-     * @returns {HTMLElement} 返回html对象
-     */
-    velfun.htmltodom = function (html, callback) {
-        var template = document.createElement('template');
-        let range = document.createRange();
-        range.selectNodeContents(template);
 
-        if (callback !== undefined) {
-            callback.call(range.createContextualFragment(html), range.createContextualFragment(html));
-        }
-        return range.createContextualFragment(html);
-    }
-    /**
-     * 将事件绑定到元素，默认绑定到document的版本，是_(document).bind()的简化写法
-     * @param {string} ev 事件名称，不包括on（和addEventListener一样）
-     * @param {string} selector 子元素选择器，用以指定具体元素，此处只接受字符串类型，在使用委托/代理模式捕捉动态元素时有效
-     * @param {function} func 事件触发的函数
-     * @param {boolean} pop 允许间接触发？默认值 False，子元素的事件不会传递给父元素。
-     * @returns {velfunEle} 返回该元素
-     */
-    velfun.bind = function (ev, selector = "", func, pop = false) {
-        var _this = _(document);
-        if (typeof func == "boolean") {
-            pop = func;
-            func = undefined;
-        }
-        if (typeof selector == "function" && func == undefined) {
-            func = selector;
-            selector = "";
-        }
-        if (typeof func === "function") {
-            for (var i = 0; i < _this.length; i++) {
-                var th = _this[i];
-                if (selector != "") {
-                    th.self = th;
-                    th.addEventListener(ev, (s => {
-                        return function (e) {
-                            var sdom = _(s);
-                            for (var i = 0; i < sdom.length; i++) {
-                                if (pop && e.target !== sdom[i]) {
-                                    let thChilds = _("*", sdom[i]);
-                                    for (var childIndex = 0; childIndex < thChilds.length; childIndex++) {
-                                        if (e.target === thChilds[childIndex]) {
-                                            func.call(_(sdom[i]), e, this);
+    let msgboxList = new Array();
 
-                                            break;
-                                        }
-                                    }
-                                } else if (e.target === sdom[i]) {
-                                    func.call(_(e.target), e, this);
-
-                                }
-                            }
-                        }
-                    })(selector))
-                } else {
-                    th.self = th;
-                    th.addEventListener(ev, function (e) {
-                        func.call(_(e.target), e, this);
-
-                    })
-                }
-            }
-        } else {
-            try {
-                console.error("VelFun Error:\n    bind:The second parameter not a function!");
-            } catch (e) {
-                document.writeln("VelFun Error:\n    bind:The second parameter not a function!");
-            }
-        }
-
-        return _this;
-    }
-
-    var msgboxList = new Array();
-    var msgfun = function (e) { return true; };
-    /**
-     * 提示框
-     * @param {string} Message 消息内容，支持html
-     * @param {string} Title 弹窗标题，可以省略
-     * @param {string} Type 按钮类型：MSG_OK 默认 仅确定；MSG_YES_NO 是、否两个按钮；MSG_OK_Cancel 确定、取消两个按钮
-     * @param {array} Position 弹窗的座标，[x, y]的格式
-     * @param {function} callback 按下按钮后的回调，参数1为按钮是否是「肯定」的，即OK YES按钮为肯定，其他为否定。
-     */
-    velfun.Msgbox = async function (Message, Title, Type, Position, callback) {
-        msgboxList.push(function () { return _.inside.Msgbox_do(Message, Title, Type, Position, callback) });
-        if (_("#_MessageBox_").length == 0) {
-            var fun = msgboxList.shift();
-            fun();
-        }
-    }
+    let msgfun = function (e) { return true; };
     /**
      * 内部实现，不要直接调用
      */
+
     velfun.inside.Msgbox_do = async function (Message, Title, Type, Position, callback) {
-        var msg = Message || "";
-        var title = Title || "";
-        var ty = Type || "";
-        var pos = Position || ['calc(50% - 225px)', '30%'];
+        let msg = Message || "";
+        let title = Title || "";
+        let ty = Type || "";
+        let pos = Position || ['calc(50% - 225px)', '30%'];
+
         msgfun = callback || function (e) { return true; };
         if (typeof title === "function") {
             msgfun = title;
@@ -1239,13 +1529,14 @@
 
         let posStr = `left: ${pos[0]} ;top: ${pos[1]}`;
 
-        var backgroundStyle = "background-color: var(--bg-color);";
+        let backgroundStyle = "background-color: var(--bg-color);";
         if (CSS.supports("backdrop-filter", "blur(30px)") || CSS.supports("-webkit-backdrop-filter", "blur(30px)")) {
             backgroundStyle = "background-color: var(--bg-color-blur);";
         }
 
-        var appstr = "<div id='_MessageBox_' style='opacity: 0; border-radius: 10px; box-shadow: 0px 0px 50px transparent; transform: translateZ(5px);" + backgroundStyle + posStr + ";'>";
-        var pwidth = parseInt(_("html").css("width"));
+        let appstr = "<div id='_MessageBox_' style='opacity: 0; border-radius: 10px; box-shadow: 0px 0px 50px transparent; transform: translateZ(5px);" + backgroundStyle + posStr + ";'>";
+
+        let pwidth = parseInt(_("html").css("width"));
         if (pwidth <= 450) {
             posStr = `left: 0;bottom: 0px`;
             appstr = "<div id='_MessageBox_' style='opacity: 1; border-radius: 10px 10px 0 0; box-shadow: 0px 0px 5px transparent; transform: translateY(100%);" + backgroundStyle + posStr + ";'>";
@@ -1266,16 +1557,22 @@
             appstr += "<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px rgba(0,0,0,0.2) solid;'><span id='_MsgOK_' class='_MsgButton_' data-val='true' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span><span id='_MsgCancel_' class='_MsgButton_' data-val='false' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>取消</span></div>";
         }
         appstr += "</div></div>";
+
         _("body").after(appstr);
+
         _("body").back();
         setTimeout(function () {
             if (pwidth - 20 < 450) {
+
                 _("#_MessageBox_").css("transform: translateY(0);");
             } else {
+
                 _("#_MessageBox_").back();
+
                 _("#_MessageBox_").css("box-shadow:0px 0px 10px rgba(0,0,0,0.5);");
             }
         }, 10);
+
 
         _("._MsgButton_").hover(function () {
             this.css("background-color:rgba(255,255,255,0.1);");
@@ -1286,12 +1583,16 @@
         });
 
         return new Promise((resolve, reject) => {
+
             _("._MsgButton_").bind("click", e => {
+
                 let buttonval = _(e.target).attr("data-val") == "true" ? true : false;
                 if (buttonval) {
+
                     _.inside.MsgRe(true, false);
                     resolve(true)
                 } else {
+
                     _.inside.MsgRe(false, false);
                     reject(false);
                 }
@@ -1299,28 +1600,15 @@
         })
     }
     /**
-     * 提示框-精简版 为低配电脑而设计，去除了一些效果和所有动画
-     * @param {string} Message 消息内容，支持html
-     * @param {string} Title 弹窗标题，可以省略
-     * @param {string} Type 按钮类型：MSG_OK 默认 仅确定；MSG_YES_NO 是、否两个按钮；MSG_OK_Cancel 确定、取消两个按钮
-     * @param {array} Position 弹窗的座标，[x, y]的格式
-     * @param {function} callback 按下按钮后的回调，参数1为按钮是否是「肯定」的，即OK YES按钮为肯定，其他为否定。
-     */
-    velfun.Msgbox_lite = async function (Message, Title, Type, Position, callback) {
-        msgboxList.push(function () { return _.inside.Msgbox_lite_do(Message, Title, Type, Position, callback) });
-        if (_("#_MessageBox_").length == 0) {
-            var fun = msgboxList.shift();
-            fun();
-        }
-    }
-    /**
      * 内部实现，不要直接调用
      */
+
     velfun.inside.Msgbox_lite_do = async function (Message, Title, Type, Position, callback) {
-        var msg = Message || "";
-        var title = Title || "";
-        var ty = Type || "";
-        var pos = Position || ['calc(50% - 225px)', '30%'];
+        let msg = Message || "";
+        let title = Title || "";
+        let ty = Type || "";
+        let pos = Position || ['calc(50% - 225px)', '30%'];
+
         msgfun = callback || function (e) { return true; };
         if (typeof title === "function") {
             msgfun = title;
@@ -1336,15 +1624,16 @@
         }
 
 
-        var backgroundStyle = "background-color: rgba(253,253,253,0.9);";
+        let backgroundStyle = "background-color: rgba(253,253,253,0.9);";
         if (CSS.supports("backdrop-filter", "blur(30px)") || CSS.supports("-webkit-backdrop-filter", "blur(30px)")) {
             backgroundStyle = "background-color: rgba(253,253,253,0.5);backdrop-filter: blur(30px);-webkit-backdrop-filter: blur(30px);";
         }
 
-        var appstr = "<div id='_MessageBox_' style='box-shadow:0px 0px 5px black;" + backgroundStyle + "border:1px #CCC solid;border-radius: 10px;box-shadow: 1px 1px 10px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:100%;width:450px;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
-        var pwidth = parseInt(_("html").css("width"));
+        let appstr = "<div id='_MessageBox_' style='box-shadow:0px 0px 5px black;" + backgroundStyle + "border:1px #CCC solid;border-radius: 10px;box-shadow: 1px 1px 10px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:100%;width:450px;height:200px;left:" + pos[0] + ";top:" + pos[1] + ";'>";
+
+        let pwidth = parseInt(_("html").css("width"));
         if (pwidth <= 450) {
-            var appstr = "<div id='_MessageBox_' style='box-shadow:0px 0px 5px black;" + backgroundStyle + "border:1px #CCC solid;border-radius: 10px;box-shadow: 1px 1px 10px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:100%;width:450px;height:200px;left:0; bottom:0;'>";
+            appstr = "<div id='_MessageBox_' style='box-shadow:0px 0px 5px black;" + backgroundStyle + "border:1px #CCC solid;border-radius: 10px;box-shadow: 1px 1px 10px #CCC;box-sizing:border-box;display: block;position: fixed;overflow:hidden;transform:translateZ(0px);opacity:1;max-width:100%;width:450px;height:200px;left:0; bottom:0;'>";
         }
         if (title != "") {
             appstr += "<div style='width: calc(100% - 10px);height: 30px;margin:5px 5px 0px 5px;font-weight: bold;line-height:30px;box-sizing:border-box;padding-left: 5px;border-bottom:1px #DDD solid;text-align: left;'>" + title + "</div>";
@@ -1361,8 +1650,11 @@
             appstr += "<div style='width: 100%;height: 40px;text-align: center;position: absolute;bottom: 0px;right: 0px;box-sizing: border-box;border-top:1px rgba(0,0,0,0.2) solid;'><span id='_MsgOK_' class='_MsgButton_' data-val='true' style='float:left;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>确定</span><span id='_MsgCancel_' class='_MsgButton_' data-val='false' style='float:right;display:block;width:50%;height:40px;line-height:40px;cursor: default;transition: 300ms ease-out;user-select: none;-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;'>取消</span></div>";
         }
         appstr += "</div></div>";
+
         _("body").after(appstr);
+
         _("body").addClass("body_lite_disabled");
+
 
         _("._MsgButton_").hover(function () {
             this.css("background-color:rgb(255,255,255);");
@@ -1373,12 +1665,16 @@
         });
 
         return new Promise((resolve, reject) => {
+
             _("._MsgButton_").bind("click", e => {
+
                 let buttonval = _(e.target).attr("data-val") == "true" ? true : false;
                 if (buttonval) {
+
                     _.inside.MsgRe(true, true);
                     resolve(true)
                 } else {
+
                     _.inside.MsgRe(false, true);
                     reject(false);
                 }
@@ -1388,28 +1684,37 @@
     /**
      * 内部实现，不要直接调用
      */
+
     velfun.inside.MsgRe = function (re, lite) {
         if (lite) {
+
             _("#_MessageBox_").remove();
+
             _("body").removeClass("body_lite_disabled");
             if (msgboxList.length > 0) {
-                var fun = msgboxList.shift();
+                const fun = msgboxList.shift();
                 fun();
             }
         } else {
-            var pwidth = parseInt(_("html").css("width"));
+
+            const pwidth = parseInt(_("html").css("width"));
             if (pwidth - 20 < 450) {
+
                 _("#_MessageBox_").css("transform: translateY(100%);");
             } else {
+
                 _("#_MessageBox_").css("box-shadow:0px 0px 50px transparent;");
+
                 _("#_MessageBox_").unback();
             }
 
+
             _("body").unback();
             setTimeout(function () {
+
                 _("#_MessageBox_").remove();
                 if (msgboxList.length > 0) {
-                    var fun = msgboxList.shift();
+                    const fun = msgboxList.shift();
                     fun();
                 }
             }, 200)
@@ -1417,29 +1722,18 @@
         msgfun(re);
     }
 
-    var optionsList = new Array();
-    var optionsArr = new Array();
-    /**
-     * 全屏显示的选择项
-     * @param {object} opt_arr JSON格式的选项，具体格式请参考官网手册
-     * @param {string} title 标题，可以省略，省略后不显示标题
-     */
-    velfun.Options = function (opt_arr, title) {
-        optionsList.push(function () { _.inside.Options_do(opt_arr, title) });
-        if (_("#_OPTIONS_").length == 0) {
-            var fun = optionsList.shift();
-            fun();
-        }
-    }
+    let optionsList = new Array();
+    let optionsArr = new Array();
     /**
      * 内部实现，不要直接调用
      */
+
     velfun.inside.Options_do = function (opt_arr, title) {
-        var title = title || "";
-        var ulhtml = "<ul id='_Velfun_OPTIONS_' style='position: fixed;display: block;width: 100%;height: auto;left: 0px;top: 50%;transform: translateY(-50%);margin:0px;padding: 0px;z-index: 1000;overflow: hidden;cursor:default;'>";
-        var lihtml = "";
+        title = title || "";
+        let ulhtml = "<ul id='_Velfun_OPTIONS_' style='position: fixed;display: block;width: 100%;height: auto;left: 0px;top: 50%;transform: translateY(-50%);margin:0px;padding: 0px;z-index: 1000;overflow: hidden;cursor:default;'>";
+        let lihtml = "";
         optionsArr = opt_arr;
-        var backgroundStyle = "background-color: var(--button-color);";
+        let backgroundStyle = "background-color: var(--button-color);";
         if (CSS.supports("backdrop-filter", "blur(30px)") || CSS.supports("-webkit-backdrop-filter", "blur(30px)")) {
             backgroundStyle = "background-color: var(--button-color-blur);";
         }
@@ -1447,16 +1741,20 @@
         if (title != "") {
             lihtml = "<li class='_Velfun_Options_Title' style='max-width: 400px;min-height: 40px;position: relative;height: auto;display: table;clear: both;margin: 10px auto;overflow-x: hidden;width: 100%;background: transparent;font-size: 20px;font-weight:bold;text-align: center;color: white;text-shadow:0px 0px 5px black;transform:translateZ(0px);'>" + title + "</li>";
         }
-        for (var index in opt_arr) {
+        for (const index in opt_arr) {
             if (opt_arr.hasOwnProperty(index)) {
                 lihtml += "<li class='_Velfun_Options_Item' style='" + backgroundStyle + "' onclick='_.inside.OptionsRe(this,\"" + index + "\")'><span style='display:table-cell;vertical-align: middle;text-align: center;'>" + index + "</span></li>";
             }
         }
-        var ophtml = ulhtml + lihtml + "</ul>";
+        const ophtml = ulhtml + lihtml + "</ul>";
+
         _("body").after(ophtml);
+
         _("body").back();
+
         _("#_Velfun_OPTIONS_ li._Velfun_Options_Item").each(function (index, item) {
-            var _this = _(this);
+
+            const _this = _(this);
             setTimeout(function () {
                 _this.css("transform: scale(1); opacity: 1;margin: 10px auto 10px auto;");
             }, 30 * index);
@@ -1465,225 +1763,151 @@
     /**
      * 内部实现，不要直接调用
      */
+
     velfun.inside.OptionsRe = function (th, index) {
-        var _this = _(th);
+
+        const _this = _(th);
         _this.back();
         setTimeout(function () {
+
             _("#_Velfun_OPTIONS_ li").css("opacity: 0;");
+
             _("body").unback();
         }, 200);
         setTimeout(function () {
+
             _("#_Velfun_OPTIONS_").remove();
             if (typeof optionsArr[index] === "function") {
                 optionsArr[index].call(_this);
             }
             if (optionsList.length > 0) {
-                var fun = optionsList.shift();
+                const fun = optionsList.shift();
                 fun();
             }
         }, 500);
     }
-    /**
-     * 整数随机数
-     * @param {number} min 两个参数时为最小值，但只指定一个参数时为最大值
-     * @param {number} max 最大值，省略时min视为最大值
-     * @returns {number} 随机的结果
-     */
-    velfun.random = function (min, max) {
-        var vel_minval, vel_maxval, vel_randomval;
-        if (typeof min == 'number' & typeof max == 'number') {
-            vel_minval = min;
-            vel_maxval = max - min;
-            vel_randomval = Math.round(Math.random() * vel_maxval + vel_minval);
-        } else if (typeof min == 'number' & max === undefined) {
-            vel_minval = 0;
-            vel_maxval = min;
-            vel_randomval = Math.round(Math.random() * vel_maxval);
-        } else {
-            try {
-                console.error("VelFun Error:\n    random:The parameter is missing or is not a number.");
-            } catch (e) {
-                document.writeln("VelFun Error:\n    random:The parameter is missing or is not a number.");
-            }
-        }
-        return vel_randomval;
-    }
-    /**
-     * [已废弃] 初始化上传控件，上传控件现在移动到libvelui库，此处的已不再维护，并很快将彻底移除
-     * @deprecated since version 4.50
-     * @returns 
-     */
-    velfun.initUpload = function () {
-        var veluploads = _("v-upload");
-        for (var i = 0; i < veluploads.length; i++) {
-            var th = _(veluploads[i]);
-            if (_("*", th).length > 0) continue;
-            let name = th.attr("data-name") || "uploadFile";
-            let title = th.attr("data-title") || "";
-            let eximg = th.attr("data-eximg") || "";
-            let showpreview = th.attr("showpreview") || "true";
-            let titletype = th.attr("titletype") || "defdynamic";
-            th.attr("data-id", i + 1);
-            if (th.css("position").toLowerCase() == "static") {
-                th.css("position:relative");
-            }
-            if (showpreview == "true") {
-                th.append(`<img class="velupload_img" src="${eximg}" alt="${title}" />`);
-            }
 
-            th.append(`<input class="velupload_file" type="file" name="${name}" />`);
-            if (title && ["defdynamic", "dynamic", "static"].indexOf(titletype) != -1) {
-                if (titletype == "defdynamic") {
-                    titletype = (showpreview == "false") ? "static" : "dynamic";
-                }
-                th.append(`<div class="velupload_title ${titletype}">${title}</div>`);
+    /**
+     * 内部实现，不要直接调用
+     */
+    velfun.inside.setAttrsLang = function (th, langdata) {
+
+        if (_(th).hasAttr("alt")) {
+
+            if (!_(th).hasAttr("data-altTempStr")) {
+
+                _(th).attr("data-altTempStr", _(th).attr("alt"));
+            } else {
+
+                _(th).attr("alt", _(th).attr("data-altTempStr"));
             }
         }
 
-        if (_.veluploadInitDone) return true;
-        if (veluploads.length == 0) return false;
 
-        _("head").append(`<style>
-      v-upload .velupload_img {
-        display: block;
-        max-width: 100%;
-        max-height: 100%;
-        margin: auto;
-        border: 1px solid gray;
-        border-radius: 10px;
-        box-shadow: 1px 1px 5px gray;
-        box-sizing: border-box;
-      }
-      v-upload .velupload_title{
-        display: block;
-        width: 100%;
-        height: 30px;
-        line-height: 30px;
-        position: absolute;
-        bottom: 0;
-        text-align: center;
-        color: black;
-        transition: opacity 300ms;
-        padding: 0;
-        margin: 0;
-        text-indent: 0;
-      }
-      v-upload .velupload_title.dynamic {
-        opacity: 0;
-      }
-      v-upload .velupload_title.static {
-        opacity: 1;
-      }
-      v-upload:hover .velupload_title.dynamic {
-        opacity: 1;
-      }
-      v-upload .velupload_file {
-        display: block;
-        width: 0px;
-        height: 0px;
-        margin: 0;
-        padding: 0;
-      }
-      v-upload *:not(.velupload_file) {
-        pointer-events: none;
-      }
-      v-upload-preview {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: 100vw;
-        background-color: rgba(0,0,0,0.5);
-        opacity: 0;
-        transition: opacity 300ms;
-        justify-content: center;
-        algin-items: center;
-        z-index:9999999;
-      }
-      v-upload-preview .velupload_preview {
-        display:block;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        max-width: 100vw;
-        max-height: 100vh;
-        pointer-events: none;
-      }
-      v-upload-preview .velupload_reupload {
-        display: block;
-        position: absolute;
-        width: 100px;
-        height: 40px;
-        line-height: 40px;
-        bottom: 50px;
-        left: calc(50% - 50px);
-        text-align: center;
-        border: 1px solid white;
-        color: white;
-        background-color: rgba(0,0,0,0.2);
-        cursor: pointer;
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-      }
-    </style>`);
+        if (_(th).hasAttr("title")) {
 
-        _.bind("click", "v-upload", function () {
-            if (_(".velupload_file", this).val() == "") {
-                _(".velupload_file", this).trigger("click");
+            if (!_(th).hasAttr("data-titleTempStr")) {
+
+                _(th).attr("data-titleTempStr", _(th).attr("title"));
             } else {
-                let files = _(".velupload_file", this)[0].files;
-                if (files.length == 0) {
-                    _("body").append(`<v-upload-preview data-for="${this.attr("data-id")}"><div class="velupload_preview">无法预览图片</div><div class="velupload_reupload">重新上传</div></v-upload-preview>`);
-                    setTimeout(function () {
-                        _("v-upload-preview").css("opacity:1");
-                    }, 0)
-                } else {
-                    let fr = new FileReader();
-                    fr.onload = () => {
-                        _("body").append(`<v-upload-preview data-for="${this.attr("data-id")}"><img class="velupload_preview" src="${fr.result}"><div class="velupload_reupload">重新上传</div></v-upload-preview>`);
-                        setTimeout(function () {
-                            _("v-upload-preview").css("opacity:1");
-                        }, 0)
-                    }
-                    fr.readAsDataURL(files[0]);
-                }
-            }
-        })
 
-        _.bind("change", "v-upload .velupload_file", function () {
-            let files = this[0].files;
-            if (files.length == 0) {
-                _(".velupload_img", this.parent()).attr("src", this.parent().attr("data-eximg"));
+                _(th).attr("title", _(th).attr("data-titleTempStr"));
+            }
+        }
+
+        if (_(th).hasAttr("placeholder")) {
+
+            if (!_(th).hasAttr("data-placeholderTempStr")) {
+
+                _(th).attr("data-placeholderTempStr", _(th).attr("placeholder"));
             } else {
-                let thp = this.parent();
-                let fr = new FileReader();
-                fr.onload = () => {
-                    _(".velupload_img", thp).attr("src", fr.result);
-                }
-                fr.readAsDataURL(files[0]);
+
+                _(th).attr("placeholder", _(th).attr("data-placeholderTempStr"));
             }
-        })
+        }
 
-        _.bind("click", "v-upload-preview", function () {
-            this.css("opacity:0;pointer-events:none;");
-            setTimeout(function (th) {
-                th.remove();
-            }, 300, this)
-        })
+        if (_(th).hasAttr("value")) {
 
-        _.bind("click", "v-upload-preview .velupload_reupload", function () {
-            let thfor = this.parent().attr("data-for");
-            this.parent().trigger("click");
-            _(`.velupload_file`, `v-upload[data-id='${thfor}']`).trigger("click");
-        })
-        _.veluploadInitDone = true;
-        return true;
+            if (!_(th).hasAttr("data-valueTempStr")) {
+
+                _(th).attr("data-valueTempStr", _(th).attr("value"));
+            } else {
+
+                _(th).attr("value", _(th).attr("data-valueTempStr"));
+            }
+        }
+        for (const key in langdata) {
+            const nt = langdata[key];
+
+            if (_(th).hasAttr("title")) {
+
+                _(th).attr("title", _(th).attr("title").replaceAll(`@t-${key};`, nt));
+            }
+
+            if (_(th).hasAttr("alt")) {
+
+                _(th).attr("alt", _(th).attr("alt").replaceAll(`@t-${key};`, nt));
+            }
+
+            if (_(th).hasAttr("placeholder")) {
+
+                _(th).attr("placeholder", _(th).attr("placeholder").replaceAll(`@t-${key};`, nt));
+            }
+
+            if (_(th).hasAttr("value")) {
+
+                _(th).attr("value", _(th).attr("value").replaceAll(`@t-${key};`, nt));
+            }
+        }
     }
 
     //IO
     velfun.io = new Object();
+    /**
+     * 同步AJAX
+     * @param {String} method 请求类型[post,get]
+     * @param {String} url 请求的地址
+     * @param {Object} data 包含的数据，以Object格式提供，post模式下会以post提交，get模式会自动合并到请求地址
+     * @returns {String|null} 成功时返回取得的文本，失败时为null
+     */
+    velfun.io.fetchSync = function (method, url, data) {
+        if (typeof data == "object") {
+            if (method.toLowerCase() == "get") {
+                let params = new Array();
+                for (const key in data) {
+                    const v = encodeURIComponent(data[key]);
+                    params.push(key + "=" + v);
+                }
+                data = params.join("&");
+            } else {
+                let params = new FormData();
+                for (const key in data) {
+                    params.append(key, data[key]);
+                }
+                data = params;
+            }
+        }
+        const XHR = new XMLHttpRequest();
+        if (method.toLowerCase() == "get") {
+            if (url.match(/\?/) != null) {
+                url += "&" + data;
+            } else {
+                url += "?" + data;
+            }
+            XHR.open(method, url, false);
+            XHR.send();
+        } else if (method.toLowerCase() == "post") {
+            XHR.open(method, url, false);
+            XHR.send(data);
+        } else {
+            try {
+                console.warn("%cVelFun%cWarning%c\n    %cAJAX%c The method invalid.Can only be get or post.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: orange; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: orange; color:white;padding: 0 5px; border-radius: 1000px;","");
+            } catch (e) {
+                document.writeln("VelFun Error:\n    AJAX:The method invalid.Can only be get or post.");
+            }
+        }
+        return (XHR.status == 200) ? XHR.responseText : null;
+    }
     /**
      * AJAX异步请求
      * @param {string} method 请求类型[post,get]
@@ -1698,46 +1922,56 @@
             data = null;
         } else if (typeof data == "object") {
             if (method.toLowerCase() == "get") {
-                var params = new Array();
-                for (var key in data) {
-                    var v = encodeURIComponent(data[key]);
+                let params = new Array();
+                for (const key in data) {
+                    const v = encodeURIComponent(data[key]);
                     params.push(key + "=" + v);
                 }
                 data = params.join("&");
-            } else {
-                var params = new FormData();
-                for (var key in data) {
-                    params.append(key, data[key]);
-                }
-                data = params;
-            }
-        }
-        return new Promise((resolve, reject) => {
-            var XHR = new XMLHttpRequest();
-            XHR.onreadystatechange = function () {
-                if (XHR.readyState == 4 && XHR.status == 200) {
-                    var msg = XHR.responseText;
-                    if (typeof callback == "function") callback(msg, XHR);
-                    resolve(msg, XHR);
-                } else if (XHR.readyState == 4 && XHR.status != 200) {
-                    reject(XHR.status, XHR);
-                }
-            }
-
-            if (method.toLowerCase() == "get") {
                 if (url.match(/\?/) != null) {
                     url += "&" + data;
                 } else {
                     url += "?" + data;
                 }
-                XHR.open(method, url);
-                XHR.send();
             } else if (method.toLowerCase() == "post") {
-                XHR.open(method, url);
-                XHR.send(data);
+                let params = new FormData();
+                for (const key in data) {
+                    params.append(key, data[key]);
+                }
+                data = params;
             } else {
                 try {
-                    console.error("VelFun Error:\n    AJAX:The method invalid.Can only be get or post.");
+                    console.warn("%cVelFun%cError%c\n    %cAJAX%c The method invalid.Can only be get or post.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: orange; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: orange; color:white;padding: 0 5px; border-radius: 1000px;","");
+                } catch (e) {
+                    document.writeln("VelFun Error:\n    AJAX:The method invalid.Can only be get or post.");
+                }
+            }
+        }
+
+        return new Promise((resolve, reject) => {
+            if (method.toLowerCase() == "get") {
+                fetch(url)
+                    .then(response => response.text())
+                    .then(text => {
+                        resolve(text);
+                    })
+                    .catch(reason => {
+                        reject(reason)
+                    })
+            } else if (method.toLowerCase() == "post") {
+                fetch(url, { method: 'POST', body: data })
+                    .then(response => response.text())
+                    .then(text => {
+                        if (typeof callback == "function") callback(text);
+                        else resolve(text);
+                    })
+                    .catch(reason => {
+                        if (typeof callback == "function") callback(text);
+                        else reject(reason)
+                    })
+            } else {
+                try {
+                    console.warn("%cVelFun%cError%c\n    %cAJAX%c The method invalid.Can only be get or post.","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: orange; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: orange; color:white;padding: 0 5px; border-radius: 1000px;","");
                 } catch (e) {
                     document.writeln("VelFun Error:\n    AJAX:The method invalid.Can only be get or post.");
                 }
@@ -1751,7 +1985,9 @@
      * @param {function} callback 回调函数，第一个参数为返回的内容
      * @returns {Promise<function>} 返回Promise对象
      */
+
     velfun.io.get = async function (url, data, callback) {
+
         return velfun.io.ajax("get", url, data, callback);
     }
     /**
@@ -1761,7 +1997,9 @@
      * @param {function} callback 回调函数，第一个参数为返回的内容
      * @returns {Promise<function>} 返回Promise对象
      */
+
     velfun.io.post = async function (url, data, callback) {
+
         return velfun.io.ajax("post", url, data, callback);
     }
     /**
@@ -1770,18 +2008,25 @@
      * @param {string} type 手动指定资源的类型，通常程序会以后缀名自动判断类型，但当后缀名与实际类型不匹配时，就需要手动指定
      * @returns {string} 返回资源路径
      */
+
     velfun.io.import = function (url, type) {
         if (type == undefined) {
-            var filepath = url.split("?");
+            let filepath = url.split("?");
+
             filepath = filepath[0];
-            var ext = filepath.match(/\.([^\.]+$)/);
+
+            let ext = filepath.match(/\.([^\.]+$)/);
             type = ext[1];
         }
         if (type.toLowerCase() == "javascript" || type.toLowerCase() == "js") {
-            var nowscript = _("script[src]");
+
+            const nowscript = _("script[src]");
+
             _(nowscript[nowscript.length - 1]).after('<script src="' + url + '" type="text/javascript"></script>');
         } else if (type.toLowerCase() == "stylesheet" || type.toLowerCase() == "css") {
-            var nowcss = _("link[rel='stylesheet']");
+
+            const nowcss = _("link[rel='stylesheet']");
+
             _(nowcss[nowcss.length - 1]).after('<link rel="stylesheet" href="' + url + '">');
         }
         return url;
@@ -1790,8 +2035,11 @@
      * 动态移除资源
      * @param {string} url 资源的路径（src或href上的路径）
      */
+
     velfun.io.unimport = function (url) {
+
         _("[src='" + url + "']").remove();
+
         _("[href='" + url + "']").remove();
     }
     /**
@@ -1799,44 +2047,54 @@
      * @param {string} path 指定补丁目录的路径，不支持单个文件 
      * @returns 
      */
+
     velfun.io.loadPatchsFrom = function (path) { //實驗性
         if (isOffline) return "Offline";
-        var request = new XMLHttpRequest();
+        const request = new XMLHttpRequest();
         request.open("get", path, false);
         request.send();
         if (request.status != 200) {
             console.clear();
-            if (request.status == 404) console.error("There is not have valid patches, or given path is wrong!");
-            console.log("Patches is not loaded!");
+            if (request.status == 404) console.error("%cVelFun%cError%c\n    %cloadPatchFrom%c There is not have valid patches, or given path is wrong!","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: red; color:white;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: red; color:white;padding: 0 5px; border-radius: 1000px;","");
+            console.log("%cVelFun%cLog%c\n   %cloadPatchsFrom%c Patches is not loaded!","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 1000px;","");
             return "Error";
         }
 
-        for (var a of _.htmltodom(request.responseText).querySelectorAll('a')) {
-            var patchfile = a.innerText;
-            var start = patchfile.lastIndexOf('.');
+
+        for (const a of _.htmltodom(request.responseText).querySelectorAll('a')) {
+            const patchfile = a.innerText;
+            const start = patchfile.lastIndexOf('.');
             if (start > 0) {
-                var patchfile_ext = patchfile.substring(start + 1);
+                const patchfile_ext = patchfile.substring(start + 1);
                 if (["js", "css"].includes(patchfile_ext)) {
+
                     _.io.import(path + "/" + patchfile);
                 } else if (["html", "xml", "php", "htm"].includes(patchfile_ext)) {
                     window.addEventListener("load", ((patchfile) => {
                         return function () {
-                            var html = new XMLHttpRequest();
+                            const html = new XMLHttpRequest();
                             html.open("get", path + "/" + patchfile, false);
                             html.send();
-                            for (var dom of _.htmltodom(html.responseText).querySelectorAll('*')) {
+
+                            for (const dom of _.htmltodom(html.responseText).querySelectorAll('*')) {
                                 if (dom.parentElement === null) {
+
                                     if (_(dom).hasAttr("id")) {
+
                                         let did = _(dom).attr("id");
+
                                         let nowele = _("#" + did);
-                                        for (var i = 0; i < nowele.length; i++) {
+                                        for (let i = 0; i < nowele.length; i++) {
                                             nowele[i].outerHTML = dom.outerHTML;
                                         }
+
                                     } else if (_(dom).hasAttr("class")) {
+
                                         let dc = _(dom).getClass();
                                         let cl = dc[0];
+
                                         let nowele = _("." + cl);
-                                        for (var i = 0; i < nowele.length; i++) {
+                                        for (let i = 0; i < nowele.length; i++) {
                                             nowele[i].outerHTML = dom.outerHTML;
                                         }
                                     }
@@ -1854,6 +2112,7 @@
      * @param {object} opts JSON格式的参数对象，具体格式请参考官网手册
      * @param {boolean} usingSessionMode 是否使用Session模式
      */
+
     velfun.io.setCookie = function (opts, usingSessionMode = false) {
         if (usingSessionMode) {
             window.sessionStorage.setItem(opts.name, opts.value);
@@ -1883,6 +2142,7 @@
                 }
                 let peeper = setInterval((name, expires) => {
                     let now = new Date();
+
                     if (Date.parse(now) >= Date.parse(expires)) {
                         window.sessionStorage.removeItem(name);
                         clearInterval(peeper);
@@ -1929,6 +2189,7 @@
      * @param {boolean} usingSessionMode 使否使用Session模式，默认使用，将优先搜索Session之后是Cookie，设为False将只搜索Cookie。
      * @returns {string} Cookie或Session的值
      */
+
     velfun.io.getCookie = function (name, usingSessionMode = true) {
 
         if (usingSessionMode) {
@@ -1937,6 +2198,7 @@
         }
 
         let result = document.cookie.match("(^|[^;]+)\\s*" + name + "\\s*=\\s*([^;]+)");
+
         return result ? result.pop() : "";
     }
     /**
@@ -1944,6 +2206,7 @@
      * @param {string} name 要删除的Cookie或Session的名字
      * @param {boolean} usingSessionMode 是否删除Session，默认为true。如果设为false则仅会删除Cookie
      */
+
     velfun.io.delCookie = function (name, usingSessionMode = true) {
         if (usingSessionMode) {
             window.sessionStorage.removeItem(name);
@@ -1955,7 +2218,9 @@
      * @param {object} options 包含input:file的属性，目前只针对accept和multiple生效。
      * @returns 
      */
+
     velfun.io.openFileDialog = async function (options = { "accept": "*", "multiple": false }) {
+
         return new Promise((resolve, reject) => {
             const f = document.createElement("input");
             f.type = "file";
@@ -1978,16 +2243,17 @@
      * @param {string} password 要测试的密码
      * @returns {number} 密码的分数，范围0-100，可能存在小数点
      */
-    velfun.test.password = function (password) {
-        var vel_t0 = /[A-Z]+/.test(password);
-        var vel_t1 = /[a-z]+/.test(password);
-        var vel_t2 = /\d+/.test(password);
-        var vel_t3 = /[^A-z\d]+/.test(password);
-        var vel_t4 = password.length;
-        var vel_t5 = /(12|23|34|45|56|67|78|89|90|01|11|22|33|44|55|66|77|88|99|00)+/.test(password);
-        var vel_t6 = /(ab|ac|cd|de|ef|fg|gh|hi|ij|jk|kl|lm|mn|no|op|pq|qr|rs|st|tu|uv|vw|wx|xy|yz|aa|bb|cc|dd|ee|ff|gg|hh|ii|jj|kk|ll|mm|nn|oo|pp|qq|rr|ss|tt|uu|vv|ww|xx|yy|zz)+/i.test(password);
 
-        var vel_safe = 0.00;
+    velfun.test.password = function (password) {
+        const vel_t0 = /[A-Z]+/.test(password);
+        const vel_t1 = /[a-z]+/.test(password);
+        const vel_t2 = /\d+/.test(password);
+        const vel_t3 = /[^A-z\d]+/.test(password);
+        const vel_t4 = password.length;
+        const vel_t5 = /(12|23|34|45|56|67|78|89|90|01|11|22|33|44|55|66|77|88|99|00)+/.test(password);
+        const vel_t6 = /(ab|ac|cd|de|ef|fg|gh|hi|ij|jk|kl|lm|mn|no|op|pq|qr|rs|st|tu|uv|vw|wx|xy|yz|aa|bb|cc|dd|ee|ff|gg|hh|ii|jj|kk|ll|mm|nn|oo|pp|qq|rr|ss|tt|uu|vv|ww|xx|yy|zz)+/i.test(password);
+
+        let vel_safe = 0.00;
         vel_safe += (vel_t0) ? 12.5 : 0;
         vel_safe += (vel_t1) ? 12.5 : 0;
         vel_safe += (vel_t2) ? 12.5 : 0;
@@ -2004,43 +2270,54 @@
      * @param {string} cellphone 要测试的电话号 
      * @returns {boolean} 输入的内容是否是电话号码。注意：此功能只能判断是否为合法电话号，但不能判断是否是有效的，或是特定要求的电话号。
      */
+
     velfun.test.cellphone = function (cellphone) {
         cellphone = cellphone.replace(/[\s-\(\)]/g, "")
-        var areacode = cellphone.match(/^(\+|0{1,3}|\+0{1,3})(86|852|853|886|1|81|44)/);
-        var test;
+        const areacode = cellphone.match(/^(\+|0{1,3}|\+0{1,3})(86|852|853|886|1|81|44)/);
+        let test;
         if (!areacode) {
+
             areacode = "+86";
         } else {
             cellphone = cellphone.replace(areacode[0], "");
+
 
             areacode = areacode[0].replace(/(\+|0{1,3}|\+0{1,3})/, "+");
         }
 
         switch (areacode) {
+
             case "+86":
                 test = /^1[345678]\d{9}$/.test(cellphone);
                 break;
+
             case "+852":
                 test = /^[239678]\d{7}$/.test(cellphone);
                 break;
+
             case "+853":
                 test = /^[68]\d{7}$/.test(cellphone) || /^28\d{6}$/.test(cellphone);
                 break;
+
             case "+886":
                 test = /^0?(9|2|3|4|5|6|7|8|37|49|89|82|826|836)\d{8}$/.test(cellphone);
                 break;
+
             case "+1":
                 test = /^\d{10}$/.test(cellphone);
                 break;
+
             case "+81":
                 test = /^\d{10}$/.test(cellphone);
                 break;
+
             case "+44":
                 test = /^0?7\d{9}$/.test(cellphone) || /^0?[^7]\d{10}$/.test(cellphone);
                 break;
             default:
 
         }
+
 
         return test;
     }
@@ -2049,53 +2326,64 @@
      * @param {string} email 要测试的邮箱
      * @returns {boolean} 是否是合法的邮箱格式。注意：此功能只能判断格式是否正确，但不能判断邮箱可用性等因素
      */
+
     velfun.test.email = function (email) {
-        var vel_t0 = /(^[A-z]+[\d_]*)\@(\w+\.?)(\.\w+)$/.test(email.trim());
-        return vel_t0;
+        return /(^[A-z]+[\d_]*)\@(\w+\.?)(\.\w+)$/.test(email.trim());
     }
     /**
      * 等待完全读取后触发回调
      * @param {function} callback 完成后触发回调
      * @returns {Promise<function>} 返回Promise对象
      */
+
     velfun.test.fullyLoad = async function (area, callback, logs = true) {
         if (typeof callback == "boolean") {
             logs = callback;
             callback = () => { };
         }
+
         return new Promise((resolve, reject) => {
             let num = 0;
             let skipnum = 0;
             let errnum = 0;
             let fontsReady = false;
+
             _("img", area).each(function () {
                 if (this.src == "") {
                     skipnum++;
                     if (logs) {
                         if (skipnum > 1) {
-                            console.log(`Images ${skipnum}/${_("img", area).length} skipped.`);
+
+                            console.log(`%cVelFun%cLog%c Images ${skipnum}/${_("img", area).length} skipped.`,"background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","");
                         } else {
-                            console.log(`Image  ${skipnum}/${_("img", area).length} skipped.`);
+
+                            console.log(`%cVelFun%cLog%c Image  ${skipnum}/${_("img", area).length} skipped.`,"background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","");
                         }
                     }
+
                     if (num + errnum + skipnum >= _("img", area).length && fontsReady) {
                         callback();
+
                         resolve(true);
                     }
                     return;
                 }
-                var oImg = new Image();
+                let oImg = new Image();
                 oImg.onload = function () {
                     num++;
                     if (logs) {
                         if (num > 1) {
-                            console.log(`Images ${num}/${_("img", area).length} loaded.`);
+
+                            console.log(`%cVelFun%cLog%c Images ${num}/${_("img", area).length} loaded.`,"background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","");
                         } else {
-                            console.log(`Image  ${num}/${_("img", area).length} loaded.`);
+
+                            console.log(`%cVelFun%cLog%c Image  ${num}/${_("img", area).length} loaded.`,"background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","");
                         }
                     }
+
                     if (num + errnum + skipnum >= _("img", area).length && fontsReady) {
                         callback();
+
                         resolve(true);
                     }
                 }
@@ -2103,23 +2391,29 @@
                     errnum++;
                     if (logs) {
                         if (errnum > 1) {
-                            console.log(`Failed to load images ${errnum}/${_("img", area).length}.`);
+
+                            console.log(`%cVelFun%cLog%c Failed to load images ${errnum}/${_("img", area).length}.`,"background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","");
                         } else {
-                            console.log(`Failed to load image  ${errnum}/${_("img", area).length}.`);
+
+                            console.log(`%cVelFun%cLog%c Failed to load image  ${errnum}/${_("img", area).length}.`,"background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","");
                         }
                     }
+
                     if (num + errnum + skipnum >= _("img", area).length && fontsReady) {
                         callback();
+
                         resolve(true);
                     }
                 }
                 oImg.src = this.src;
             })
             document.fonts.ready.then(function () {
-                if (logs) console.log("Fonts loaded");
+                if (logs) console.log("%cVelFun%cLog%c Fonts loaded","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #f0f0f0; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","");
                 fontsReady = true;
+
                 if (num + errnum >= _("img", area).length) {
                     callback();
+
                     resolve(true);
                 }
             })
@@ -2128,16 +2422,18 @@
 
     //Translate
     velfun.trans = new Object();
+
     velfun.trans.inside = new Object();
     /**
      * 内部实现，不要直接调用
      */
+
     velfun.trans.inside.toChar = function (num, numlang, levellang) {
-        var num = num.split("");
-        var showNum = "";
-        var hasZero = false;
-        for (var i = 0; i < num.length; i++) {
-            var level = levellang[num.length - i - 1];
+        num = num.split("");
+        let showNum = "";
+        let hasZero = false;
+        for (let i = 0; i < num.length; i++) {
+            const level = levellang[num.length - i - 1];
             if (num.length == 2 && num[0] == '1' && i == 0) {
                 showNum = level;
             } else {
@@ -2161,24 +2457,28 @@
      * @param {boolean} upperCase 是否使用大写汉字
      * @returns {string} 转换后的汉字数字
      */
+
     velfun.trans.NumToChar = function (number, upperCase) {
         upperCase = upperCase || false;
+
         number = String(number);
-        numArr = number.split(".");
-        numInt = numArr[0];
-        numFloat = numArr[1] || "";
+
+        const numArr = number.split(".");
+        const numInt = numArr[0];
+        const numFloat = numArr[1] || "";
         //定义对应数组
+        let numlang, levellang;
         if (upperCase) {
-            var numlang = new Array("零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "拾");
-            var levellang = new Array("", "拾", "佰", "仟");
+            numlang = new Array("零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "拾");
+            levellang = new Array("", "拾", "佰", "仟");
         } else {
-            var numlang = new Array("零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十");
-            var levellang = new Array("", "十", "百", "千");
+            numlang = new Array("零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十");
+            levellang = new Array("", "十", "百", "千");
         }
-        var biglevellang = new Array("", "万", "亿");
+        const biglevellang = new Array("", "万", "亿");
 
         //整数计算
-        num = new Array();
+        let num = new Array();
         if (numInt.length > 8) {
             num[0] = numInt.substring(0, numInt.length - 8);
             num[1] = numInt.substring(numInt.length - 8, numInt.length - 4);
@@ -2189,16 +2489,19 @@
         } else {
             num[0] = numInt;
         }
-        var showNum = "";
-        for (var i = 0; i < num.length; i++) {
+        let showNum = "";
+        for (let i = 0; i < num.length; i++) {
+
             let in_k = velfun.trans.inside.toChar(num[i], numlang, levellang);
             if (in_k != "") {
                 if (i > 0 && in_k.indexOf("零") != 0 && num[i - 1].substring(num[i - 1].length - 1, num[i - 1].length) == "0") showNum += "零"
+
                 showNum += velfun.trans.inside.toChar(num[i], numlang, levellang) + biglevellang[num.length - i - 1];
             }
         }
         //小数计算
-        var showNum_float = velfun.trans.inside.toChar(numFloat, numlang, ["", "", "", ""]);
+
+        let showNum_float = velfun.trans.inside.toChar(numFloat, numlang, ["", "", "", ""]);
         if (showNum_float) {
             return showNum + "点" + showNum_float;
         } else {
@@ -2212,32 +2515,42 @@
      * 获取移动端类型
      * @returns {string} 移动端的英文类型，NOT表示不是移动端
      */
+
     velfun.info.mobileType = function () {
-        var u = navigator.userAgent;
+        const u = navigator.userAgent;
         if (u.match(/Android/i)) {
+
             Mobile = 'android';
         } else if (u.match(/BlackBerry/i)) {
+
             Mobile = 'blackberry';
         } else if (u.match(/iPhone|iPad|iPod/i)) {
+
             Mobile = 'ios';
         } else if (u.match(/IEMobile/i)) {
+
             Mobile = 'windows';
         } else {
+
             Mobile = 'NOT';
         }
+
         return Mobile;
     }
     /**
      * 获取是否是移动端
      * @returns {boolean} 是否是移动端
      */
+
     velfun.info.isMobile = function () {
+
         return (velfun.info.mobileType() != 'NOT') ? true : false;
     }
     /**
      * 获取主机地址
      * @returns {string} 主机地址
      */
+
     velfun.info.host = function () {
         return window.location.host;
     }
@@ -2247,6 +2560,7 @@
      * @param {function} func 如果为IE则执行的操作 
      * @returns {boolean} 是否是IE
      */
+
     velfun.info.isIE = function (func) {
         if ((!!window.ActiveXObject || "ActiveXObject" in window) && typeof func == "function") {
             func();
@@ -2258,49 +2572,40 @@
      * @param {string} needvar 需要获取的参数的参数名
      * @returns {string} 返回的参数值，此值永远是字符串类型
      */
+
     velfun.info.args = function (needvar) {
         let query = window.location.search.substring(1);
         let reg = new RegExp(`(^|&)${needvar}=(.*?)(&|$)`);
         let re = query.match(reg);
+
         return re ? re[2] : false;
     };
 
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
+    const query = window.location.search.substring(1);
+    const vars = query.split("&");
+    for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split("=");
+
         velfun.info.args[pair[0]] = pair[1];
     }
 
-    var tipList = new Array();
-    var tipReady = true;
-    /**
-     * 弹出提示
-     * @param {string} content 弹出提示的内容
-     * @param {string} title 提示的标题
-     * @param {number} duration 多久自动关闭，单位毫秒，默认三秒
-     */
-    velfun.Tip = function (content, title, duration) {
-        tipList.push(function () { _.inside.Tip_do(content, title, duration) });
-        if (tipReady) {
-            tipReady = false;
-            var fun = tipList.shift();
-            fun();
-        }
-    }
+    let tipList = new Array();
+    let tipReady = true;
     /**
      * 内部实现，不要直接调用
      */
+
     velfun.inside.Tip_do = function (content, title, duration) {
         if (typeof title === "number") {
             duration = title;
+
             delete title;
         }
         if (duration === undefined) {
             duration = 3000;
         }
-        var appendHtml = "";
-        var backgroundStyle = "background-color: var(--bg-color);";
+        let appendHtml = "";
+        let backgroundStyle = "background-color: var(--bg-color);";
         if (CSS.supports("backdrop-filter", "blur(30px)") || CSS.supports("-webkit-backdrop-filter", "blur(30px)")) {
             backgroundStyle = "background-color: var(--bg-color-blur);";
         }
@@ -2309,17 +2614,20 @@
         } else {
             appendHtml = "<div class='_Velfun_Tip' style='" + backgroundStyle + "'><span class='_Velfun_Tip_Content' style='display:block;width:100%;padding:5px;box-sizing:border-box;'>" + content + "</span></div>";
         }
+
         _("body").after(appendHtml);
 
-        var tips = _("._Velfun_Tip");
-        for (var i = 0; i < tips.length; i++) {
-            var tip = _(tips[i]);
+
+        const tips = _("._Velfun_Tip");
+        for (let i = 0; i < tips.length; i++) {
+
+            const tip = _(tips[i]);
             if (i == 0) {
                 setTimeout(function (t) {
                     t.css("right:5px;--st-color-mask: transparent");
                 }, 10, tip)
             } else {
-                var newtop = parseInt(tips[0].offsetHeight) + parseInt(tip[0].offsetTop) + 5;
+                const newtop = parseInt(tips[0].offsetHeight) + parseInt(tip[0].offsetTop) + 5;
                 tip.css("top:" + newtop + "px;");
             }
         }
@@ -2328,159 +2636,21 @@
             setTimeout(function (t) {
                 t.remove();
             }, 300, t)
+
         }, duration, _(tips[0]))
 
         setTimeout(function () {
             if (tipList.length >= 1) {
-                var fun = tipList.shift();
+                const fun = tipList.shift();
                 fun();
             } else {
                 tipReady = true;
             }
         }, 500)
     }
-    /**
-     * 手动初始化所有v-coloricon元素
-     */
-    velfun.setColoricon = function () {
-        var coloricons = _("v-coloricon");
-        for (var i = 0; i < coloricons.length; i++) {
-            var thisicon = _(coloricons[i]);
-            if (_("img", thisicon).length > 0) continue;
-            var width = thisicon.attr("width") || thisicon.css("width");
-            var height = thisicon.attr("height") || thisicon.css("height");
-            var src = thisicon.attr("src");
-            thisicon.css("width:" + width + "px;height:" + height + "px;overflow:hidden;display:inline-block;text-indent:0px;padding:0px;");
-            thisicon.append("<img src='" + src + "' style='width:" + width + "px;height:" + height + "px;position:relative;left:-" + width + "px;border-right:1px solid transparent;filter:drop-shadow(" + width + "px 0 0 black)'>");
-        }
-    }
-    /**
-     * 设置网页语言（需要网页以VelFun多语言方式开发）
-     * @param {string} langfile 指定语言文件路径
-     * @returns 
-     */
-    velfun.setLang = function (langfile = "") {
-        if (isOffline) return;
-        if (langfile == "") return;
-        if (_.observer != undefined) _.observer.disconnect();
-
-        _.io.get(langfile, function (langfiledata) {
-            _.langdata = JSON.parse(langfiledata);
-
-            /**调用时强制更新**/
-            var nl = _.getTextNodes(_("html")[0]);
-            for (var tn of nl) {
-                if (tn.nodeValue.trim() == "") continue;
-                if (tn.tempStr == undefined) {
-                    tn.tempStr = tn.nodeValue.trim();
-                } else {
-                    tn.nodeValue = tn.tempStr;
-                }
-                for (var key in _.langdata) {
-                    var nt = _.langdata[key];
-                    tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`, nt);
-                }
-            }
-
-            var al = _("[title],[placeholder],[value]");
-            al.each(function () {
-                _.setAttrsLang(this, _.langdata);
-            })
-            _.observer.observe(_.obbody, _.obconfig);
-        })
-    }
-    /**
-     * 内部实现，不要直接调用
-     */
-    velfun.setAttrsLang = function (th, langdata) {
-        if (_(th).hasAttr("alt")) {
-            if (!_(th).hasAttr("data-altTempStr")) {
-                _(th).attr("data-altTempStr", _(th).attr("alt"));
-            } else {
-                _(th).attr("alt", _(th).attr("data-altTempStr"));
-            }
-        }
-
-        if (_(th).hasAttr("title")) {
-            if (!_(th).hasAttr("data-titleTempStr")) {
-                _(th).attr("data-titleTempStr", _(th).attr("title"));
-            } else {
-                _(th).attr("title", _(th).attr("data-titleTempStr"));
-            }
-        }
-        if (_(th).hasAttr("placeholder")) {
-            if (!_(th).hasAttr("data-placeholderTempStr")) {
-                _(th).attr("data-placeholderTempStr", _(th).attr("placeholder"));
-            } else {
-                _(th).attr("placeholder", _(th).attr("data-placeholderTempStr"));
-            }
-        }
-        if (_(th).hasAttr("value")) {
-            if (!_(th).hasAttr("data-valueTempStr")) {
-                _(th).attr("data-valueTempStr", _(th).attr("value"));
-            } else {
-                _(th).attr("value", _(th).attr("data-valueTempStr"));
-            }
-        }
-        for (var key in langdata) {
-            var nt = langdata[key];
-            if (_(th).hasAttr("title")) {
-                _(th).attr("title", _(th).attr("title").replaceAll(`@t-${key};`, nt));
-            }
-            if (_(th).hasAttr("alt")) {
-                _(th).attr("alt", _(th).attr("alt").replaceAll(`@t-${key};`, nt));
-            }
-            if (_(th).hasAttr("placeholder")) {
-                _(th).attr("placeholder", _(th).attr("placeholder").replaceAll(`@t-${key};`, nt));
-            }
-            if (_(th).hasAttr("value")) {
-                _(th).attr("value", _(th).attr("value").replaceAll(`@t-${key};`, nt));
-            }
-        }
-    }
-    /**
-     * 获取元素下所有纯文本节点
-     * @param {HTMLElement} ele 父元素对象
-     * @returns {array} 所有#TEXT节点
-     */
-    velfun.getTextNodes = function (ele) {
-        if (ele.nodeType == 3) return [ele];
-        var nodes = ele.childNodes;
-        var textnodes = [];
-        for (var i in nodes) {
-            if (nodes[i].nodeType == 3) {
-                textnodes.push(nodes[i]);
-            } else {
-                var r = _.getTextNodes(nodes[i]);
-                for (var tn of r) {
-                    textnodes.push(tn);
-                }
-            }
-        }
-        return textnodes;
-    }
-    /**
-     * 数组/对象深度拷贝
-     * @param {array} from 从那个数组/对象拷贝
-     * @returns {array} 得到的独立的新数组/对象
-     */
-    velfun.deepCopy = function (from) {
-        let new_obj = new Object();
-        if (Array.isArray(from)) {
-            new_obj = new Array();
-        }
-        for (const key in from) {
-            let val = from[key];
-            if (typeof val == "object") {
-                new_obj[key] = velfun.deepCopy(val);
-            } else {
-                new_obj[key] = val;
-            }
-        }
-        return new_obj;
-    }
 
     velfun.fn.init.prototype = velfun.fn;
+
     window.velfun = _ = velfun;
 })(window);
 
@@ -2490,16 +2660,19 @@
  * @param {boolean} addone 是否+1偏移 
  * @returns {string} 月份字符串
  */
+
 Date.prototype.getFullMonth = function (addone) {
-    var addo = addone || false;
-    var vel_date = this;
-    var vel_month = vel_date.getMonth();
+    const addo = addone || false;
+    const vel_date = this;
+    let vel_month = vel_date.getMonth();
     if (addo) {
+
         vel_month = parseInt(vel_month) + 1;
     }
     if (vel_month.toString().length == 1) {
         return "0" + vel_month;
     } else {
+
         return vel_month;
     }
 }
@@ -2507,12 +2680,14 @@ Date.prototype.getFullMonth = function (addone) {
  * 获取两位数的完整日期
  * @returns {string} 天数字符串
  */
+
 Date.prototype.getFullDate = function () {
-    var vel_date = this;
-    var vel_fdate = vel_date.getDate();
+    const vel_date = this;
+    const vel_fdate = vel_date.getDate();
     if (vel_fdate.toString().length == 1) {
         return "0" + vel_fdate;
     } else {
+
         return vel_fdate;
     }
 }
@@ -2520,12 +2695,14 @@ Date.prototype.getFullDate = function () {
  * 获取两位数的完整小时
  * @returns {string} 小时字符串
  */
+
 Date.prototype.getFullHours = function () {
-    var vel_date = this;
-    var vel_hours = vel_date.getHours();
+    const vel_date = this;
+    const vel_hours = vel_date.getHours();
     if (vel_hours.toString().length == 1) {
         return "0" + vel_hours;
     } else {
+
         return vel_hours;
     }
 }
@@ -2533,12 +2710,14 @@ Date.prototype.getFullHours = function () {
  * 获取两位数的完整分钟
  * @returns {string} 分钟字符串
  */
+
 Date.prototype.getFullMinutes = function () {
-    var vel_date = this;
-    var vel_minutes = vel_date.getMinutes();
+    const vel_date = this;
+    const vel_minutes = vel_date.getMinutes();
     if (vel_minutes.toString().length == 1) {
         return "0" + vel_minutes;
     } else {
+
         return vel_minutes;
     }
 }
@@ -2546,12 +2725,14 @@ Date.prototype.getFullMinutes = function () {
  * 获取两位数的完整秒数
  * @returns {string} 秒数字符串
  */
+
 Date.prototype.getFullSeconds = function () {
-    var vel_date = this;
-    var vel_seconds = vel_date.getSeconds();
+    const vel_date = this;
+    const vel_seconds = vel_date.getSeconds();
     if (vel_seconds.toString().length == 1) {
         return "0" + vel_seconds;
     } else {
+
         return vel_seconds;
     }
 }
@@ -2589,18 +2770,24 @@ Object.defineProperty(Date.prototype, "FullSeconds", {
 //Auto Exec
 _.selfpath = document.scripts;
 _.selfpath = _.selfpath[_.selfpath.length - 1].src.substring(0, _.selfpath[_.selfpath.length - 1].src.lastIndexOf("/") + 1);
+
 let _return = _.io.loadPatchsFrom(_.selfpath + "plugins/");
 if (_return == "Error") {
     console.clear();
-    console.log("VelFun: Not found any plugins, Let's go on!");
+    console.info("%cVelFun%cInfo%c Not found any plugins, Let's go on!","background-color: black; color:white;padding: 0 5px; border-radius: 1000px 0 0 1000px;","background-color: #9999ff; color:black;padding: 0 5px; border-radius: 0 1000px 1000px 0;","");
 }
 
 function controllerInit() {
+
     _.initUpload();
+
     _.setColoricon();
+
     _.observer.observe(_.obbody, _.obconfig);
 }
+
 _(function () {
+
     if (_.info.isIE()) {
         document.writeln("VelFun4 is not support Internet Explorer.");
         return false;
@@ -2609,56 +2796,74 @@ _(function () {
 
 
     /**监听变化内容以更新**/
+
     _.obbody = _("html")[0];
+
     _.obconfig = { attributes: true, childList: true, subtree: true };
+
     _.obcallback = function (ml, observer) {
         controllerInit();
-        for (var mr of ml) {
+        for (const mr of ml) {
             /*>>>>语言更新*/
             switch (mr.type) {
                 case "attributes":
                     if (!["alt", "title", "placeholder", "value"].includes(mr.attributeName)) continue;
-                    let mutationRecords = observer.takeRecords();
+
                     _.observer.disconnect();
+
                     if (_(mr.target).hasAttr(mr.attributeName)) {
+
                         _(mr.target).attr("data-" + mr.attributeName + "TempStr", _(mr.target).attr(mr.attributeName));
                     }
-                    for (var key in _.langdata) {
-                        var nt = _.langdata[key];
+
+                    for (const key in _.langdata) {
+
+                        const nt = _.langdata[key];
                         try {
+
                             _(mr.target).attr(mr.attributeName, _(mr.target).attr(mr.attributeName).replaceAll(`@t-${key};`, nt));
                         } catch (e) { }
                     }
+
                     _.observer.observe(_.obbody, _.obconfig);
                     break;
                 case "childList":
+
                     _.observer.disconnect();
-                    for (var adn of mr.addedNodes) {
-                        var nl = _.getTextNodes(adn);
-                        for (var tn of nl) {
+                    for (const adn of mr.addedNodes) {
+
+                        const nl = _.getTextNodes(adn);
+                        for (const tn of nl) {
                             if (tn.tempStr == undefined) {
                                 tn.tempStr = tn.nodeValue.trim();
                             } else {
                                 tn.nodeValue = tn.tempStr;
                             }
-                            for (var key in _.langdata) {
-                                var nt = _.langdata[key];
+
+                            for (const key in _.langdata) {
+
+                                const nt = _.langdata[key];
                                 tn.nodeValue = tn.nodeValue.replaceAll(`@t-${key};`, nt);
                             }
                         }
-                        _.setAttrsLang(adn, _.langdata);
+
+                        _.inside.setAttrsLang(adn, _.langdata);
                     }
+
                     _.observer.observe(_.obbody, _.obconfig);
                     break;
             }
             /*<<<<语言更新*/
         }
     }
+
     _.observer = new MutationObserver(_.obcallback);
     controllerInit(); //初始化控件
 
     //Init Auto
+
     _("html").css("perspective: 100px; min-height:100%; min-width: 100%;");
+
     _("head").prepend(`
       <style id="vel_needed_styles">
     .html_alt_back {
@@ -2781,94 +2986,134 @@ _(function () {
     </style>
     `);
 
-    _(document).click(function () {
+
+    _(document).bind("click", function () {
+
         _("._Velfun_Contextmenu_[data-open]").css("opacity:0;");
         setTimeout(function () {
+
             _("._Velfun_Contextmenu_[data-open]").css("display:none;");
+
             _("._Velfun_Contextmenu_[data-open]").attr("data-open", "");
+
             _("._Velfun_Contextmenu_[dynamic]").remove();
         }, 120)
 
+
         if (_("v-select[data-opening]").length > 0) {
+
             _("v-select[data-opening]").closeSelect();
         }
     })
 
 
     //Keys
+
     velfun.nowinputbox = null;
+
     _("v-key").bind("mousedown", function (e) {
         e.preventDefault();
     })
 
+
     _("v-key").bind("click", function () {
-        var _this = this;
+        const _this = this;
+
         if (_(velfun.nowinputbox).hasAttr('readonly') || _(velfun.nowinputbox).hasAttr('disable') || !velfun.nowinputbox) {
             return false;
         }
-        var keychar = _this.attr("value");
-        var pos = velfun.nowinputbox.selectionStart;
+        const keychar = _this.attr("value");
+
+        const pos = velfun.nowinputbox.selectionStart;
         if (keychar == "clear") {
+
             velfun.nowinputbox.value = "";
+
             velfun.nowinputbox.selectionStart = 0;
+
             velfun.nowinputbox.selectionEnd = 0;
         } else if (keychar == "backspace") {
+
             if (velfun.nowinputbox.selectionStart != velfun.nowinputbox.selectionEnd) {
+
                 velfun.nowinputbox.value = velfun.nowinputbox.value.substr(0, velfun.nowinputbox.selectionStart) + velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd, velfun.nowinputbox.value.length);
+
                 velfun.nowinputbox.selectionStart = pos;
+
                 velfun.nowinputbox.selectionEnd = pos;
                 return false;
             }
+
             velfun.nowinputbox.value = velfun.nowinputbox.value.substr(0, pos - 1) + velfun.nowinputbox.value.substr(pos, velfun.nowinputbox.value.length);
+
             velfun.nowinputbox.selectionStart = pos - 1;
+
             velfun.nowinputbox.selectionEnd = pos - 1;
         } else if (keychar == "minus") {
+
             if (velfun.nowinputbox.value.indexOf("-") == -1) {
+
                 velfun.nowinputbox.value = "-" + velfun.nowinputbox.value;
             } else {
+
                 velfun.nowinputbox.value = velfun.nowinputbox.value.substr(1, velfun.nowinputbox.value.length);
             }
+
             velfun.nowinputbox.selectionStart = velfun.nowinputbox.value.length;
+
             velfun.nowinputbox.selectionEnd = velfun.nowinputbox.value.length;
         } else if (keychar == "shift") {
             if (_this.hasClass('shiftON')) {
                 _this.removeClass('shiftON');
-                var keys = _("v-key", _this.parent());
-                for (var i = 0; i < keys.length; i++) {
-                    var key = _(keys[i]);
-                    var isEn = /^[a-zA-Z]$/i.test(key.attr("value"));
+
+                const keys = _("v-key", _this.parent());
+                for (let i = 0; i < keys.length; i++) {
+
+                    const key = _(keys[i]);
+                    const isEn = /^[a-zA-Z]$/i.test(key.attr("value"));
                     if (isEn) {
-                        var normal = key.attr("value").toLowerCase();
+                        const normal = key.attr("value").toLowerCase();
                         key.attr("value", normal);
                         key.text(normal);
                     }
                 }
             } else {
                 _this.addClass('shiftON');
-                var keys = _("v-key", _this.parent());
-                for (var i = 0; i < keys.length; i++) {
-                    var key = _(keys[i]);
-                    var isEn = /^[a-zA-Z]$/i.test(key.attr("value"));
+
+                const keys = _("v-key", _this.parent());
+                for (let i = 0; i < keys.length; i++) {
+
+                    const key = _(keys[i]);
+                    const isEn = /^[a-zA-Z]$/i.test(key.attr("value"));
                     if (isEn) {
-                        var upper = key.attr("value").toUpperCase();
+                        const upper = key.attr("value").toUpperCase();
                         key.attr("value", upper);
                         key.text(upper);
                     }
                 }
             }
         } else if (keychar == "space") {
+
             velfun.nowinputbox.value = velfun.nowinputbox.value.substr(0, velfun.nowinputbox.selectionStart) + " " + velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd, velfun.nowinputbox.value.length);
+
             velfun.nowinputbox.selectionStart = pos + keychar.length;
+
             velfun.nowinputbox.selectionEnd = pos + keychar.length;
         } else {
+
             velfun.nowinputbox.value = velfun.nowinputbox.value.substr(0, velfun.nowinputbox.selectionStart) + keychar + velfun.nowinputbox.value.substr(velfun.nowinputbox.selectionEnd, velfun.nowinputbox.value.length);
+
             velfun.nowinputbox.selectionStart = pos + keychar.length;
+
             velfun.nowinputbox.selectionEnd = pos + keychar.length;
         }
+
         _(velfun.nowinputbox).trigger("change");
     })
 
+
     _("input[inputbox]").bind("focus", function () {
+
         velfun.nowinputbox = this[0];
     })
 

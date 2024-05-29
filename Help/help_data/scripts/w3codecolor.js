@@ -7,7 +7,8 @@ function w3CodeColor() {
     x = document.getElementsByClassName(modes[j] + "High");
     l = x.length;
     for (i = 0; i < l; i++) {
-      x[i].innerHTML = w3CodeColorize(x[i].innerHTML, modes[j]);
+      if(!x[i].getAttribute("data-html")) x[i].setAttribute("data-html",x[i].innerHTML);
+      x[i].innerHTML = w3CodeColorize(x[i].getAttribute("data-html"), modes[j]);
     }
   }
 }

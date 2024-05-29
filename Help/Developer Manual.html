@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <title>VelFun4开发者手册 - 4.33</title>
+  <title>VelFun4开发者手册 - 4.50</title>
   <link rel="stylesheet" href="help_data/styles/style.css?ver=2.50" />
   <link rel="stylesheet" href="help_data/styles/w3.css" />
-  <script src="help_data/scripts/velfun4.js?ver=4.31" type="text/javascript"></script>
+  <script src="help_data/scripts/velfun4.js?ver=4.50" type="text/javascript"></script>
   <script src="help_data/scripts/help.js" type="text/javascript"></script>
   <script src="help_data/scripts/w3codecolor.js" type="text/javascript"></script>
   <style id="vel_needed_styles">
@@ -43,7 +43,7 @@
 <body>
   <div class="top">
     <img src="help_data/images/Logo.png" alt="VelFun4" />
-    <div class="version">Ver 4.33</div>
+    <div class="version">Ver 4.50</div>
   </div>
   <div class="menu">
     <div class="type">
@@ -56,13 +56,10 @@
       <span class="typeitem" data-page="back">置于背景</span>
       <span class="typeitem" data-page="unback">从背景恢复</span>
       <span class="typeitem" data-page="resetback">重置背景</span>
-      <span class="typeitem" data-page="exec">执行代码</span>
       <span class="typeitem" data-page="hover">鼠标悬浮操作</span>
       <span class="typeitem" data-page="ccm">自定义右键选单（静态）</span>
       <span class="typeitem" data-page="ccmd">自定义右键选单（动态）</span>
-      <span class="typeitem" data-page="select"><img src="help_data/images/no.svg" alt="已移除" title="已移除">下拉菜单框架</span>
       <span class="typeitem" data-page="coloricon">变色图标</span>
-      <span class="typeitem" data-page="autotile"><img src="help_data/images/no.svg" alt="不推荐" title="不推荐">自动平铺</span>
     </div>
     <div class="type">
       <span class="typetitle">顶级静态方法</span>
@@ -71,7 +68,6 @@
       <span class="typeitem" data-page="random">整数随机数</span>
       <span class="typeitem" data-page="tip">无中断提示</span>
       <span class="typeitem" data-page="setlang">多语言框架</span>
-      <span class="typeitem" data-page="upload">可视化上传控件</span>
       <span class="typeitem" data-page="deepcopy">数组/对象深度拷贝</span>
     </div>
     <div class="type">
@@ -90,11 +86,11 @@
       <span class="typeitem" data-page="mobiletype">获取移动端类别</span>
       <span class="typeitem" data-page="ismobile">判断是否是移动端</span>
       <span class="typeitem" data-page="host">获取当前域名</span>
-      <span class="typeitem" data-page="isie"><img src="help_data/images/no.svg" alt="不可用" title="不可用">判断IE</span>
       <span class="typeitem" data-page="args">获取传参</span>
     </div>
     <div class="type">
       <span class="typetitle">输入输出方法</span>
+      <span class="typeitem" data-page="fetchSync">fetchSync</span>
       <span class="typeitem" data-page="ajax">AJAX</span>
       <span class="typeitem" data-page="post">POST</span>
       <span class="typeitem" data-page="get">GET</span>
@@ -104,19 +100,19 @@
       <span class="typeitem" data-page="import">动态导入资源文件</span>
       <span class="typeitem" data-page="unimport">动态卸载资源文件</span>
       <span class="typeitem" data-page="patchs"><img src="help_data/images/Experimental.png" alt="实验性功能"
-          title="实验性功能">加载补丁</span>
-      <span class="typeitem" data-page="openfiledialog">打开「打开文件」对话框</span>
-    </div>
-    <div class="type">
-      <span class="typetitle">原生扩展</span>
-      <span class="typeitem" data-page="fullmonth">完整月份</span>
-      <span class="typeitem" data-page="fulldate">完整日期</span>
-      <span class="typeitem" data-page="fullhour">完整小时</span>
-      <span class="typeitem" data-page="fullminutes">完整分钟</span>
-      <span class="typeitem" data-page="fullseconds">完整秒数</span>
-    </div>
-    <div class="type">
-      <span class="typetitle">自动框架</span>
+        title="实验性功能">加载补丁</span>
+        <span class="typeitem" data-page="openfiledialog">打开「打开文件」对话框</span>
+      </div>
+      <div class="type">
+        <span class="typetitle">原生扩展</span>
+        <span class="typeitem" data-page="fullmonth">完整月份</span>
+        <span class="typeitem" data-page="fulldate">完整日期</span>
+        <span class="typeitem" data-page="fullhour">完整小时</span>
+        <span class="typeitem" data-page="fullminutes">完整分钟</span>
+        <span class="typeitem" data-page="fullseconds">完整秒数</span>
+      </div>
+      <div class="type">
+        <span class="typetitle">自动框架</span>
       <span class="typeitem" data-page="keys">屏幕键盘框架</span>
     </div>
     <div class="type">
@@ -130,12 +126,21 @@
       <span class="typeitem" data-page="text">文本操作</span>
       <span class="typeitem" data-page="class">样式类操作</span>
       <span class="typeitem" data-page="bind">事件绑定</span>
+      <span class="typeitem" data-page="unbind">解除事件绑定</span>
       <span class="typeitem" data-page="trigger">事件触发</span>
       <span class="typeitem" data-page="dom">元素操作</span>
       <span class="typeitem" data-page="parent">获取父级</span>
       <span class="typeitem" data-page="next">获取下一个元素</span>
       <span class="typeitem" data-page="prev">获取上一个元素</span>
       <span class="typeitem" data-page="each">遍历操作</span>
+    </div>
+    <div class="type">
+      <span class="typetitle">废弃方法</span>
+      <span class="typeitem" data-page="exec"><img src="help_data/images/deleted.svg" alt="已废弃" title="已废弃">执行代码</span>
+      <span class="typeitem" data-page="select"><img src="help_data/images/deleted.svg" alt="已移除" title="已移除">下拉菜单框架</span>
+      <span class="typeitem" data-page="autotile"><img src="help_data/images/deleted.svg" alt="已废弃" title="已废弃">自动平铺</span>
+      <span class="typeitem" data-page="upload"><img src="help_data/images/deleted.svg" alt="已废弃" title="已废弃">可视化上传控件</span>
+      <span class="typeitem" data-page="isie"><img src="help_data/images/no.svg" alt="不可用" title="不可用">判断IE</span>
     </div>
   </div>
   <div class="main">
@@ -247,23 +252,10 @@
     </div>
 
     <div class="part" id="exec">
-      <span class="title">执行代码</span>
+      <span class="title"><img src="help_data/images/deleted.svg" alt="已废弃" title="已废弃">执行代码</span>
       <span class="subtitle"><span>说明</span></span>
       <span class="content">
-        现在可以在链式调用中使用exec执行自定义代码了，并且可以延迟调用，当没有延迟参数时，它是同步执行的，但是当它具有延迟参数时，它的效果与setTimeout一样是异步执行，他不能当做Sleep延迟后面的调用。
-      </span>
-      <span class="subtitle"><span>使用方法</span></span>
-      <span class="content">
-        <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).exec(<方法>[,<延迟>]);
-          </div>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>方法：要执行的方法，你可以传入一个匿名函数，或是一个具名函数</li>
-            <li>延迟：整数类型，单位是毫秒，可选参数，用来表示代码要延迟多久之后执行，需要注意的是，如果你提供了这个参数，exec方法会变为异步执行</li>
-          </ul>
-        </div>
+        <span class="warning">已废弃：此功能已于4.50版本被废弃</span>
       </span>
     </div>
 
@@ -464,52 +456,10 @@
     </div>
 
     <div class="part" id="select">
-      <span class="title"><img src="help_data/images/no.svg" alt="已移除" title="已移除">下拉菜单框架</span>
+      <span class="title"><img src="help_data/images/deleted.svg" alt="已移除" title="已移除">下拉菜单框架</span>
       <span class="subtitle"><span>说明</span></span>
       <span class="content">
-        <span
-          class="warning">已移除：VelFun中的v-select存在很大的问题，并且会与VelUI中的v-select功能重复，因此VelFun中的下拉选单已移除，请使用VelUI中的版本替代！</span>
-        下拉菜单，很常用的东西，但是万物皆可CSS的网页中始终有一个老顽固，那就是下拉菜单，于是很多前端就放弃使用这个了，最常见的方法是用ul
-        li模拟一个，样式，坐标等等等等，总是要处里很多的问题，现在我们提供了框架，让工作轻松了许多。
-      </span>
-      <span class="subtitle"><span>使用方法</span></span>
-      <span class="content">
-        <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code htmlHigh notranslate">
-              &lt;v-select name="&lt;名字&gt;"&gt;
-                &lt;v-option value="&lt;值1&gt;"&gt;选项1&lt;/v-option&gt;
-                &lt;v-option value="&lt;值2&gt;"&gt;选项2&lt;/v-option&gt;
-                &lt;v-option value="&lt;值3&gt;" disable&gt;选项3&lt;/v-option&gt;
-                &lt;v-option value="&lt;值4&gt;"&gt;选项4&lt;/v-option&gt;
-                .
-                .
-                .
-              &lt;/v-select&gt;
-            </pre>
-          <ul>
-            <li>名字：表单提交需要的name字段</li>
-            <li>值：选项的值</li>
-            <li>选项：选项显示的文本</li>
-            <li>你可以自定义每一个选项，以及下拉框本身的样式，框架只提供功能</li>
-            <li>如果你的下拉框是页面加载就存在的，那么你不需要做任何事，VelFun会自动处里所有工作</li>
-            <li>下拉框框架不包含任何的样式，这需要你自己来做。</li>
-            <li>你可以使用disable来禁用某些选项，它会变成灰色</li>
-            <li>你可以通过_(下拉框).val()获取当前选择的值或设定选择项</li>
-          </ul>
-        </div>
-      </span>
-      <span class="subtitle"><span>动态加载</span></span>
-      <span class="content">
-        如果你的下拉框是动态加载的，那么你需要在加载完成时执行一次初始化操作。
-        <div class="w3-panel w3-card w3-light-vel">
-          <h4>手动初始化下拉框</h4>
-          <pre class="w3-code jsHigh notranslate">
-              _(<下拉框>).setSelect();
-            </pre>
-          <ul>
-            <li>下拉框：选择动态加载的下拉框，或是直接用_("v-select")初始化所有页面上的下拉框</li>
-          </ul>
-        </div>
+        <span class="warning">已移除：VelFun中的v-select存在很大的问题，并且会与VelUI中的v-select功能重复，因此VelFun中的下拉选单已移除，请使用VelUI中的版本替代！</span>
       </span>
     </div>
 
@@ -565,43 +515,10 @@
     </div>
 
     <div class="part" id="autotile">
-      <span class="title"><img src="help_data/images/no.svg" alt="不推荐" title="不推荐">自动平铺</span>
+      <span class="title"><img src="help_data/images/deleted.svg" alt="已废弃" title="已废弃">自动平铺</span>
       <span class="subtitle"><span>说明</span></span>
       <span class="content">
-        <span
-          class="warning">不推荐：此功能只针对不支持flex布局的浏览器，现在flex布局具有良好的兼容性，可以实现的效果更好，也更方便，请在只有你开发的网站主要面向的浏览器不支持flex布局时使用此功能。</span>
-        间距总是令人厌烦的，尤其是应对不同屏幕，每一行显示的项目数量是不可控的，因此我们需要「自动平铺」！它可以自动的帮我们计算每行摆放的项目数量，计算并设置好相等的间距。
-      </span>
-      <span class="subtitle"><span>使用方法</span></span>
-      <span class="content">
-        <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).autoTile();
-          </div>
-          <div id="test_autoTile_div" style="display:block;width:500px;height:240px;border:1px solid black;">
-            <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;
-            </div>
-            <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;
-            </div>
-            <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;
-            </div>
-            <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;
-            </div>
-            <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;
-            </div>
-            <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;
-            </div>
-            <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;
-            </div>
-            <div style="display:inline-block;width:100px;height:100px;border:1px solid black;margin-top:10px;">&nbsp;
-            </div>
-          </div>
-          <button id="test_autoTile">平铺元素</button>
-          <ul>
-            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
-            <li>当窗口大小发生变化时，需要重新调用，放一个监听窗口大小变化的事件吧</li>
-          </ul>
-        </div>
+        <span class="warning">已废弃：此功能已于4.50版本被废弃</span>
       </span>
     </div>
 
@@ -616,7 +533,13 @@
         <div class="w3-panel w3-card w3-light-vel">
           <div class="w3-code jsHigh notranslate">
             _.Msgbox(<消息内容>[,<标题>[,<按钮类型>]][,<显示位置>][,<回调函数>]);</br>
-                      _.Msgbox(<消息内容>[,<标题>[,<按钮类型>]][,<显示位置>]).then(<肯定函数>[,<否定函数>]);
+                      _.Msgbox({
+                        "message": <消息内容>,
+                        "title": <标题>,
+                        "type": <按钮类型>,
+                        "position": <显示位置>,
+                        "callback": <回调函数>
+                      });
           </div>
           <button id="test_Msgbox">点击这里试试</button>
           <ul>
@@ -627,9 +550,6 @@
             </li>
             <li>显示位置：数组类型，可选参数，以[0.5,0.5]格式指定消息框的位置，取值范围0-1，左上为[0,0]，右下为[1,1]，但你通常不需要去设定这个参数，默认的位置刚刚好</li>
             <li>回调函数：可选参数，指定一个函数在点击按钮后执行，函数的第一个参数指示点击的按钮，此参数是布尔型，true表示确定/是，false表示取消/否</li>
-            <li>
-              Promise方式：then中第一个函数为用户选择「是/确定」等肯定按钮时返回，第二个函数为用户选择「否/取消」等按钮时触发。无需在函数内判断返回值。第二个可以省略，但会在控制台报错，不影响使用，有强迫症的朋友可以传一个空的函数（例如
-              ()=>{} 即可），如果同时给出回调函数则会同时触发两个处理</li>
             <li>消息框拥有队列，多个消息框会依次显示</li>
           </ul>
         </div>
@@ -705,7 +625,12 @@
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <pre class="w3-code jsHigh notranslate">
-              _.Tip(<内容>[,<标题>][,<显示时间>]);
+            _.Tip(<内容>[,<标题>][,<显示时间>]);<br>
+            _.Tip({
+              "content": <内容>,
+              "title": <标题>,
+              "duration": <显示时间>
+            });
             </pre>
           <button id="test_tip">点这里试试</button>
           <ul>
@@ -769,44 +694,10 @@
     </div>
 
     <div class="part" id="upload">
-      <span class="title">可视化上传控件</span>
+      <span class="title"><img src="help_data/images/deleted.svg" alt="已废弃" title="已废弃">可视化上传控件</span>
       <span class="subtitle"><span>说明</span></span>
       <span class="content">
-        还在用input file上传文件？还在为了图片上传而自己写一堆代码？现在 可视化上传控件 来了！此控件主要针对图片上传做了优化，提供可视化上传与大图预览功能，随着后期的更新可能提供上传时编辑功能。
-      </span>
-      <span class="subtitle"><span>使用方法</span></span>
-      <span class="content">
-        <div class="w3-panel w3-card w3-light-vel">
-          <h2>html</h2>
-          <pre class="w3-code htmlHigh notranslate">
-              &lt;v-upload data-name="" data-title="" data-eximg="" titletype="" showpreview=""&gt;&lt;/v-upload&gt;
-            </pre>
-          <div style="display:block;width:100%;height:123px;">
-            <v-upload style="display:block;width: 200px;height:123px;float:left;" data-name="idcard1" data-title="动态标题"
-              data-eximg="help_data/images/idcard.jpg"></v-upload>
-            <v-upload style="display:block;width: 200px;height:123px;float:left;" data-name="idcard2" data-title="静态标题"
-              data-eximg="help_data/images/idcard.jpg" titletype="static"></v-upload>
-            <v-upload style="display:block;width: 200px;height:123px;float:left;" data-name="idcard3" data-title="隐藏标题"
-              data-eximg="help_data/images/idcard.jpg" titletype="none"></v-upload>
-          </div>
-          <ul>
-            <li>此控件为自动调用形式，无需编写js代码</li>
-            <li>data-name:对应控件的name属性，无需使用表单提交时可省略，使用表单时表现同input file的name属性</li>
-            <li>data-title:控件显示的标题，省略时不显示标题，同时也是图片的alt属性</li>
-            <li>data-eximg:例图路径，用来在用户未选择图片文件时显示例图，当用户选择文件后，将会被替换（类似input text的placeholder）</li>
-            <li>titletype:决定标题的显示方式：
-              <ul>
-                <li>dynamic(默认):动态显示，仅当鼠标移动到上传控件时显示</li>
-                <li>static:静态显示，标题将始终显示</li>
-                <li>none:不显示，即使设定了data-title属性，也不会显示标题，而data-title属性依然可以用于图片的alt属性</li>
-              </ul>
-            </li>
-            <li>showpreview:值为true/false
-              指示此控件是否显示缩略图，默认为true显示缩略图，设为false时不显示例图与选择的图片。当此值为false时，titletype的默认值将由dynamic变为static。</li>
-            <li>此控件的大小及位址需要自行设定，为v-upload正常写样式即可</li>
-            <li>操作逻辑：此控件在未选择文件时显示例图，此时点击将开启“打开”文件框，选择文件后例图被替代，再次点击将显示原图预览，并包含重新上传按钮。</li>
-          </ul>
-        </div>
+        <span class="warning">已废弃：此功能已于4.50版本被废弃</span>
       </span>
     </div>
 
@@ -1063,12 +954,34 @@
         </div>
       </span>
     </div>
-
+    <div class="part" id="fetchSync">
+      <span class="title">fetchSync同步传输</span>
+      <span class="subtitle"><span>说明</span></span>
+      <span class="content">
+        简单地封装了XHR(XML Http Request)的同步传输方法，fetchSync属于io(input/output 输入/输出)分类之下，使用_.io.fetchSync()调用。
+      </span>
+      <span class="subtitle"><span>使用方法</span></span>
+      <span class="content">
+        <div class="w3-panel w3-card w3-light-vel">
+          <pre class="w3-code jsHigh notranslate">
+              let <变量> = _.io.fetchSync(<类型>,<路径>[,<数据>]);
+            </pre>
+          <ul>
+            <li>类型：必要参数，字符串类型，AJAX提交的method，参数为post或get</li>
+            <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，无论传递类型是get还是post，此处连接的参数一律视为GET</li>
+            <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
+            <li>通过使用url连接参数与post +
+              数据的提交方式，可以给后台同时传递GET的参数与POST的参数，以PHP为例，$_POST只能获取到POST的参数而$_GET则只能获取GET的参数，并不是说类型设为post就都是post传递。但是GET类型没有这个区别。
+            </li>
+          </ul>
+        </div>
+      </span>
+    </div>
     <div class="part" id="ajax">
       <span class="title">AJAX异步传输</span>
       <span class="subtitle"><span>说明</span></span>
       <span class="content">
-        简单地封装了XHR(XML Http Request)的异步传输方法，也就是俗称的AJAX，AJAX属于io(input/output 输入/输出)分类之下，使用_.io.ajax()调用。
+        简单地封装了Fetch的异步传输方法，也就是俗称的AJAX，AJAX属于io(input/output 输入/输出)分类之下，使用_.io.ajax()调用。
       </span>
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
@@ -1081,8 +994,8 @@
             <li>类型：必要参数，字符串类型，AJAX提交的method，参数为post或get</li>
             <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，无论传递类型是get还是post，此处连接的参数一律视为GET</li>
             <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
-            <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据，第二个参数是完整的XHR对象，通常使用一个参数即可</li>
-            <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，如果同时给出回调函数则会同时触发两个处理</li>
+            <li>回调函数：可选参数，函数类型，当获取到返回值时调用的回调函数，回调函数第一个参数是返回的文本数据</li>
+            <li>Promise方式：用then的方式，回传参数与回调函数一致，如果使用Promise形式回调函数为可选，<strong>如果同时给出回调函数则会只处理callback</strong></li>
             <li>通过使用url连接参数与post +
               数据的提交方式，可以给后台同时传递GET的参数与POST的参数，以PHP为例，$_POST只能获取到POST的参数而$_GET则只能获取GET的参数，并不是说类型设为post就都是post传递。但是GET类型没有这个区别。
             </li>
@@ -1531,7 +1444,8 @@
       <span class="title">值操作</span>
       <span class="subtitle"><span>说明</span></span>
       <span class="content">
-        用于velfun对象的值操作方法，获取或设定value属性值。<br><strong>从4.33版本开始统一使用HTMLElement.value = value;实现，不再操作attr设定和读取HTML属性，不具有value对象属性的元素不再能被读取，请转而使用attr("value")读取自定义的HTML中的value。</strong>
+        用于velfun对象的值操作方法，获取或设定value属性值。<br><strong>从4.33版本开始统一使用HTMLElement.value =
+          value;实现，不再操作attr设定和读取HTML属性，不具有value对象属性的元素不再能被读取，请转而使用attr("value")读取自定义的HTML中的value。</strong>
       </span>
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
@@ -1639,15 +1553,22 @@
       <span class="subtitle"><span>说明</span></span>
       <span class="content">
         用于velfun对象的事件绑定，用来绑定事件触发时的操作，在VelFun中所有的事件绑定都是由bind完成的，不像jQuery拥有类似click()
-        mousedown()等方法。同时bind基本等同于on，对于动态添加的对象也可以绑定。
+        mousedown()等方法。同时bind基本等同于on，对于动态添加的对象也可以绑定。从4.50版本开始，将返回事件ID用以解除绑定。
       </span>
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <div class="w3-code jsHigh notranslate">
-            _(<元素>).bind(<事件>,<方法>); //绑定静态元素（已加载的元素）事件<br>
-                  _(document).bind(<事件>,<选择器>,<方法>,<允许间接触发>); //绑定动态元素（未来将加载的元素）事件<br>
-                          _.bind(<事件>,<选择器>,<方法>,<允许间接触发>); //此写法也可以绑定动态元素（未来将加载的元素）事件
+            const <事件ID> = _(<元素>).bind(<事件>,<函数>); //绑定静态元素（已加载的元素）事件<br>
+            const <事件ID> = _(document).bind(<事件>,<选择器>,<函数>,<允许间接触发>); //绑定动态元素（未来将加载的元素）事件<br>
+            const <事件ID> = _.bind(<事件>,<选择器>,<函数>,<允许间接触发>); //此写法也可以绑定动态元素（未来将加载的元素）事件<br>
+            // 对象传参写法<br>
+            const <事件ID> = _(<元素>).bind({
+              "event": <事件>,
+              "selector": <选择器>,
+              "callback": <函数>,
+              "bubbling": <允许间接触发>
+            });
           </div>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
@@ -1655,10 +1576,33 @@
             <li>
               选择器：VelFun4选择器兼容的任意形式（文本，元素，velfun对象等），最常用文本类型，因为在元素加载前，其它类型无法获取到，需要注意的是_(selector)返回的是<strong>当前存在</strong>的对象，因此不能匹配未来加载的元素，即使他们的selector一样
             </li>
-            <li>方法：当事件发生时要执行的方法，可以是匿名函数。需要注意变量的作用域，以免触发时拿到的变量值与绑定时不同。方法可以通过第二个参数接收原始绑定元素对象</li>
+            <li>函数：当事件发生时要执行的函数，可以是匿名函数，即使是匿名函数也可以解绑。需要注意变量的作用域，以免触发时拿到的变量值与绑定时不同。函数可以通过第二个参数接收原始绑定元素对象</li>
             <li>
               允许间接触发：默认值False，仅动态绑定有效，默认情况下，动态元素为精准匹配模式，即点击子元素时，不会触发父级绑定的事件，这对按钮，文本框等非常有用，不会因为点按按钮触发背后父级的点击事件。但一些情况下可以手动设定为True来使父级能够响应由子元素传递而来的间接触发。
             </li>
+            <li>事件ID：使用bind绑定事件现在会返回一个事件ID，此事件ID可以用于解绑事件</li>
+          </ul>
+        </div>
+      </span>
+    </div>
+
+    <div class="part" id="unbind">
+      <span class="title">解除事件绑定</span>
+      <span class="subtitle"><span>说明</span></span>
+      <span class="content">
+        用于解除velfun对象的事件绑定，仅与bind组合使用，要解除事件绑定，你需要知道使用bind绑定时返回的事件ID。
+      </span>
+      <span class="subtitle"><span>使用方法</span></span>
+      <span class="content">
+        <div class="w3-panel w3-card w3-light-vel">
+          <div class="w3-code jsHigh notranslate">
+            _(<元素>).bind(<事件>,<事件ID>); //绑定静态元素（已加载的元素）事件<br>
+            _.bind(<事件>,<事件ID>); //此写法也可以绑定动态元素（未来将加载的元素）事件<br>
+          </div>
+          <ul>
+            <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
+            <li>事件：要解绑的事件，与你之前bind时的事件一致</li>
+            <li>事件ID：使用bind绑定事件现在会返回一个事件ID，在解绑时需要使用这个ID</li>
           </ul>
         </div>
       </span>
@@ -1719,12 +1663,12 @@
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <div class="w3-code jsHigh notranslate">
-            _(<元素>).parent(<层数>);
+            _(<元素>).parent([<层数>]);
           </div>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>
-              <层数>：向上寻找父级的次数（层数），省略默认为一层父级
+              层数：向上寻找父级的次数（层数），省略默认为一层父级
             </li>
           </ul>
         </div>
@@ -1741,12 +1685,12 @@
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <div class="w3-code jsHigh notranslate">
-            _(<元素>).next(<次数>);
+            _(<元素>).next([<次数>]);
           </div>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>
-              <层数>：向后寻找兄弟元素的次数，省略默认为下一个元素
+              层数：向后寻找兄弟元素的次数，省略默认为下一个元素
             </li>
           </ul>
         </div>
@@ -1763,12 +1707,12 @@
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <div class="w3-code jsHigh notranslate">
-            _(<元素>).prev(<层数>);
+            _(<元素>).prev([<次数>]);
           </div>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>
-              <层数>：向前寻找兄弟元素的次数，省略默认为上一个元素
+              次数：向前寻找兄弟元素的次数，省略默认为上一个元素
             </li>
           </ul>
         </div>

@@ -1,4 +1,5 @@
 _(function(){
+  const isOffline = !location.origin.match(/^(http:|https:)\/\//);
   _(".typeitem").bind("click",function(){
     _(".typeitem.selected").removeClass("selected");
     this.addClass("selected");
@@ -9,6 +10,9 @@ _(function(){
   _("#jj").css("display:block;");
 
   _.setLang("/online/Help/help_data/lang/cn.lang");
+  if(isOffline){
+    _("#test_setlang").text("切换语言");
+  }
 
   /****演示按钮****/
   _("#test_back").bind("click",function(){
@@ -129,12 +133,18 @@ _(function(){
   })
 
   _("#test_setlang").bind("click",function(){
+    if(isOffline){
+      _.Msgbox("您当前处于本地版本，然而setLang需要利用ajax读取语言文件，它必须是具有域名且同源的，而本地网页并没有源，因此无法试用此功能","不能切换");
+      return;
+    }
     if(this.attr("data-lang") == "cn"){
       _.setLang("/online/Help/help_data/lang/en.lang");
       this.attr("data-lang","en");
+      w3CodeColor();
     }else{
       _.setLang("/online/Help/help_data/lang/cn.lang");
       this.attr("data-lang","cn");
+      w3CodeColor();
     }
   })
 
