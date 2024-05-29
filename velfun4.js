@@ -1,6 +1,6 @@
 /********************
 腳本名:VelFun
-版本號:4-4.50
+版本號:4-4.51
 通  道:Release
 作　者:龍翔翎(Velade)
 
@@ -8,7 +8,7 @@
 ********************/
 ; (function (window, undefined) {
     const isOffline = !location.origin.match(/^(http:|https:)\/\//);
-    const version = "4-4.50";
+    const version = "4-4.51";
     const channel = "Release";
     const author = "Velade";
     const releaseDate = "2024-05-29";
@@ -966,7 +966,7 @@
         for (let i = 0; i < times; i++) {
             parent = parent.parentElement;
         }
-        return parent;
+        return _(parent);
     }
     /**
      * 返回元素的下一个元素，注意不是节点，因此#TEXT节点不会被捕获
@@ -980,7 +980,7 @@
         for (let i = 0; i < times; i++) {
             next = next.nextElementSibling;
         }
-        return next;
+        return _(next);
     }
     /**
      * 返回元素的上一个元素，注意不是节点，因此#TEXT节点不会被捕获
@@ -994,7 +994,7 @@
         for (let i = 0; i < times; i++) {
             prev = prev.previousElementSibling;
         }
-        return prev;
+        return _(prev);
     }
     /**
      * 遍历VelFun对象
@@ -1953,10 +1953,12 @@
                 fetch(url)
                     .then(response => response.text())
                     .then(text => {
-                        resolve(text);
+                        if (typeof callback == "function") callback(text);
+                        else resolve(text);
                     })
                     .catch(reason => {
-                        reject(reason)
+                        if (typeof callback == "function") callback(text);
+                        else reject(reason)
                     })
             } else if (method.toLowerCase() == "post") {
                 fetch(url, { method: 'POST', body: data })
@@ -2336,7 +2338,7 @@
      * @returns {Promise<function>} 返回Promise对象
      */
 
-    velfun.test.fullyLoad = async function (area, callback, logs = true) {
+    velfun.test.fullyLoad = async function (area, callback = ()=>{}, logs = true) {
         if (typeof callback == "boolean") {
             logs = callback;
             callback = () => { };
