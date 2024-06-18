@@ -3,12 +3,13 @@
 
 <head>
   <meta charset="utf-8">
-  <title>VelFun4开发者手册 - 4.51</title>
+  <title>VelFun4开发者手册 - 4.60</title>
+  <link rel="stylesheet" href="help_data/styles/w3.css">
   <link rel="stylesheet" href="help_data/styles/style.css?ver=2.50" />
-  <link rel="stylesheet" href="help_data/styles/w3.css" />
-  <script src="help_data/scripts/velfun4.js?ver=4.50" type="text/javascript"></script>
+  <script src="help_data/scripts/velfun4.min.js?ver=4.60" type="text/javascript"></script>
   <script src="help_data/scripts/help.js" type="text/javascript"></script>
-  <script src="help_data/scripts/w3codecolor.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="help_data/scripts/highlight/styles/googlecode.css" />
+  <script src="help_data/scripts/highlight/highlight.min.js"></script>
   <style id="vel_needed_styles">
     .html_alt_back {
       background-color: black !important;
@@ -43,7 +44,7 @@
 <body>
   <div class="top">
     <img src="help_data/images/Logo.png" alt="VelFun4" />
-    <div class="version">Ver 4.51</div>
+    <div class="version">Ver 4.60</div>
   </div>
   <div class="menu">
     <div class="type">
@@ -60,6 +61,7 @@
       <span class="typeitem" data-page="ccm">自定义右键选单（静态）</span>
       <span class="typeitem" data-page="ccmd">自定义右键选单（动态）</span>
       <span class="typeitem" data-page="coloricon">变色图标</span>
+      <span class="typeitem" data-page="gmc-dom">获取主题色（元素）</span>
     </div>
     <div class="type">
       <span class="typetitle">顶级静态方法</span>
@@ -69,6 +71,7 @@
       <span class="typeitem" data-page="tip">无中断提示</span>
       <span class="typeitem" data-page="setlang">多语言框架</span>
       <span class="typeitem" data-page="deepcopy">数组/对象深度拷贝</span>
+      <span class="typeitem" data-page="gmc-single">获取主题色（独立）</span>
     </div>
     <div class="type">
       <span class="typetitle">验证方法</span>
@@ -177,9 +180,11 @@
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <h4>引入VelFun4</h4>
-          <div class="w3-code htmlHigh notranslate">
-            &lt;script src="velfun4.js" type="text/javascript"&gt;&lt;/script&gt;
-          </div>
+          <pre>
+            <code class="language-xml">
+                &lt;script src="velfun4.js" type="text/javascript"&gt;&lt;/script&gt;
+            </code>
+          </pre>
         </div>
       </span>
     </div>
@@ -193,9 +198,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).back([<距离>]);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).back([<距离>]);
+          </code>
+</pre>
           <button id="test_back">点击这里试试</button>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
@@ -219,9 +226,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).unback();
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).unback();
+          </code>
+</pre>
           <button id="test_unback">点击这里试试</button>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
@@ -240,9 +249,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).resetback();
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).resetback();
+          </code>
+</pre>
           <button id="test_resetback">点击这里试试</button>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
@@ -268,9 +279,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).hover(<方法1>[,<方法2>]);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).hover(<方法1>[,<方法2>]);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>方法1：当鼠标进入时执行的方法</li>
@@ -290,31 +303,33 @@
       <span class="subtitle"><span>基础使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _(<元素>).CustomContextmenu({<br />
-                "选项1":function(){<br />
-                  //选项1的操作<br />
-                },<br />
-                "选项2":function(){<br />
-                  //选项2的操作<br />
-                },<br />
-                .<br />
-                .<br />
-                .<br />
-              });<br />
-              //你也可以使用缩写ccm<br />
-              _(<元素>).ccm({<br />
-                "选项1":function(){<br />
-                  //选项1的操作<br />
-                },<br />
-                "选项2":function(){<br />
-                  //选项2的操作<br />
-                },<br />
-                .<br />
-                .<br />
-                .<br />
-              });
-            </pre>
+          <pre>
+<code class="language-js">
+_(<元素>).CustomContextmenu({
+    "选项1":function(){
+        /* 选项1的操作 */
+    },
+    "选项2":function(){
+        /* 选项2的操作 */
+    },
+    .
+    .
+    .
+});
+/* 你也可以使用缩写ccm */
+_(<元素>).ccm({
+    "选项1":function(){
+        /* 选项1的操作 */
+    },
+    "选项2":function(){
+        /* 选项2的操作 */
+    },
+    .
+    .
+    .
+});
+            </code>
+</pre>
           <button id="test_rightclick">右键单击这里试试</button>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
@@ -327,16 +342,18 @@
       <span class="subtitle" style="width:300px;"><span style="width:300px;">特殊选项使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _(<元素>).CustomContextmenu({<br />
-                "icon('/ex/ex.icon')选项1":function(){ //添加一个带有小图标的菜单项<br />
-                  //选项1的操作<br />
-                },<br />
-                "选项2 if(条件)":function(){ //选项2只有在符合if()中的条件时才会显示<br />
-                  //选项2的操作<br />
-                }<br />
-              });
-            </pre>
+          <pre>
+<code class="language-js">
+_(<元素>).CustomContextmenu({
+    "icon('/ex/ex.icon')选项1":function(){ /* 添加一个带有小图标的菜单项 */
+        /* 选项1的操作 */
+    },
+    "选项2 if(条件)":function(){ /* 选项2只有在符合if()中的条件时才会显示 */
+        /* 选项2的操作 */
+    }
+});
+            </code>
+</pre>
           <ul>
             <li>
               条件：用于控制选项是否显示的条件表达式，但是需要注意的是，由于变量作用域的原因，调用自定义菜单的地方与生成菜单的地方并不相同，变量也就无法直接使用，因此此处如过需要用到变量，那么只能是以下变量作用域：全局变量，注册到window的属性，注册到velfun的属性（推荐），以及元素的值或属性等。建议使用&#12288;_.变量名&#12288;将变量变为VelFun4的属性来调用。
@@ -365,53 +382,55 @@
       <span class="subtitle"><span>基础使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              let menu = _(<元素>).CustomContextmenuDynamic({<br />
-                "选择器1":{
-                  "选项1":function(){<br />
-                    //选项1的操作<br />
-                  },<br />
-                  "选项2":function(){<br />
-                    //选项2的操作<br />
-                  }<br />
-                },
-                "选择器2":{
-                  "选项1":function(){<br />
-                    //选项1的操作<br />
-                  },<br />
-                  "选项2":function(){<br />
-                    //选项2的操作<br />
-                  }<br />
-                },<br />
-                .<br />
-                .<br />
-                .<br />
-              });<br />
-              // 你也可以使用缩写ccmd<br />
-              _(<元素>).ccmd({<br />
-                "选择器1":{
-                  "选项1":function(){<br />
-                    //选项1的操作<br />
-                  },<br />
-                  "选项2":function(){<br />
-                    //选项2的操作<br />
-                  }<br />
-                },
-                "选择器2":{
-                  "选项1":function(){<br />
-                    //选项1的操作<br />
-                  },<br />
-                  "选项2":function(){<br />
-                    //选项2的操作<br />
-                  }<br />
-                },<br />
-                .<br />
-                .<br />
-                .<br />
-              });
-              menu.add(<选择器>, <选项名>,<方法/事件回调>,<在某项之前>);<br />
-              menu.remove(<选择器>, <选项名>);<br />
-            </pre>
+          <pre>
+<code class="language-js">
+let menu = _(<元素>).CustomContextmenuDynamic({
+    "选择器1":{
+        "选项1":function(){
+            /* 选项1的操作 */
+        },
+        "选项2":function(){
+            /* 选项2的操作 */
+        }
+    },
+    "选择器2":{
+        "选项1":function(){
+            /* 选项1的操作 */
+        },
+        "选项2":function(){
+            /* 选项2的操作 */
+        }
+    },
+    .
+    .
+    .
+    });
+    /* 你也可以使用缩写ccmd */
+    _(<元素>).ccmd({
+    "选择器1":{
+        "选项1":function(){
+            /* 选项1的操作 */
+        },
+        "选项2":function(){
+            /* 选项2的操作 */
+        }
+    },
+    "选择器2":{
+        "选项1":function(){
+            /* 选项1的操作 */
+        },
+        "选项2":function(){
+            /* 选项2的操作 */
+        }
+    },
+    .
+    .
+    .
+});
+menu.add(<选择器>, <选项名>,<方法/事件回调>,<在某项之前>);
+menu.remove(<选择器>, <选项名>);
+            </code>
+</pre>
           <button id="test_rightclick">右键单击这里试试</button>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
@@ -472,11 +491,13 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code htmlHigh notranslate">
-              &lt;v-coloricon src="&lt;图标路径&gt;" width="&lt;宽度&gt;" height="&lt;高度&gt;"&gt;&lt;/v-coloricon&gt;
-              或
-              &lt;v-coloricon src="&lt;图标路径&gt;" width="&lt;宽度&gt;" height="&lt;高度&gt;" /&gt;
-            </pre>
+          <pre>
+<code class="language-xml">
+&lt;v-coloricon src="&lt;图标路径&gt;" width="&lt;宽度&gt;" height="&lt;高度&gt;"&gt;&lt;/v-coloricon&gt;
+或
+&lt;v-coloricon src="&lt;图标路径&gt;" width="&lt;宽度&gt;" height="&lt;高度&gt;" /&gt;
+            </code>
+</pre>
           演示图标：<v-coloricon src="help_data/images/icon.png" width="24" height="24"></v-coloricon>
           <ul>
             <li>图标路径：要显示的图标的路径，图片必须是具有透明通道的，建议使用黑色与透明来做，不透明的图片只会得到一个纯色方块。</li>
@@ -489,9 +510,11 @@
         如果你的图标是动态加载的，那么你需要在加载完成时执行一次初始化操作。
         <div class="w3-panel w3-card w3-light-vel">
           <h4>手动初始化变色图标</h4>
-          <pre class="w3-code jsHigh notranslate">
-              _.setColoricon();
-            </pre>
+          <pre>
+<code class="language-js">
+_.setColoricon();
+            </code>
+</pre>
           <ul>
             <li>直接初始化即可，无需元素选择器</li>
           </ul>
@@ -502,13 +525,65 @@
         初始化之后，默认颜色是黑色，你可以改变它的颜色
         <div class="w3-panel w3-card w3-light-vel">
           <h4>改变颜色</h4>
-          <pre class="w3-code jsHigh notranslate">
-              _(<变色图标>).setColor(<颜色>);
-            </pre>
+          <pre>
+<code class="language-js">
+_(<变色图标>).setColor(<颜色>);
+            </code>
+</pre>
           演示图标：<v-coloricon id="test_coloricon" src="help_data/images/icon.png" width="24" height="24"></v-coloricon>
           <ul>
             <li>变色图标：已经初始化完成的变色图标元素</li>
             <li>颜色：文本类型，所有支持的颜色书写方式，例如red rgb() #000000等</li>
+          </ul>
+        </div>
+      </span>
+    </div>
+
+    <div class="part" id="gmc-dom">
+      <span class="title">获取主题色（元素）</span>
+      <span class="subtitle"><span>说明</span></span>
+      <span class="content">
+        可以获取元素背景图片的一组莫兰迪配色，包括了主题色，暗色，中等颜色，亮色，0％亮度颜色，25％亮度颜色，50％亮度颜色，75％亮度颜色，100％亮度颜色（亮度颜色均取最接近的颜色，而不是绝对的亮度颜色）<br>
+        这是一个异步方法，只支持Promise形式<br>
+        其中建议将主题色设为背景，而亮色设为前景，当然具体还是需要更多的判断，因为主题色也可能是明亮的颜色。
+      </span>
+      <span class="subtitle"><span>使用方法</span></span>
+      <span class="content">
+        <div class="w3-panel w3-card w3-light-vel">
+          <pre>
+<code class="language-js">
+/* 使用正式驼峰名称调用 */
+_(<带有背景图片的元素>).getMainColors([<颜色格式>]).then(<颜色>=>{
+    /* 你的代码 */
+})
+/* 也可以使用全小写调用 */
+_(<带有背景图片的元素>).getmaincolors([<颜色格式>]).then(<颜色>=>{
+    /* 你的代码 */
+})
+/* 也可以使用简写调用 */
+_(<带有背景图片的元素>).gmc([<颜色格式>]).then(<颜色>=>{
+    /* 颜色格式 */
+    <颜色> = {
+        "mainColor": 主题色,
+        "darkColor": 暗色,
+        "midColor": 中等色,
+        "lightColor": 亮色,
+        "0%": 0%亮度颜色,
+        "25%": 25%亮度颜色,
+        "50%": 50%亮度颜色,
+        "75%": 75%亮度颜色,
+        "100%": 100%亮度颜色
+    }
+    /* 你的代码 */
+})
+        </code>
+</pre>
+          <ul>
+            <li> _(<带有背景图片的元素>)：velfun对象，目前只对带有背景图片url()的元素有效，支持dataUrl，背景颜色、linear-gradient生成的渐变等无效</li>
+            <li>颜色格式：可选参数，支持的颜色格式为RGB，HSL，HEX，不区分大小写，其中HEX带有井号，而rgb和hex则只会返回数字数组，例如RGB返回[255, 255, 255]，而HSL返回[360, 100, 100]，你需要自行放置这三个数值</li>
+            <li>颜色：返回的参数只有一个，这个参数是一个对象，而颜色的具体部份根据选择的格式不同而不同，如果是HEX格式它会是一个字符串，例如"#243826"，而如果是RGB或HSL则会以数字数组表示他们的三个值而不是字符串</li>
+            <li>小技巧：你可以使用rgba(RGB, 0.5)来设定带透明度的颜色，返回的rgb数组会自动转换为255,255,255的字符串格式，因此可以完美拼接</li>
+            <li><strong>提醒：不要忘记为HSL的后两个参数添加百分号！</strong></li>
           </ul>
         </div>
       </span>
@@ -531,16 +606,19 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _.Msgbox(<消息内容>[,<标题>[,<按钮类型>]][,<显示位置>][,<回调函数>]);</br>
-                      _.Msgbox({
-                        "message": <消息内容>,
-                        "title": <标题>,
-                        "type": <按钮类型>,
-                        "position": <显示位置>,
-                        "callback": <回调函数>
-                      });
-          </div>
+          <pre>
+<code class="language-js">
+_.Msgbox(<消息内容>[,<标题>[,<按钮类型>]][,<显示位置>][,<回调函数>]);
+/* 对象传参写法 */
+_.Msgbox({
+    "message": <消息内容>,
+    "title": <标题>,
+    "type": <按钮类型>,
+    "position": <显示位置>,
+    "callback": <回调函数>
+});
+          </code>
+</pre>
           <button id="test_Msgbox">点击这里试试</button>
           <ul>
             <li>消息内容：必要参数，提示消息的主要内容</li>
@@ -565,22 +643,24 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.Options({
-                "选项名":function(){
-                  //选项操作<br />
-                },
-                "选项名":function(){
-                  //选项操作<br />
-                },
-                "选项名":function(){
-                  //选项操作<br />
-                },
-                .
-                .
-                .
-              }[,<标题>]);
-            </pre>
+          <pre>
+<code class="language-js">
+_.Options({
+    "选项名":function(){
+        /* 选项操作 */
+    },
+    "选项名":function(){
+        /* 选项操作 */
+    },
+    "选项名":function(){
+        /* 选项操作 */
+    },
+    .
+    .
+    .
+}[,<标题>]);
+            </code>
+</pre>
           <button id="test_options">点击这里试试</button>
           <ul>
             <li>选项名：必要参数，选项的标题，可以比较长</li>
@@ -601,10 +681,12 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.random(<最小数>,<最大数>);
-              _.random(<最大数>);
-            </pre>
+          <pre>
+<code class="language-js">
+_.random(<最小数>,<最大数>);
+_.random(<最大数>);
+            </code>
+</pre>
           参数1：<input id="test_int1" type="number" style="margin-bottom:10px;" />&#12288;参数2：<input id="test_int2"
             type="number" style="margin-bottom:10px;" /><br />
           <button id="test_intbutton">给我一个数字</button>
@@ -624,14 +706,17 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-            _.Tip(<内容>[,<标题>][,<显示时间>]);<br>
-            _.Tip({
-              "content": <内容>,
-              "title": <标题>,
-              "duration": <显示时间>
-            });
-            </pre>
+          <pre>
+<code class="language-js">
+_.Tip(<内容>[,<标题>][,<显示时间>]);
+/* 对象传参写法 */
+_.Tip({
+    "content": <内容>,
+    "title": <标题>,
+    "duration": <显示时间>
+});
+            </code>
+</pre>
           <button id="test_tip">点这里试试</button>
           <ul>
             <li>内容：提示框的内容，必要参数</li>
@@ -655,9 +740,11 @@
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <h2>html</h2>
-          <pre class="w3-code htmlHigh notranslate">
-              &lt;div title="@t-名称;"&gt;@t-名称;&lt;/div&gt;
-            </pre>
+          <pre>
+<code class="language-xml">
+&lt;div title="@t-名称;"&gt;@t-名称;&lt;/div&gt;
+            </code>
+</pre>
           <ul>
             <li>名称：用来表示不同文本内容的名称，与变量名类似，建议使用英文。前方的「 @t- 」与最后的 「 ; 」是不可以缺少的，请确保名称与语言文件中定义的名称一致</li>
             <li>多语言模板字串同样可以用于属性，目前支持的属性有alt title placeholder value四个</li>
@@ -665,12 +752,14 @@
         </div>
         <div class="w3-panel w3-card w3-light-vel">
           <h2>语言文件</h2>
-          <pre class="w3-code jsHigh notranslate">
-              {
-                "名称1": "文本1",
-                "名称2": "文本2"
-              }
-            </pre>
+          <pre>
+<code class="language-json">
+{
+    "名称1": "文本1",
+    "名称2": "文本2"
+}
+            </code>
+</pre>
           <ul>
             <li>名称n：用来表示不同文本内容的名称，与变量名类似，建议使用英文。此处的名称不需要带「@t-」前缀与「;」</li>
             <li>语言文件可以以任何后缀名保存，但本质上是一个json文件，因此需要遵守json的规则</li>
@@ -679,9 +768,11 @@
         </div>
         <div class="w3-panel w3-card w3-light-vel">
           <h2>JavaScript</h2>
-          <pre class="w3-code jsHigh notranslate">
-              _.setLang(<语言文件>);
-            </pre>
+          <pre>
+<code class="language-js">
+_.setLang(<语言文件>);
+            </code>
+</pre>
           <button id="test_setlang" title="@t-langbutton;" data-lang="cn">@t-langbutton;</button>
           <ul>
             <li>语言文件：语言文件的路径，指示程序要读取的语言文件</li>
@@ -712,9 +803,11 @@
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
           <h2>JavaScript</h2>
-          <pre class="w3-code jsHigh notranslate">
-              let &lt;新变量&gt; = _.deepCopy(&lt;源变量&gt;);
-            </pre>
+          <pre>
+<code class="language-js">
+let &lt;新变量&gt; = _.deepCopy(&lt;源变量&gt;);
+            </code>
+</pre>
           <ul>
             <li>新变量：被赋值的新变量</li>
             <li>源变量：已有的数组/对象，被拷贝的内容</li>
@@ -726,6 +819,56 @@
       </span>
     </div>
 
+    <div class="part" id="gmc-single">
+        <span class="title">获取主题色（独立）</span>
+        <span class="subtitle"><span>说明</span></span>
+        <span class="content">
+          可以获取传入的图片的一组莫兰迪配色，包括了主题色，暗色，中等颜色，亮色，0％亮度颜色，25％亮度颜色，50％亮度颜色，75％亮度颜色，100％亮度颜色（亮度颜色均取最接近的颜色，而不是绝对的亮度颜色）<br>
+          这是一个异步方法，只支持Promise形式<br>
+          其中建议将主题色设为背景，而亮色设为前景，当然具体还是需要更多的判断，因为主题色也可能是明亮的颜色。
+        </span>
+        <span class="subtitle"><span>使用方法</span></span>
+        <span class="content">
+          <div class="w3-panel w3-card w3-light-vel">
+            <pre>
+<code class="language-js">
+/* 使用正式驼峰名称调用 */
+_.getMainColors(<图片URL>,[<颜色格式>]).then(<颜色>=>{
+    /* 你的代码 */
+})
+/* 也可以使用全小写调用 */
+_.getmaincolors(<图片URL>,[<颜色格式>]).then(<颜色>=>{
+    /* 你的代码 */
+})
+/* 也可以使用简写调用 */
+_.gmc(<图片URL>,[<颜色格式>]).then(<颜色>=>{
+    /* 颜色格式 */
+    <颜色> = {
+        "mainColor": 主题色,
+        "darkColor": 暗色,
+        "midColor": 中等色,
+        "lightColor": 亮色,
+        "0%": 0%亮度颜色,
+        "25%": 25%亮度颜色,
+        "50%": 50%亮度颜色,
+        "75%": 75%亮度颜色,
+        "100%": 100%亮度颜色
+    }
+    /* 你的代码 */
+})
+          </code>
+</pre>
+            <ul>
+              <li> 图片URL：必填参数，用以指定图片路径，需要注意的是，因为浏览器限制，有可能不支持跨域图片URL</li>
+              <li>颜色格式：可选参数，支持的颜色格式为RGB，HSL，HEX，不区分大小写，其中HEX带有井号，而rgb和hex则只会返回数字数组，例如RGB返回[255, 255, 255]，而HSL返回[360, 100, 100]，你需要自行放置这三个数值</li>
+              <li>颜色：返回的参数只有一个，这个参数是一个对象，而颜色的具体部份根据选择的格式不同而不同，如果是HEX格式它会是一个字符串，例如"#243826"，而如果是RGB或HSL则会以数字数组表示他们的三个值而不是字符串</li>
+              <li>小技巧：你可以使用rgba(RGB, 0.5)来设定带透明度的颜色，返回的rgb数组会自动转换为255,255,255的字符串格式，因此可以完美拼接</li>
+              <li><strong>提醒：不要忘记为HSL的后两个参数添加百分号！</strong></li>
+            </ul>
+          </div>
+        </span>
+      </div>
+
     <div class="part" id="password">
       <span class="title">密码强度验证</span>
       <span class="subtitle"><span>说明</span></span>
@@ -735,9 +878,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.test.password(<密码>);
-            </pre>
+          <pre>
+<code class="language-js">
+_.test.password(<密码>);
+            </code>
+</pre>
           <input id="test_password" type="password" style="margin-bottom:10px;" />
           <span
             style="display:inline-block;position: relative;width:200px;height:10px;margin-left:10px;border-radius:5px;border:1px solid gray;padding:0px;overflow:hidden;">
@@ -769,9 +914,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.test.cellphone(<电话号码>);
-            </pre>
+          <pre>
+<code class="language-js">
+_.test.cellphone(<电话号码>);
+            </code>
+</pre>
           <input id="test_cellphone" type="text" style="margin-bottom:10px;" />
           <span id="test_cellphone_check" style="margin-left:10px; font-size:15px;">输入手机号码验证格式</span>
           <ul>
@@ -791,9 +938,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.test.cellphone(<邮箱地址>);
-            </pre>
+          <pre>
+<code class="language-js">
+_.test.cellphone(<邮箱地址>);
+            </code>
+</pre>
           <input id="test_email" type="text" style="margin-bottom:10px;" />
           <span id="test_email_check" style="margin-left:10px; font-size:15px;">输入邮箱地址验证格式</span>
           <ul>
@@ -813,11 +962,13 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.test.fullyLoad(<区域>, [<回调>], [<日志>]).then(()=>{<br>
-                // 完整加载完成后执行<br>
-              });
-            </pre>
+          <pre>
+<code class="language-js">
+_.test.fullyLoad(<区域>, [<回调>], [<日志>]).then(()=>{
+    /* 完整加载完成后执行 */
+});
+            </code>
+</pre>
           <ul>
             <li>区域：要监控的区域，可以是HTMLElement或VelFun对象</li>
             <li>回调函数：可选参数，函数类型，当加载完毕时调用，无返回值</li>
@@ -837,9 +988,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.trans.NumToChar(<数字>[,<是否大写>]);
-            </pre>
+          <pre>
+<code class="language-js">
+_.trans.NumToChar(<数字>[,<是否大写>]);
+            </code>
+</pre>
           <label><input type="checkbox" id="test_ntc_upperCase">大写</label>
           <input id="test_ntc" type="text" style="margin-bottom:10px;" />
           <span id="test_ntc_check" style="margin-left:10px; font-size:15px;">输入任意数字以转换</span>
@@ -861,9 +1014,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.info.mobileType();
-            </pre>
+          <pre>
+<code class="language-js">
+_.info.mobileType();
+            </code>
+</pre>
         </div>
       </span>
     </div>
@@ -877,9 +1032,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.info.isMobile();
-            </pre>
+          <pre>
+<code class="language-js">
+_.info.isMobile();
+            </code>
+</pre>
         </div>
       </span>
     </div>
@@ -893,9 +1050,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.info.host();
-            </pre>
+          <pre>
+<code class="language-js">
+_.info.host();
+            </code>
+</pre>
         </div>
       </span>
     </div>
@@ -912,15 +1071,17 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            //<strong>正确格式</strong><br />
-            _.info.isIE(<回调函数>);<br /><br />
+          <pre>
+<code class="language-js">
+/* <strong>正确格式</strong> */
+_.info.isIE(<回调函数>);
 
-              //<strong>错误格式，他无法在IE下工作</strong><br />
-              _(function(){<br />
-              &nbsp;&nbsp;_.info.isIE(<回调函数>);<br />
-                })
-          </div>
+/* <strong>错误格式，他无法在IE下工作</strong> */
+_(function(){
+    _.info.isIE(<回调函数>);
+})
+            </code>
+</pre>
           <ul>
             <li>回调函数：当浏览器是IE时将会执行的函数，如果浏览器不是IE，此函数不会被执行</li>
             <li>isIE同样具有返回值，是IE则为true。因此可以用if判断返回值处理，而无需使用回调函数</li>
@@ -939,12 +1100,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            //<strong>属性形式（推荐）</strong><br />
-            _.info.args.<参数名>;<br /><br />
-              //<strong>方法形式</strong><br />
-              _.info.args(<参数名>);
-          </div>
+          <pre>
+<code class="language-js">
+/* <strong>属性形式（推荐）</strong> */
+_.info.args.<参数名>;
+/* <strong>方法形式</strong> */
+_.info.args(<参数名>);
+          </code>
+</pre>
           <ul>
             <li>参数名：要获取的参数的名称，如果参数不存在，方法形式会返回false而属性形式会返回undefined</li>
             <li>属性形式是在页面加载时获取参数，并作为velfun.info.args的属性，因此当读取时不必再次解析地址栏，更加快速</li>
@@ -963,9 +1126,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              let <变量> = _.io.fetchSync(<类型>,<路径>[,<数据>]);
-            </pre>
+          <pre>
+<code class="language-js">
+let <变量> = _.io.fetchSync(<类型>,<路径>[,<数据>]);
+            </code>
+</pre>
           <ul>
             <li>类型：必要参数，字符串类型，AJAX提交的method，参数为post或get</li>
             <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，无论传递类型是get还是post，此处连接的参数一律视为GET</li>
@@ -986,10 +1151,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.ajax(<类型>,<路径>[,<数据>],<回调函数>);<br>
-              _.io.ajax(<类型>,<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
-            </pre>
+          <pre>
+<code class="language-js">
+/* Callback回调方式 */
+_.io.ajax(<类型>,<路径>[,<数据>],<回调函数>);
+/* Promise方式 */
+_.io.ajax(<类型>,<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
+            </code>
+</pre>
           <ul>
             <li>类型：必要参数，字符串类型，AJAX提交的method，参数为post或get</li>
             <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，无论传递类型是get还是post，此处连接的参数一律视为GET</li>
@@ -1013,10 +1182,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.post(<路径>[,<数据>],<回调函数>);
-              _.io.post(<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
-            </pre>
+          <pre>
+<code class="language-js">
+/* Callback回调方式 */
+_.io.post(<路径>[,<数据>],<回调函数>);
+/* Promise方式 */
+_.io.post(<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
+            </code>
+</pre>
           <ul>
             <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可拼接参数，此处连接的参数一律视为GET</li>
             <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
@@ -1037,10 +1210,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.get(<路径>[,<数据>],<回调函数>);
-              _.io.get(<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
-            </pre>
+          <pre>
+<code class="language-js">
+/* Callback回调方式 */
+_.io.get(<路径>[,<数据>],<回调函数>);
+/* Promise方式 */
+_.io.get(<路径>[,<数据>]).then((<值>,<XHR对象>)=>{...});
+            </code>
+</pre>
           <ul>
             <li>路径：必要参数，字符串类型，要访问的后台页面的路径，可直接拼接参数</li>
             <li>数据：可选参数，支持Object对象类型，或字符串类型，字符串类型格式同GET方式网址列?后的部分，参数名与参数值之间等号连接，参数与参数之间&amp;号连接</li>
@@ -1061,15 +1238,17 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.setCookie({
-                "name": &lt;名称&gt;,
-                "value": &lt;值&gt;,
-                "expires": &lt;过期时间&gt;,
-                "path": &lt;路径&gt;,
-                "domain": &lt;域名&gt;,
-              },&lt;使用Session模式&gt;);
-            </pre>
+          <pre>
+<code class="language-js">
+_.io.setCookie({
+    "name": &lt;名称&gt;,
+    "value": &lt;值&gt;,
+    "expires": &lt;过期时间&gt;,
+    "path": &lt;路径&gt;,
+    "domain": &lt;域名&gt;,
+},&lt;使用Session模式&gt;);
+            </code>
+</pre>
           <ul>
             <li>setCookie的参数以对象方式传入</li>
             <li>名称：用于指定Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
@@ -1105,9 +1284,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.getCookie(&lt;Cookie名&gt;,&lt;使用Session模式&gt;);
-            </pre>
+          <pre>
+<code class="language-js">
+_.io.getCookie(&lt;Cookie名&gt;,&lt;使用Session模式&gt;);
+            </code>
+</pre>
           <ul>
             <li>名称：字符串类型，用于指定要获取的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
             <li>使用Session模式(可选)：布尔型，默认为True</li>
@@ -1131,9 +1312,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.delCookie(&lt;Cookie名&gt;,&lt;使用Session模式&gt;);
-            </pre>
+          <pre>
+<code class="language-js">
+_.io.delCookie(&lt;Cookie名&gt;,&lt;使用Session模式&gt;);
+            </code>
+</pre>
           <ul>
             <li>名称：字符串类型，用于指定要删除的Cookie的名称，Cookie结构是扁平的，如果便于分类，也可以使用type.name的形式，但type.name会被视作一个字符串的名称，而非层级结构</li>
             <li>使用Session模式(可选)：布尔型，默认为True</li>
@@ -1156,9 +1339,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.import(<路径>,<类型>);
-            </pre>
+          <pre>
+<code class="language-js">
+_.io.import(<路径>,<类型>);
+            </code>
+</pre>
           <ul>
             <li>路径：必要参数，字符串类型，要加载的资源文件的路径</li>
             <li>类型：可选参数，强制指定资源的类型，目前支持两种类型javascript(js)，stylesheet(css)全称与简写都可以</li>
@@ -1180,9 +1365,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.unimport(<路径>);
-            </pre>
+          <pre>
+<code class="language-js">
+_.io.unimport(<路径>);
+            </code>
+</pre>
           <ul>
             <li>路径：书写代码时使用的路径，或动态引入时返回的路径</li>
             <li>卸载不需要指定类型，因为我们不认为会有同一个文件既是脚本又是样式表的情况</li>
@@ -1203,14 +1390,16 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.loadPatchsFrom(<路径>); //在初始化函数之前调用<br>
-              _(function(){
-                .
-                .
-                .
-              })
-            </pre>
+          <pre>
+<code class="language-js">
+_.io.loadPatchsFrom(<路径>); /* 在初始化函数之前调用 */
+_(function(){
+.
+.
+.
+})
+            </code>
+</pre>
           <ul>
             <li>路径：存放补丁文件的文件夹的路径，不要直接指定单个补丁文件</li>
             <li><strong>补丁所在目录需要开放目录列表权限，即访问的目录没有index时允许展示目录列表而不是返回403</strong></li>
@@ -1236,11 +1425,13 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              _.io.openFileDialog(<选项>).then((<文件(files)>)=>{<br>
-                // 处理过程<br>
-              });
-          </pre>
+          <pre>
+<code class="language-js">
+_.io.openFileDialog(<选项>).then((<文件(files)>)=>{
+    /* 处理过程 */
+});
+          </code>
+</pre>
           <button onclick="_.io.openFileDialog();">点我打开对话框</button>
           <ul>
             <li>选项：目前包括accept和multiple属性的设定，通过object传入，默认{ "accept": "*", "multiple": false }</li>
@@ -1258,11 +1449,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              var date = new Date();
-              date.getFullMonth(<是否+1>); <br>//或者<br>
-              date.FullMonth;
-            </pre>
+          <pre>
+<code class="language-js">
+var date = new Date();
+date.getFullMonth(<是否+1>); 
+/* 或者 */
+date.FullMonth;
+            </code>
+</pre>
           月份:<span id="test_Month"></span>
           <ul>
             <li>是否+1：布尔型，可选参数，因为Date默认获取的月份是从0开始的，因此加1后才是我们需要的月份。此参数为true时返回的月份是正常月份，而传递false时，返回的是Date自身获取的月份。缺省为false
@@ -1282,11 +1476,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              var date = new Date();
-              date.getFullDate(); <br>//或者<br>
-              date.FullDate;
-            </pre>
+          <pre>
+<code class="language-js">
+var date = new Date();
+date.getFullDate(); 
+/* 或者 */
+date.FullDate;
+            </code>
+</pre>
           日期:<span id="test_Date"></span>
         </div>
       </span>
@@ -1301,11 +1498,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              var date = new Date();
-              date.getFullHours(); <br>//或者<br>
-              date.FullHours;
-            </pre>
+          <pre>
+<code class="language-js">
+var date = new Date();
+date.getFullHours(); 
+/* 或者 */
+date.FullHours;
+            </code>
+</pre>
           小时:<span id="test_Hour"></span>
         </div>
       </span>
@@ -1320,11 +1520,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              var date = new Date();
-              date.getFullMinutes(); <br>//或者<br>
-              date.FullMinutes;
-            </pre>
+          <pre>
+<code class="language-js">
+var date = new Date();
+date.getFullMinutes(); 
+/* 或者 */
+date.FullMinutes;
+            </code>
+</pre>
           分钟:<span id="test_Min"></span>
         </div>
       </span>
@@ -1339,11 +1542,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code jsHigh notranslate">
-              var date = new Date();
-              date.getFullSeconds(); <br>//或者<br>
-              date.FullSeconds;
-            </pre>
+          <pre>
+<code class="language-js">
+var date = new Date();
+date.getFullSeconds(); 
+/* 或者 */
+date.FullSeconds;
+            </code>
+</pre>
           秒数:<span id="test_Sec"></span>
         </div>
       </span>
@@ -1358,12 +1564,14 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <pre class="w3-code htmlHigh notranslate">
-              &lt;input type="text" inputbox /&gt;
-              &lt;v-key value="1"&gt;1&lt;/v-key&gt;
-              &lt;v-key value="2"&gt;2&lt;/v-key&gt;
-              &lt;v-key value="3"&gt;3&lt;/v-key&gt;
-            </pre>
+          <pre>
+<code class="language-xml">
+&lt;input type="text" inputbox /&gt;
+&lt;v-key value="1"&gt;1&lt;/v-key&gt;
+&lt;v-key value="2"&gt;2&lt;/v-key&gt;
+&lt;v-key value="3"&gt;3&lt;/v-key&gt;
+            </code>
+</pre>
           <input type="text" inputbox /><br />
           <v-key value="7">7</v-key>
           <v-key value="8">8</v-key>
@@ -1406,9 +1614,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<选择器>[,<上下文>]);
-          </div>
+          <pre>
+<code class="language-js">
+_(<选择器>[,<上下文>]);
+          </code>
+</pre>
           <ul>
             <li>选择器：可以是CSS选择器的文本，原生Dom元素，又或者是一个velfun对象</li>
             <li>上下文：可选参数，可以传入的内容与选择器一样，用来限定查找范围，当一个上下文有效时，将只会在限定的范围中查找，当上下文出错，会在控制台报错，并自动使用全局查找。</li>
@@ -1426,9 +1636,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).attr(<属性名>[，<属性值>]);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).attr(<属性名>[，<属性值>]);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>属性名：要操作的属性名</li>
@@ -1450,9 +1662,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).val([<值>]);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).val([<值>]);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>值：字符串类型，可选参数，不传此参数时为读取value值，传递值时设置value值</li>
@@ -1472,9 +1686,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).css(<样式文本>);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).css(<样式文本>);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>
@@ -1494,9 +1710,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).html(&lt;HTML文本&gt;);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).html(&lt;HTML文本&gt;);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>HTML文本：字符串类型，可选参数，如果不传此值，则读取元素内的HTML代码。如果传了此参数，则会将元素内部使用此参数的值替代</li>
@@ -1514,9 +1732,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).text(&lt;文本&gt;);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).text(&lt;文本&gt;);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>文本：字符串类型，可选参数，如果不传此值，则读取元素内的文本，会排除所有的HTML标签。如果传了此参数，则会将元素内部使用此参数的值替代</li>
@@ -1534,13 +1754,15 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).getClass(); //获取元素所有类名<br />
-              _(<元素>).addClass(<类名>); //添加类名<br />
-                  _(<元素>).removeClass(<类名>); //移除指定的类<br />
-                      _(<元素>).hasClass(<类名>); //判断元素是否拥有指定类名<br />
-                          _(<元素>).replaceClass(<旧类名>,<新类名>); //用新类名替换旧类名
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).getClass(); /* 获取元素所有类名 */
+_(<元素>).addClass(<类名>); /* 添加类名 */
+_(<元素>).removeClass(<类名>); /* 移除指定的类 */
+_(<元素>).hasClass(<类名>); /* 判断元素是否拥有指定类名 */
+_(<元素>).replaceClass(<旧类名>,<新类名>); /* 用新类名替换旧类名 */
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
           </ul>
@@ -1558,18 +1780,20 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            const <事件ID> = _(<元素>).bind(<事件>,<函数>); //绑定静态元素（已加载的元素）事件<br>
-            const <事件ID> = _(document).bind(<事件>,<选择器>,<函数>,<允许间接触发>); //绑定动态元素（未来将加载的元素）事件<br>
-            const <事件ID> = _.bind(<事件>,<选择器>,<函数>,<允许间接触发>); //此写法也可以绑定动态元素（未来将加载的元素）事件<br>
-            // 对象传参写法<br>
-            const <事件ID> = _(<元素>).bind({
-              "event": <事件>,
-              "selector": <选择器>,
-              "callback": <函数>,
-              "bubbling": <允许间接触发>
-            });
-          </div>
+          <pre>
+<code class="language-js">
+const <事件ID> = _(<元素>).bind(<事件>,<函数>); /* 绑定静态元素（已加载的元素）事件 */
+const <事件ID> = _(document).bind(<事件>,<选择器>,<函数>,<允许间接触发>); /* 绑定动态元素（未来将加载的元素）事件*/
+const <事件ID> = _.bind(<事件>,<选择器>,<函数>,<允许间接触发>); /* 此写法也可以绑定动态元素（未来将加载的元素）事件*/
+/* 对象传参写法 */
+const <事件ID> = _(<元素>).bind({
+    "event": <事件>,
+    "selector": <选择器>,
+    "callback": <函数>,
+    "bubbling": <允许间接触发>
+});
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>事件：要监听的事件，需要不带on的形式，例如单击是click而不是onclick</li>
@@ -1595,10 +1819,12 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).bind(<事件>,<事件ID>); //绑定静态元素（已加载的元素）事件<br>
-            _.bind(<事件>,<事件ID>); //此写法也可以绑定动态元素（未来将加载的元素）事件<br>
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).unbind(<事件>,<事件ID>); /* 解绑静态元素（已加载的元素）事件*/
+_.unbind(<事件>,<事件ID>); /* 此写法也可以解绑动态元素（代理元素）事件 */
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>事件：要解绑的事件，与你之前bind时的事件一致</li>
@@ -1617,9 +1843,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).trigger(<事件>);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).trigger(<事件>);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>事件：要触发的事件，需要不带on的形式，例如单击是click而不是onclick</li>
@@ -1637,14 +1865,16 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).append(&lt;HTML代码&gt;); //在元素内部最后追加<br />
-              _(<元素>).prepend(&lt;HTML代码&gt;); //在元素内部最开头追加<br />
-                _(<元素>).after(&lt;HTML代码&gt;); //在元素(外部)之后添加<br />
-                  _(<元素>).before(&lt;HTML代码&gt;);//在元素(外部)之前添加<br />
-                    _(<元素>).remove(); //移除元素本身及其子元素<br />
-                      _(<元素>).empty(); //移除元素内部所有的子元素(清空)
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).append(&lt;HTML代码&gt;); /* 在元素内部最后追加 */
+_(<元素>).prepend(&lt;HTML代码&gt;); /* 在元素内部最开头追加 */
+_(<元素>).after(&lt;HTML代码&gt;); /* 在元素(外部)之后添加 */
+_(<元素>).before(&lt;HTML代码&gt;);/* 在元素(外部)之前添加 */
+_(<元素>).remove(); /* 移除元素本身及其子元素 */
+_(<元素>).empty(); /* 移除元素内部所有的子元素(清空) */
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>HTML代码：文本形式的HTML代码，不支持其他的形式</li>
@@ -1662,9 +1892,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).parent([<层数>]);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).parent([<层数>]);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>
@@ -1684,9 +1916,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).next([<次数>]);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).next([<次数>]);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>
@@ -1706,9 +1940,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).prev([<次数>]);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).prev([<次数>]);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>
@@ -1728,9 +1964,11 @@
       <span class="subtitle"><span>使用方法</span></span>
       <span class="content">
         <div class="w3-panel w3-card w3-light-vel">
-          <div class="w3-code jsHigh notranslate">
-            _(<元素>).each(<方法>);
-          </div>
+          <pre>
+<code class="language-js">
+_(<元素>).each(<方法>);
+          </code>
+</pre>
           <ul>
             <li>_(<元素>)：velfun对象，需要注意的是它与jQuery对象不通用</li>
             <li>方法：每次循环都会执行的方法，方法的第一个参数是序号，从0开始。第二个参数是当前一次循环的DOM元素。同时使用this也可以获取当前的DOM元素。</li>
@@ -1741,7 +1979,7 @@
 
   </div>
   <script>
-    w3CodeColor();
+    hljs.highlightAll();
   </script>
 </body>
 

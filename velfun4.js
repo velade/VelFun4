@@ -1,17 +1,17 @@
 /********************
 腳本名:VelFun
-版本號:4-4.51
+版本號:4-4.60
 通  道:Release
 作　者:龍翔翎(Velade)
 
-更新日期:2024-05-29
+更新日期:2024-06-11
 ********************/
 ; (function (window, undefined) {
     const isOffline = !location.origin.match(/^(http:|https:)\/\//);
-    const version = "4-4.51";
+    const version = "4-4.60";
     const channel = "Release";
     const author = "Velade";
-    const releaseDate = "2024-05-29";
+    const releaseDate = "2024-06-11";
 
     /**
      * @typedef {object} velfunEle VelFun元素
@@ -31,6 +31,14 @@
 
         return new velfun.fn.init(selector, context);
     }
+
+    velfun.private = new Object();
+    velfun.msgtype = Object.freeze({
+        MSG_OK: "MSG_OK",
+        MSG_OK_Cancel: "MSG_OK_Cancel",
+        MSG_YES_NO: "MSG_YES_NO"
+    })
+
     /**
      * 将文本类型的html代码转换为HTMLElement对象
      * @param {string} html 文本类型的html代码
@@ -134,7 +142,7 @@
             callback = _args.callback;
         }
 
-        msgboxList.push(function () { return _.inside.Msgbox_do(Message, Title, Type, Position, callback); });
+        msgboxList.push(function () { return Msgbox_do(Message, Title, Type, Position, callback); });
 
         if (_("#_MessageBox_").length == 0) {
             const fun = msgboxList.shift();
@@ -160,7 +168,7 @@
             callback = _args.callback;
         }
 
-        msgboxList.push(function () { return _.inside.Msgbox_lite_do(Message, Title, Type, Position, callback); });
+        msgboxList.push(function () { return Msgbox_lite_do(Message, Title, Type, Position, callback); });
 
         if (_("#_MessageBox_").length == 0) {
             const fun = msgboxList.shift();
@@ -174,7 +182,7 @@
      */
     velfun.Options = function (opt_arr, title) {
 
-        optionsList.push(function () { _.inside.Options_do(opt_arr, title); });
+        optionsList.push(function () { Options_do(opt_arr, title); });
 
         if (_("#_OPTIONS_").length == 0) {
             const fun = optionsList.shift();
@@ -209,6 +217,221 @@
 
         return vel_randomval;
     }
+    const hexColors = [
+        "#EBD9CB", "#F9F6F1", "#DBE2EC", "#8D91AA", "#E2E2E2", "#DECECE",
+        "#F7F0EA", "#E7ADAC", "#78677A", "#D8B0B0", "#F0F0F2", "#E7E7E5",
+        "#ACD4D6", "#797979", "#DFDFDF", "#EBC1A8", "#EBDAC8", "#F6F2F1",
+        "#CAC0B7", "#D2D3D5", "#A2886D", "#C3BAB1", "#F1E2DB", "#DACCC1",
+        "#BFCAC2", "#013E41", "#C6DEE0", "#F7EDEB", "#A6BAAF", "#4A475C",
+        "#CEAEB9", "#E9CEC3", "#EED9D4", "#8D7477", "#6E4740", "#5E5D65",
+        "#CB9B8F", "#F6E1DC", "#B5BAC0", "#5B7493", "#E3BCB5", "#A7BEC6",
+        "#F4F4F4", "#B98A82", "#F5F4F0", "#BFBFC1", "#B4A29E", "#E0D3C3",
+        "#EBE8E3", "#E4DBD2", "#BEA8AA", "#9AA2AD", "#9B8D8C", "#DECFCC",
+        "#C0B9B2", "#ACA39A", "#94938E", "#817F7C", "#6F6C69", "#5D5A57",
+        "#4B4844", "#393631", "#27241E", "#D1C4B6", "#B8A999", "#9F8E7C",
+        "#867460", "#6D5943", "#544E37", "#3B422A", "#E0D5C1", "#C7BBA3",
+        "#AE9F85", "#958367", "#7C6749", "#63502C", "#4A3910", "#F0E6CD",
+        "#D7CCAF", "#BEB191", "#A59673", "#8C7B55", "#736038", "#5A451B",
+        "#EDE3D9", "#D4C9C0", "#BBB0A7", "#A2968E", "#897D75", "#70635C",
+        "#574A43", "#3E312A", "#E7E5E1", "#CECDC9", "#B5B4B1", "#9C9B99",
+        "#838281", "#6A6969", "#514F51", "#383638"
+      ];      
+    const rgbColors = HexToRgb(hexColors);
+    function HexToRgb (colors){
+        let rgbs = [];
+        colors.forEach(c => {
+            let cs = c.replace("#","");
+            cs = cs.match(/.{2}/g);
+            let _tmp = [];
+            cs.forEach(e=>{
+                _tmp.push(parseInt(e,16));
+            })
+            rgbs.push(_tmp);
+        });
+        return rgbs;
+    }
+    function RgbToHsl(colors) {
+        let hsls = [];
+        colors.forEach(c => {
+            if(!Array.isArray(c)) c = c.split(",");
+            let r = c[0] / 255;
+            let g = c[1] / 255;
+            let b = c[2] / 255;
+
+            let max = Math.max(r, g, b);
+            let min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if(max == min){
+                h = s = 0; // 无色彩
+            } else {
+                let d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch(max){
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+
+            h = Math.round(h * 360);
+            s = Math.round(s * 100);
+            l = Math.round(l * 100);
+
+            hsls.push([h,s,l]);
+        })
+    
+        return hsls;
+    }
+    function RgbToHex (colors){
+        let hexs = [];
+        colors.forEach(c => {
+            if(!Array.isArray(c)) c = c.split(",");
+            hexs.push(`#${parseInt(c[0]).toString(16).toUpperCase()}${parseInt(c[1]).toString(16).toUpperCase()}${parseInt(c[2]).toString(16).toUpperCase()}`);
+        });
+        return hexs;
+    }
+    function closeColor(source,targets) {
+        let topRScore = 99999999;
+        let topGScore = 99999999;
+        let topBScore = 99999999;
+        let topColor = 0;
+        for (const key in targets) {
+            let rgbColor = targets[key];
+            if(typeof rgbColor == "string"){
+                rgbColor = rgbColor.match(/\d+/g);
+            }
+            let scoreR = Math.abs(source[0] - rgbColor[0]);
+            let scoreG = Math.abs(source[1] - rgbColor[1]);
+            let scoreB = Math.abs(source[2] - rgbColor[2]);
+            if(scoreR <= topRScore && scoreG <= topGScore && scoreB <= topBScore){
+                topRScore = scoreR;
+                topGScore = scoreG;
+                topBScore = scoreB;
+                topColor = targets[key];
+            }
+        }
+        return topColor;
+    }
+    function getLofColor(targetLight, colors) {
+        let minABS = 99999999;
+        let topColor = null;
+        for (const key in Object.values(colors)) {
+            let _hsl = RgbToHsl([colors[key]])[0];
+            if(Math.abs(_hsl[2] - targetLight) < minABS) {
+                minABS = Math.abs(_hsl[2] - targetLight);
+                topColor = colors[key];
+            }
+        }
+        return topColor;
+    }
+    /**
+     * 获取主题色
+     * @param {String} url 图片的路径，支持dataUri
+     * @param {String} format 输出的格式，默认RGB，支持RGB HEX HSL 
+     */
+    velfun.getMainColors = velfun.getmaincolors = velfun.gmc = function (url,format = "rgb"){
+        return new Promise((resolve,reject)=>{
+            let colorsCounter = [];
+            let ti = document.createElement("canvas");
+            let ctxt = ti.getContext("2d");
+            let img = new Image;
+            img.crossOrigin = 'anonymous';
+            img.onload = ()=>{
+                ctxt.canvas.width = img.width;
+                ctxt.canvas.height = img.height;
+                ctxt.drawImage(img, 0, 0);
+                let data = ctxt.getImageData(img.width * 0.25,img.height * 0.25,img.width * 0.75, img.height * 0.75).data;
+                data = Array.from(data);
+                let imgPixels = [];
+                for(let i = 0;i < data.length;i += 4){
+                    imgPixels.push(data.slice(i,i+4));
+                }
+                let pointsNum = 0;
+                for (let i = 0; i < imgPixels.length; i += parseInt(imgPixels.length / 5000)) {
+                    let topColor = closeColor(imgPixels[i],rgbColors);
+                    if(!colorsCounter[topColor]) colorsCounter[topColor] = 0;
+                    colorsCounter[topColor] ++;
+                    pointsNum ++;
+                }
+
+                const entries = Object.entries(colorsCounter);
+                entries.sort((a, b) => b[1] - a[1]);
+                let mainColors = Object.keys(Object.fromEntries(entries));
+                mainColors = mainColors.slice(0,mainColors.length * 0.25);
+
+                let mainColor = mainColors[0];
+                let darkColor = getLofColor(10,mainColors);
+                let midColor = getLofColor(60,mainColors);
+                let lightColor = getLofColor(90,mainColors);
+                
+                if(format.toUpperCase() == "RGB") {
+                    resolve({
+                        "mainColor":mainColor,
+                        "darkColor":darkColor,
+                        "midColor":midColor,
+                        "lightColor":lightColor,
+                        "0%":getLofColor(0,mainColors),
+                        "25%":getLofColor(25,mainColors),
+                        "50%":getLofColor(50,mainColors),
+                        "75%":getLofColor(75,mainColors),
+                        "100%":getLofColor(100,mainColors)
+                    });
+                }else if(format.toUpperCase() == "HSL") {
+                    let _hslColors = RgbToHsl([
+                        mainColor,
+                        darkColor,
+                        midColor,
+                        lightColor,
+                        getLofColor(0,mainColors),
+                        getLofColor(25,mainColors),
+                        getLofColor(50,mainColors),
+                        getLofColor(75,mainColors),
+                        getLofColor(100,mainColors)
+                    ]);
+                    resolve({
+                        "mainColor":_hslColors[0],
+                        "darkColor":_hslColors[1],
+                        "midColor":_hslColors[2],
+                        "lightColor":_hslColors[3],
+                        "0%":_hslColors[4],
+                        "25%":_hslColors[5],
+                        "50%":_hslColors[6],
+                        "75%":_hslColors[7],
+                        "100%":_hslColors[8]
+                    });
+                }else if(format.toUpperCase() == "HEX") {
+                    let _hslColors = RgbToHex([
+                        mainColor,
+                        darkColor,
+                        midColor,
+                        lightColor,
+                        getLofColor(0,mainColors),
+                        getLofColor(25,mainColors),
+                        getLofColor(50,mainColors),
+                        getLofColor(75,mainColors),
+                        getLofColor(100,mainColors)
+                    ]);
+                    resolve({
+                        "mainColor":_hslColors[0],
+                        "darkColor":_hslColors[1],
+                        "midColor":_hslColors[2],
+                        "lightColor":_hslColors[3],
+                        "0%":_hslColors[4],
+                        "25%":_hslColors[5],
+                        "50%":_hslColors[6],
+                        "75%":_hslColors[7],
+                        "100%":_hslColors[8]
+                    });
+                }else {
+                    reject("Wrong format");
+                }
+                
+            }
+            img.src = url;
+        })
+    }
     /**
      * [已废弃] 初始化上传控件，上传控件现在移动到libvelui库，此处的已不再维护，并很快将彻底移除
      * @deprecated since version 4.50
@@ -236,7 +459,7 @@
             title = _args.title;
             duration = _args.duration;
         }
-        tipList.push(function () { _.inside.Tip_do(content, title, duration); });
+        tipList.push(function () { Tip_do(content, title, duration); });
         if (tipReady) {
             tipReady = false;
             const fun = tipList.shift();
@@ -295,7 +518,7 @@
 
             const al = _("[title],[placeholder],[value]");
             al.each(function () {
-                _.inside.setAttrsLang(this, _.langdata);
+                velfun.private.setAttrsLang(this, _.langdata);
             });
 
             _.observer.observe(_.obbody, _.obconfig);
@@ -1484,6 +1707,115 @@
         const coloricon = _("img", this);
         coloricon.css('filter:drop-shadow(' + this.attr("width") + 'px 0 0 ' + col + ')');
     }
+    velfun.fn.getMainColors = velfun.fn.getmaincolors = velfun.fn.gmc = function (format = "rgb"){
+        const _this = this;
+        return new Promise((resolve,reject)=>{
+            let colorsCounter = [];
+            let ti = document.createElement("canvas");
+            let ctxt = ti.getContext("2d");
+            let img = new Image;
+            img.crossOrigin = 'anonymous';
+            img.onload = ()=>{
+                ctxt.canvas.width = img.width;
+                ctxt.canvas.height = img.height;
+                ctxt.drawImage(img, 0, 0);
+                let data = ctxt.getImageData(img.width * 0.25,img.height * 0.25,img.width * 0.75, img.height * 0.75).data;
+                data = Array.from(data);
+                let imgPixels = [];
+                for(let i = 0;i < data.length;i += 4){
+                    imgPixels.push(data.slice(i,i+4));
+                }
+                let pointsNum = 0;
+                for (let i = 0; i < imgPixels.length; i += parseInt(imgPixels.length / 5000)) {
+                    let topColor = closeColor(imgPixels[i],rgbColors);
+                    if(!colorsCounter[topColor]) colorsCounter[topColor] = 0;
+                    colorsCounter[topColor] ++;
+                    pointsNum ++;
+                }
+
+                const entries = Object.entries(colorsCounter);
+                entries.sort((a, b) => b[1] - a[1]);
+                let mainColors = Object.keys(Object.fromEntries(entries));
+                mainColors = mainColors.slice(0,mainColors.length * 0.25);
+
+                let mainColor = mainColors[0];
+                let darkColor = getLofColor(10,mainColors);
+                let midColor = getLofColor(60,mainColors);
+                let lightColor = getLofColor(90,mainColors);
+                
+                if(format.toUpperCase() == "RGB") {
+                    resolve({
+                        "mainColor":mainColor,
+                        "darkColor":darkColor,
+                        "midColor":midColor,
+                        "lightColor":lightColor,
+                        "0%":getLofColor(0,mainColors),
+                        "25%":getLofColor(25,mainColors),
+                        "50%":getLofColor(50,mainColors),
+                        "75%":getLofColor(75,mainColors),
+                        "100%":getLofColor(100,mainColors)
+                    });
+                }else if(format.toUpperCase() == "HSL") {
+                    let _hslColors = RgbToHsl([
+                        mainColor,
+                        darkColor,
+                        midColor,
+                        lightColor,
+                        getLofColor(0,mainColors),
+                        getLofColor(25,mainColors),
+                        getLofColor(50,mainColors),
+                        getLofColor(75,mainColors),
+                        getLofColor(100,mainColors)
+                    ]);
+                    resolve({
+                        "mainColor":_hslColors[0],
+                        "darkColor":_hslColors[1],
+                        "midColor":_hslColors[2],
+                        "lightColor":_hslColors[3],
+                        "0%":_hslColors[4],
+                        "25%":_hslColors[5],
+                        "50%":_hslColors[6],
+                        "75%":_hslColors[7],
+                        "100%":_hslColors[8]
+                    });
+                }else if(format.toUpperCase() == "HEX") {
+                    let _hslColors = RgbToHex([
+                        mainColor,
+                        darkColor,
+                        midColor,
+                        lightColor,
+                        getLofColor(0,mainColors),
+                        getLofColor(25,mainColors),
+                        getLofColor(50,mainColors),
+                        getLofColor(75,mainColors),
+                        getLofColor(100,mainColors)
+                    ]);
+                    resolve({
+                        "mainColor":_hslColors[0],
+                        "darkColor":_hslColors[1],
+                        "midColor":_hslColors[2],
+                        "lightColor":_hslColors[3],
+                        "0%":_hslColors[4],
+                        "25%":_hslColors[5],
+                        "50%":_hslColors[6],
+                        "75%":_hslColors[7],
+                        "100%":_hslColors[8]
+                    });
+                }else {
+                    reject("Wrong format");
+                }
+                
+            }
+            let _style = window.getComputedStyle(_this[0]);
+            let url = _style.getPropertyValue("background-image") ||  _style.getPropertyValue("background") || _style.backgroundImage || _style.background;
+            if(url.match(/^url\((.+?)\)$/)) {
+                url = url.match(/^url\("(.+?)"\)$/)[1];
+                img.src = url;
+            }else {
+                reject("The element background not a image");
+            }
+        })
+    }
     /**
      * [已废弃] 自动平铺，现已废弃，请使用flex和grid布局代替
      * @deprecated since version 4.50
@@ -1498,8 +1830,6 @@
     }
 
     //Static Function
-    velfun.inside = new Object();
-
     let msgboxList = new Array();
 
     let msgfun = function (e) { return true; };
@@ -1507,7 +1837,7 @@
      * 内部实现，不要直接调用
      */
 
-    velfun.inside.Msgbox_do = async function (Message, Title, Type, Position, callback) {
+    async function Msgbox_do(Message, Title, Type, Position, callback) {
         let msg = Message || "";
         let title = Title || "";
         let ty = Type || "";
@@ -1589,11 +1919,11 @@
                 let buttonval = _(e.target).attr("data-val") == "true" ? true : false;
                 if (buttonval) {
 
-                    _.inside.MsgRe(true, false);
+                    MsgRe(true, false);
                     resolve(true)
                 } else {
 
-                    _.inside.MsgRe(false, false);
+                    MsgRe(false, false);
                     reject(false);
                 }
             })
@@ -1603,7 +1933,7 @@
      * 内部实现，不要直接调用
      */
 
-    velfun.inside.Msgbox_lite_do = async function (Message, Title, Type, Position, callback) {
+    async function Msgbox_lite_do (Message, Title, Type, Position, callback) {
         let msg = Message || "";
         let title = Title || "";
         let ty = Type || "";
@@ -1671,11 +2001,11 @@
                 let buttonval = _(e.target).attr("data-val") == "true" ? true : false;
                 if (buttonval) {
 
-                    _.inside.MsgRe(true, true);
+                    MsgRe(true, true);
                     resolve(true)
                 } else {
 
-                    _.inside.MsgRe(false, true);
+                    MsgRe(false, true);
                     reject(false);
                 }
             })
@@ -1685,7 +2015,7 @@
      * 内部实现，不要直接调用
      */
 
-    velfun.inside.MsgRe = function (re, lite) {
+    function MsgRe (re, lite) {
         if (lite) {
 
             _("#_MessageBox_").remove();
@@ -1728,7 +2058,7 @@
      * 内部实现，不要直接调用
      */
 
-    velfun.inside.Options_do = function (opt_arr, title) {
+    function Options_do (opt_arr, title) {
         title = title || "";
         let ulhtml = "<ul id='_Velfun_OPTIONS_' style='position: fixed;display: block;width: 100%;height: auto;left: 0px;top: 50%;transform: translateY(-50%);margin:0px;padding: 0px;z-index: 1000;overflow: hidden;cursor:default;'>";
         let lihtml = "";
@@ -1743,7 +2073,7 @@
         }
         for (const index in opt_arr) {
             if (opt_arr.hasOwnProperty(index)) {
-                lihtml += "<li class='_Velfun_Options_Item' style='" + backgroundStyle + "' onclick='_.inside.OptionsRe(this,\"" + index + "\")'><span style='display:table-cell;vertical-align: middle;text-align: center;'>" + index + "</span></li>";
+                lihtml += "<li class='_Velfun_Options_Item' style='" + backgroundStyle + "' onclick='velfun.private.OptionsRe(this,\"" + index + "\")'><span style='display:table-cell;vertical-align: middle;text-align: center;'>" + index + "</span></li>";
             }
         }
         const ophtml = ulhtml + lihtml + "</ul>";
@@ -1763,8 +2093,7 @@
     /**
      * 内部实现，不要直接调用
      */
-
-    velfun.inside.OptionsRe = function (th, index) {
+    velfun.private.OptionsRe = function (th, index) {
 
         const _this = _(th);
         _this.back();
@@ -1790,7 +2119,7 @@
     /**
      * 内部实现，不要直接调用
      */
-    velfun.inside.setAttrsLang = function (th, langdata) {
+    velfun.private.setAttrsLang = function (th, langdata) {
 
         if (_(th).hasAttr("alt")) {
 
@@ -1957,8 +2286,7 @@
                         else resolve(text);
                     })
                     .catch(reason => {
-                        if (typeof callback == "function") callback(text);
-                        else reject(reason)
+                        reject(reason)
                     })
             } else if (method.toLowerCase() == "post") {
                 fetch(url, { method: 'POST', body: data })
@@ -1968,8 +2296,7 @@
                         else resolve(text);
                     })
                     .catch(reason => {
-                        if (typeof callback == "function") callback(text);
-                        else reject(reason)
+                        reject(reason)
                     })
             } else {
                 try {
@@ -2424,13 +2751,11 @@
 
     //Translate
     velfun.trans = new Object();
-
-    velfun.trans.inside = new Object();
     /**
      * 内部实现，不要直接调用
      */
 
-    velfun.trans.inside.toChar = function (num, numlang, levellang) {
+    function toChar (num, numlang, levellang) {
         num = num.split("");
         let showNum = "";
         let hasZero = false;
@@ -2494,16 +2819,16 @@
         let showNum = "";
         for (let i = 0; i < num.length; i++) {
 
-            let in_k = velfun.trans.inside.toChar(num[i], numlang, levellang);
+            let in_k = toChar(num[i], numlang, levellang);
             if (in_k != "") {
                 if (i > 0 && in_k.indexOf("零") != 0 && num[i - 1].substring(num[i - 1].length - 1, num[i - 1].length) == "0") showNum += "零"
 
-                showNum += velfun.trans.inside.toChar(num[i], numlang, levellang) + biglevellang[num.length - i - 1];
+                showNum += toChar(num[i], numlang, levellang) + biglevellang[num.length - i - 1];
             }
         }
         //小数计算
 
-        let showNum_float = velfun.trans.inside.toChar(numFloat, numlang, ["", "", "", ""]);
+        let showNum_float = toChar(numFloat, numlang, ["", "", "", ""]);
         if (showNum_float) {
             return showNum + "点" + showNum_float;
         } else {
@@ -2597,11 +2922,11 @@
      * 内部实现，不要直接调用
      */
 
-    velfun.inside.Tip_do = function (content, title, duration) {
+    function Tip_do (content, title, duration) {
         if (typeof title === "number") {
             duration = title;
 
-            delete title;
+            title = undefined;
         }
         if (duration === undefined) {
             duration = 3000;
@@ -2849,7 +3174,7 @@ _(function () {
                             }
                         }
 
-                        _.inside.setAttrsLang(adn, _.langdata);
+                        velfun.private.setAttrsLang(adn, _.langdata);
                     }
 
                     _.observer.observe(_.obbody, _.obconfig);
